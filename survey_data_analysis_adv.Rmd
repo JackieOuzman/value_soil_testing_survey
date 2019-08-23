@@ -7,24 +7,68 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(DT)
 ```
 
-## R Markdown
+## Do this a sections first 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r import dataset advisor}
 
-```{r cars}
-summary(cars)
+#These names are very long perhaps we can make them shorter?
+
+headers <- read_excel("Using soil and plant testing data to better inform nutrient management.xlsx", 
+                   sheet = "Data", col_names=FALSE, range = "A1:DO1")
+data <- read_excel("Using soil and plant testing data to better inform nutrient management.xlsx", 
+                   sheet = "Data", col_names=FALSE, range = "A4:DO74")
+
+names(data) <- headers
+#names(data)
+
+
 ```
 
 ## Including Plots
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r Q2 by region, echo=FALSE}
+
+Q2 <- group_by(data, Q1_region) %>% 
+  summarise(
+    count = n(),
+    Ave_Cropped_Area = round(mean(`Q2_Cropped Area`), 0)) 
+    #%>% 
+    #arrange(desc(Ave_Cropped_Area))
+
+head(Q2, 15)
+
+Q2 <- mutate(Q2,
+             names_display =case_when(
+               Q1_region == "SA - Mallee (low rainfall)" ~  "SA - Mallee",
+               Q1_region == "SA – Lower EP (medium rainfall)" ~  "SA – Lower EP",
+               Q1_region == "SA - Mid North (medium rainfall)" ~  "SA - Mid North",
+               Q1_region == "SA - Yorke Peninsula (medium rainfall)" ~  "SA - Yorke Peninsula",
+               Q1_region == "SA - Upper EP (low rainfall)" ~  "SA - Upper EP",
+               Q1_region == "SA - South East (medium rainfall)" ~  "SA - South East",
+               Q1_region == "VIC - Wimmera (medium rainfall)" ~  "VIC - Wimmera",
+               Q1_region == "VIC - Mallee (low rainfall)" ~  "VIC - Mallee",
+               Q1_region == "VIC - Southern region (high rainfall)" ~  "VIC - Southern region",
+               Q1_region == "Other (please specify)" ~  "Other"))
+               
+ 
+#work out how to best use this clm
+
+
+datatable(Q2,  colnames = c("response", "average cropped area"),
+          rownames = FALSE,
+          options = list(order = list(list(2, 'dec'))))
+
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
