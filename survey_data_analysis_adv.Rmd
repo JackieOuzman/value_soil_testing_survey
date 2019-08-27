@@ -12,6 +12,8 @@ library(tidyverse)
 library(ggplot2)
 library(readxl)
 library(DT)
+#install.packages("scales")
+library(scales)
 ```
 
 ## Do this a sections first 
@@ -32,22 +34,12 @@ names(data) <- headers
 
 ```
 
-## Including Plots
+## subset of data
 
-You can also embed plots, for example:
+setting the display names and the order I want them to appear
 
-```{r Q2 by region, echo=FALSE}
-
-Q2 <- group_by(data, Q1_region) %>% 
-  summarise(
-    count = n(),
-    Ave_Cropped_Area = round(mean(`Q2_Cropped Area`), 0)) 
-    #%>% 
-    #arrange(desc(Ave_Cropped_Area))
-
-head(Q2, 15)
-
-Q2 <- mutate(Q2,
+```{r setting up the region names and order, echo=FALSE}
+data <- mutate(data,
              names_display =case_when(
                Q1_region == "SA - Mallee (low rainfall)" ~  "SA - Mallee",
                Q1_region == "SA – Lower EP (medium rainfall)" ~  "SA – Lower EP",
@@ -59,15 +51,40 @@ Q2 <- mutate(Q2,
                Q1_region == "VIC - Mallee (low rainfall)" ~  "VIC - Mallee",
                Q1_region == "VIC - Southern region (high rainfall)" ~  "VIC - Southern region",
                Q1_region == "Other (please specify)" ~  "Other"))
-               
- 
-#work out how to best use this clm
+data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee", 
+                                       "SA – Lower EP", 
+                                       "SA - Mid North", 
+                                       "SA - Yorke Peninsula", 
+                                       "SA - Upper EP", 
+                                       "SA - South East", 
+                                       "VIC - Wimmera",
+                                       "VIC - Mallee",
+                                       "VIC - Southern region",
+                                       "Other")))
 
+```
 
-datatable(Q2,  colnames = c("response", "average cropped area"),
-          rownames = FALSE,
-          options = list(order = list(list(2, 'dec'))))
+Summary of data 
+```{r Q2, echo=FALSE}
 
+Q2 <- group_by(data, names_display) %>% 
+  summarise(
+    count = n(),
+    Ave_Cropped_Area = round(mean(`Q2_Cropped Area`), 0)) %>% 
+    arrange(names_display)
+
+head(Q2, 15)
+
+datatable(Q2,  colnames = c( "names", "count", "average cropped area"),
+          rownames = FALSE)
+          
+ggplot(Q2, aes(names_display, Ave_Cropped_Area))+
+  geom_col()+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Cropped area")+
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  scale_y_continuous(labels =  comma)
 
 ```
 
