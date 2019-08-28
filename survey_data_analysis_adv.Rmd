@@ -92,6 +92,7 @@ datatable(Q2_regions,  colnames = c( "names", "count", "average cropped area"),
 ```{r Q2 graph regions, echo=FALSE}
 ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
   geom_col()+
+  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
   theme_classic()+
   labs(x= "Regions",
        y = "Cropped area",
@@ -161,7 +162,7 @@ Q6_byRegion <- data %>%
 
 ggplot(Q6_byRegion, aes(names_display, percent, fill=Q6_recommend_testing ))+
   geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = "inward", hjust = "inward"))+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions",
        y = "Recommend testing",
@@ -177,7 +178,7 @@ ggplot(Q6_byRegion, aes(names_display, percent, fill=Q6_recommend_testing ))+
 filter(Q6_byRegion, Q6_recommend_testing == "No") %>% 
 ggplot(aes(names_display, percent))+
   geom_col()+
-  geom_text(aes(label = percent(signif(percent),1), vjust = "inward", hjust = "inward"))+
+  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions",
        y = "Do not recommend testing",
@@ -186,7 +187,7 @@ ggplot(aes(names_display, percent))+
        caption = "Q) Do you recommend soil and or plant testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent, limits=c(0, 0.2))
 
 ```
 
@@ -306,7 +307,7 @@ Q) What % of your clients tested for P in 2018?")
 filter(Q12_percent_testing, bins != "NA") %>% 
 ggplot( aes(bins, percent))+
   geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = "inward", hjust = "inward"))+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
   labs(x= "bins",
@@ -473,13 +474,6 @@ Q16_why_not_moreN <- rbind(Q16_why_not_moreN_cost,
                            Q16_why_not_moreN_lab_accuracy,
                            Q16_why_not_moreN_test_profit_decis,
                            Q16_why_not_moreN_too_slow)
-labels_q16 <- c(Q16_why_not_moreN_cost = "cost", 
-                Q16_why_not_moreN_time = "time",
-                Q16_why_not_moreN_lab_cost = "cost of lab analysis",
-                Q16_why_not_moreN_variability = "vara",
-                Q16_why_not_moreN_lab_accuracy = "accuracy of lab analysis",
-                Q16_why_not_moreN_test_profit_decis = "translate to profitable decision",
-                Q16_why_not_moreN_too_slow = "get results at right time")
 
 Q16_why_not_moreN <- mutate(Q16_why_not_moreN,
                                         percent1 = round(percent*100,2),
@@ -503,7 +497,7 @@ ggplot(Q16_why_not_moreN,  aes(label_name , percent))+
        caption = "add")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8, hjust = 0))+
-  scale_y_continuous(labels = scales::percent)
+   scale_y_continuous(labels = scales::percent, limits=c(0, 0.5))
 
 
 ```
