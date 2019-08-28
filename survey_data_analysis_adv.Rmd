@@ -16,10 +16,11 @@ library(DT)
 library(scales)
 ```
 
-## Do this a sections first 
+#### Do analysis in sections 
+first section is question 1 to XXX
 
-
-```{r import dataset advisor}
+Bring in the data and assign the correct headings
+```{r import dataset advisor, include=FALSE}
 
 #These names are very long perhaps we can make them shorter?
 
@@ -34,11 +35,11 @@ names(data) <- headers
 
 ```
 
-## subset of data
+#### subset of data
 
 setting the display names and the order I want them to appear
 
-```{r setting up the region names and order, echo=FALSE}
+```{r setting up the region names and order, include=FALSE}
 data <- mutate(data,
              names_display =case_when(
                Q1_region == "SA - Mallee (low rainfall)" ~  "SA - Mallee",
@@ -64,28 +65,467 @@ data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee",
 
 ```
 
-Summary of data 
-```{r Q2, echo=FALSE}
+#### Question 1 
+In which argo-elecological region do you work / are your clients based?
+This is not done yet
 
-Q2 <- group_by(data, names_display) %>% 
+#### **Question 2** 
+What is the average total area cropped (hectares) that you have managed for clients over the last 3 seasons?
+**Analysed copped area by regions**
+
+
+```{r Q2 analysis and table, echo=FALSE}
+
+Q2_regions <- group_by(data, names_display) %>% 
   summarise(
     count = n(),
     Ave_Cropped_Area = round(mean(`Q2_Cropped Area`), 0)) %>% 
     arrange(names_display)
 
-head(Q2, 15)
+#head(Q2_regions,3)
 
-datatable(Q2,  colnames = c( "names", "count", "average cropped area"),
+datatable(Q2_regions,  colnames = c( "names", "count", "average cropped area"),
           rownames = FALSE)
           
-ggplot(Q2, aes(names_display, Ave_Cropped_Area))+
+
+```
+```{r Q2 graph regions, echo=FALSE}
+ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
   geom_col()+
   theme_classic()+
   labs(x= "Regions",
-       y = "Cropped area")+
-  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+       y = "Cropped area",
+       title = "Total area cropped (hectares)",
+       subtitle = "Agronomist",
+       caption = "Q) What is the average total area cropped (hectares) that you have managed for clients over the last 3 seasons?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels =  comma)
+```
+
+#### Question 3 
+Of the land you manage with clients, what percentage would be the following crops, by area? (please enter a whole number without the % sign.
+Every row needs a number, so if there is none grown, please enter 0.)
+
+Cerals (wheat, barley, oats)
+Canola
+Pulses (peas, beans, lupins, lentils, chickpeas)
+Pasture
+Hay
+Fallow
+
+#### Question 4
+When thinking about your average client's annual variable costs, what percentage would fertilisers account for?
+
+#### Question 5
+What are the main nutrient deficiencies your clients encounter?
+
+#### **Question 6** 
+Do you recommend soil and or plant testing?
+
+```{r Q6 summary, echo=FALSE}
+#All agronomist  
+Q6_all <- data %>% 
+  count(Q6_recommend_testing) %>% 
+  mutate(percent = 
+        (freq = n / sum(n)))
+#head(Q6_all)
+
+ggplot(Q6_all, aes(Q6_recommend_testing, percent))+
+  geom_col()+
+  geom_text(aes(label = percent(signif(percent),1), vjust = "inward", hjust = "inward"))+
+  theme_classic()+
+  labs(x= "All regions",
+       y = "Recommend testing",
+       title = "Recommend soil and or plant testing",
+       subtitle = "Agronomist",
+       caption = "Q) Do you recommend soil and or plant testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent)
+
+
+#agronomist by region
+
+Q6_byRegion <- data %>%
+  group_by(names_display, Q6_recommend_testing) %>%
+  summarise(n = n()) %>%
+    mutate(percent = 
+        (freq = n / sum(n)))
+   #mutate(percent = round(
+  #      (freq = n / sum(n))*100,3)) #having some trouble with the rounding
+
+
+
+#head(Q6_byRegion)
+
+ggplot(Q6_byRegion, aes(names_display, percent, fill=Q6_recommend_testing ))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = "inward", hjust = "inward"))+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Recommend testing",
+       fill = "",
+       title = "Recommend soil and or plant testing",
+       subtitle = "Agronomist",
+       caption = "Q) Do you recommend soil and or plant testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent)
+
+#graph of agronomist advising no
+filter(Q6_byRegion, Q6_recommend_testing == "No") %>% 
+ggplot(aes(names_display, percent))+
+  geom_col()+
+  geom_text(aes(label = percent(signif(percent),1), vjust = "inward", hjust = "inward"))+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Do not recommend testing",
+       title = "Recommend soil and or plant testing",
+       subtitle = "Agronomist",
+       caption = "Q) Do you recommend soil and or plant testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent)
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+#### Question 7
+Of your clients, how many of them rely entirely on you to make the nutrient decisions?
+Of your clients, how many of them rely somewhat on you to make the nutrient decisions?
+Of your clients, how many of them make their own nutrient decisions?
+
+#### Question 8
+To what extent are you responsible for determining how much testing is done on your clients' farms?
+
+#### Question 9
+To what extent do the test results influence your recommendations?
+
+#### Question 10
+What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? #Indicate if this is different for N, P and other nutrients
+Source 1
+Source 2
+Source 3
+
+#### Question 11
+#### Explain your approach to soil testing P, N and other micronutrients ...
+P
+N
+Micronutrients
+
+#### **Question 12**
+#### Can you please provide some specific information on ..
+#### What % of your clients soil tested in 2018?
+#### What % of your clients tested for N in 2018?
+What % of your clients tested for N to at least 60cm in 2018?
+#### What % of your clients tested for P in 2018?
+
+
+```{r Q12 data work up and DT summary, echo=FALSE}
+#All agronomist  
+#table(data$Q12_percent_testing_2018)
+#table(data$Q12_percent_N_testing_2018)
+#table(data$Q12_percent_testing_P_2018)
+#table(data$Q12_percent_testing_N_60cm_2018)
+
+Q12_percent_testing_2018 <- data %>%
+  group_by( Q12_percent_testing_2018 ) %>%
+  summarise(n = n()) %>%
+  mutate(percent = (freq = n / sum(n)),
+         type = "percent_testing_2018")
+Q12_percent_testing_2018 <- Q12_percent_testing_2018 %>%
+  select(n,
+        percent,
+        type,
+        bins = Q12_percent_testing_2018)
+
+Q12_percent_N_testing_2018 <- data %>%
+  group_by(  Q12_percent_N_testing_2018 ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_N_testing_2018")
+Q12_percent_N_testing_2018 <- Q12_percent_N_testing_2018 %>%
+  select(n,
+         percent,
+         type,
+         bins = Q12_percent_N_testing_2018)
+
+Q12_percent_testing_P_2018 <- data %>%
+  group_by(  Q12_percent_testing_P_2018 ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_P_testing_2018")
+Q12_percent_testing_P_2018 <- Q12_percent_testing_P_2018 %>%
+  select(n,
+         percent,
+         type,
+         bins = Q12_percent_testing_P_2018)
+
+Q12_percent_testing <- rbind(Q12_percent_testing_2018,
+                             Q12_percent_N_testing_2018,
+                             Q12_percent_testing_P_2018)
+Q12_percent_testing <- select(Q12_percent_testing,
+                              type,
+                              bins,
+                              percent, n)      
+#head(Q12_percent_testing) 
+
+
+labels <- c(percent_N_testing_2018 = "N", 
+            percent_P_testing_2018 = "P",
+            percent_testing_2018 = "testing")
+
+
+#head(Q12_percent_testing)
+Q12_percent_testing_for_table <- mutate(Q12_percent_testing,
+                                        percent1 = round(percent*100,2),
+                                        label_name = case_when(
+                                          type == "percent_N_testing_2018" ~ "N",
+                                          type == "percent_P_testing_2018" ~ "P",
+                                          type == "percent_testing_2018" ~ "any testing")) %>% 
+                                select(label_name, bins, percent1 )
+
+#head(Q12_percent_testing_for_table)
+
+
+filter(Q12_percent_testing_for_table, bins != "NA") %>% 
+  datatable(colnames = c("testing for", "bins", "percentage of tetsing done"))
+
+
+```
+
+```{r Q12 graphs , echo=FALSE}
+
+caption <- c(
+"Q) What % of your clients soil tested in 2018?
+Q) What % of your clients tested for N in 2018?
+Q) What % of your clients tested for P in 2018?")
+
+
+
+filter(Q12_percent_testing, bins != "NA") %>% 
+ggplot( aes(bins, percent))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = "inward", hjust = "inward"))+
+  theme_classic()+
+  facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
+  labs(x= "bins",
+       y = "",
+       title = "In 2018 what % of your clients tested...",
+       subtitle = "Agronomist",
+       caption = caption)+
+       theme(axis.text.x=element_text(angle=90,hjust=1),
+       plot.caption = element_text(size = 8, hjust = 0))+
+       scale_y_continuous(labels = scales::percent)
+
+```
+
+#### Question 13
+Which tests do you currently use for soil N testing?
+Nitrogen 1 - Type of test
+Nitrogen 1 - Frequency (times per season)
+Nitrogen 1 - How many representative samples per paddock
+Nitrogen 2 - Type of test
+Nitrogen 2 - Frequency (times per season)
+Nitrogen 2 - How many representative samples per paddock
+Nitrogen 3 - Type of test
+Nitrogen 3 - Frequency (times per season)
+Nitrogen 3 - How many representative samples per paddock
+How frequently are paddocks tested i.e. every 3 years, every 5 years ... other?
+
+#### Question 14
+Which tests do you use for P tests?
+Phosphorus 1 - Type of test
+Phosphorus 1 - Frequency (times per season)
+Phosphorus 1 - How many representative samples per paddock
+Phosphorus 2 - Type of test
+Phosphorus 2 - Frequency (times per season)
+Phosphorus 2 - How many representative samples per paddock
+Phosphorus 3 - Type of test
+Phosphorus 3 - Frequency (times per season)
+Phosphorus 3 - How many representative samples per paddock
+Phosphorus 4 - Type of test
+Phosphorus 4 - Frequency (times per season)
+Phosphorus 4 - How many representative samples per paddock
+Phosphorus 5 - Type of test
+Phosphorus 5 - Frequency (times per season)
+Phosphorus 5 - How many representative samples per paddock
+How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?
+
+#### Question 14
+What tests do you use for Potassium testing ...
+Potassium 1 - Type of test
+Potassium 1 - Frequency (times per season)
+Potassium 1 - How many representative samples per paddock
+Potassium 2 - Type of test
+Potassium 2 - Frequency (times per season)
+Potassium 2 - How many representative samples per paddock
+Potassium 3 - Type of test
+Potassium 3 - Frequency (times per season)
+Potassium 3 - How many representative samples per paddock
+How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?9
+
+#### Question 14
+And, which tests do you use for micronutrients?
+1 - Type of test
+1 - Frequency (times per season)
+1 - How many cores per paddock
+2 - Type of test
+2 - Frequency (times per season)
+2 - How many cores per paddock
+3 - Type of test
+3 - Frequency (times per season)
+3 - How many cores per paddock
+4 - Type of test
+4 - Frequency (times per season)
+4 - How many cores per paddock
+5 - Type of test
+5 - Frequency (times per season)
+5 - How many cores per paddock
+6 - Type of test
+6 - Frequency (times per season)
+6 - How many cores per paddock
+7 - Type of test
+7 - Frequency (times per season)
+7 - How many cores per paddock
+8 - Type of test
+8 - Frequency (times per season)
+8 - How many cores per paddock
+How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?10
+
+#### Question 15
+What are the top 3 reasons for soil testing on your clients farms ...
+1
+2
+3
+#### Question 16
+Please indicate why you don't do more SOIL Nitrogen testing:
+The cost of soil sampling
+The time required for soil sampling
+The cost of soil testing lab analysis
+The difficulty in being able to represent the variability in a paddock
+The level of accuracy of soil testing lab analysis
+The ability to translate soil test results into a profitable fertiliser decision for my paddock
+Not being able to get soil test results at the right time for decision making
+General comments:
+
+```{r Q16 data work up and DT summary, echo=FALSE}
+Q16_why_not_moreN_time <- data %>%
+  group_by(  Q16_why_not_moreN_time ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "Q16_why_not_moreN_time") %>% 
+  filter( Q16_why_not_moreN_time != "NA") %>% 
+  select(percent, type)
+
+Q16_why_not_moreN_lab_cost <- data %>%
+  group_by(  Q16_why_not_moreN_lab_cost ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "Q16_why_not_moreN_lab_cost") %>% 
+  filter( Q16_why_not_moreN_lab_cost != "NA") %>% 
+  select(percent, type)
+
+Q16_why_not_moreN_lab_accuracy <- data %>%
+  group_by(  Q16_why_not_moreN_lab_accuracy ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "Q16_why_not_moreN_lab_accuracy")%>% 
+  filter( Q16_why_not_moreN_lab_accuracy != "NA") %>% 
+  select(percent, type)
+
+Q16_why_not_moreN_test_profit_decis <- data %>%
+  group_by(  Q16_why_not_moreN_test_profit_decis ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "Q16_why_not_moreN_test_profit_decis")%>% 
+  filter( Q16_why_not_moreN_test_profit_decis != "NA") %>% 
+  select(percent, type)
+
+Q16_why_not_moreN_too_slow <- data %>%
+  group_by(  Q16_why_not_moreN_too_slow ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "Q16_why_not_moreN_too_slow")%>% 
+  filter( Q16_why_not_moreN_too_slow != "NA") %>% 
+  select(percent, type)
+
+Q16_why_not_moreN_variability <- data %>%
+  group_by(  Q16_why_not_moreN_variability ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "Q16_why_not_moreN_variability")%>% 
+  filter( Q16_why_not_moreN_variability != "NA") %>% 
+  select(percent, type)
+
+Q16_why_not_moreN_cost <- data %>%
+  group_by(  Q16_why_not_moreN_cost ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "Q16_why_not_moreN_cost") %>% 
+  filter( Q16_why_not_moreN_cost != "NA") %>% 
+  select(percent, type)
+
+Q16_why_not_moreN <- rbind(Q16_why_not_moreN_cost,
+                           Q16_why_not_moreN_time,
+                           Q16_why_not_moreN_lab_cost,
+                           Q16_why_not_moreN_variability,
+                           Q16_why_not_moreN_lab_accuracy,
+                           Q16_why_not_moreN_test_profit_decis,
+                           Q16_why_not_moreN_too_slow)
+labels_q16 <- c(Q16_why_not_moreN_cost = "cost", 
+                Q16_why_not_moreN_time = "time",
+                Q16_why_not_moreN_lab_cost = "cost of lab analysis",
+                Q16_why_not_moreN_variability = "vara",
+                Q16_why_not_moreN_lab_accuracy = "accuracy of lab analysis",
+                Q16_why_not_moreN_test_profit_decis = "translate to profitable decision",
+                Q16_why_not_moreN_too_slow = "get results at right time")
+
+Q16_why_not_moreN <- mutate(Q16_why_not_moreN,
+                                        percent1 = round(percent*100,2),
+                                        label_name = case_when(
+                                          type == "Q16_why_not_moreN_cost" ~ "cost",
+                                          type == "Q16_why_not_moreN_time" ~ "time",
+                                          type == "Q16_why_not_moreN_lab_cost" ~ "cost of lab analysis",
+                                          type == "Q16_why_not_moreN_variability" ~ "variability",
+                                          type == "Q16_why_not_moreN_lab_accuracy" ~ "accuracy",
+                                          type == "Q16_why_not_moreN_test_profit_decis" ~ "translate profitable decision",
+                                          type == "Q16_why_not_moreN_too_slow" ~ "get results at right time") ) 
+
+ggplot(Q16_why_not_moreN,  aes(label_name , percent))+
+  geom_col()+
+  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "reasons",
+       y = "",
+       title = "Please indicate why you don't do more SOIL Nitrogen testing:",
+       subtitle = "Agronomist",
+       caption = "add")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8, hjust = 0))+
+  scale_y_continuous(labels = scales::percent)
+
+
+```
+
+
+#### Question 17
+Please indicate why you don't do more SOIL Phosphorous testing
+The cost of soil sampling11
+The time required for soil sampling12
+The cost of soil testing lab analysis13
+The difficulty in being able to represent the variability in a paddock14
+The level of accuracy of soil testing lab analysis15
+The ability to translate soil test results into a profitable fertiliser decision for my paddock16
+Not being able to get soil test results at the right time for decision making17
+General comments:18
+
+
+
+
+
+
+
+
+
+
