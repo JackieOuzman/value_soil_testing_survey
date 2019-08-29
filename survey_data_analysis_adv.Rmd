@@ -466,15 +466,16 @@ Q16_why_not_moreN_cost <- data %>%
          type = "Q16_why_not_moreN_cost") %>% 
   filter( Q16_why_not_moreN_cost != "NA") %>% 
   select(percent, type)
-
+#merge all my dataframes into one
 Q16_why_not_moreN <- rbind(Q16_why_not_moreN_cost,
                            Q16_why_not_moreN_time,
                            Q16_why_not_moreN_lab_cost,
                            Q16_why_not_moreN_variability,
                            Q16_why_not_moreN_lab_accuracy,
                            Q16_why_not_moreN_test_profit_decis,
-                           Q16_why_not_moreN_too_slow)
-
+                           Q16_why_not_moreN_too_slow) %>% 
+                           arrange(desc(percent))
+#make a new column for names to use when graphing
 Q16_why_not_moreN <- mutate(Q16_why_not_moreN,
                                         percent1 = round(percent*100,2),
                                         label_name = case_when(
@@ -486,7 +487,7 @@ Q16_why_not_moreN <- mutate(Q16_why_not_moreN,
                                           type == "Q16_why_not_moreN_test_profit_decis" ~ "translate profitable decision",
                                           type == "Q16_why_not_moreN_too_slow" ~ "get results at right time") ) 
 
-ggplot(Q16_why_not_moreN,  aes(label_name , percent))+
+ggplot(Q16_why_not_moreN, aes(x = reorder(label_name, -percent), y = percent))+
   geom_col()+
   geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
@@ -494,8 +495,8 @@ ggplot(Q16_why_not_moreN,  aes(label_name , percent))+
        y = "",
        title = "Please indicate why you don't do more SOIL Nitrogen testing:",
        subtitle = "Agronomist",
-       caption = "add")+
-  theme(axis.text.x=element_text(angle=90,hjust=1),
+       caption = "Please indicate why you don't do more SOIL Nitrogen testing:")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
         plot.caption = element_text(size = 8, hjust = 0))+
    scale_y_continuous(labels = scales::percent, limits=c(0, 0.5))
 
@@ -515,10 +516,115 @@ Not being able to get soil test results at the right time for decision making17
 General comments:18
 
 
+```{r Q17 data work up and graph, echo=FALSE}
 
 
-
-
+ #table(data$Q17_why_not_moreP_cost)
+#  table(data$Q17_why_not_moreP_time)
+#  table(data$Q17_why_not_moreP_lab_cost)
+#  table(data$Q17_why_not_moreP_variability)
+#  table(data$Q17_why_not_moreP_lab_accuracy)
+#  table(data$Q17_why_not_moreP_test_profit_decis)
+#  table(data$Q17_why_not_moreP_too_slow) 
+#  table(data$Q17_why_not_moreP_text)
+  
+  
+  Q17_why_not_moreP_cost <- data %>%
+    group_by(  Q17_why_not_moreP_cost ) %>%
+    summarise(n = n()) %>%
+    mutate(percent =(freq = n / sum(n)),
+           type = "Q17_why_not_moreP_cost") %>% 
+    filter( Q17_why_not_moreP_cost != "NA") %>% 
+    select(percent, type)
+  
+  Q17_why_not_moreP_time <- data %>%
+    group_by(  Q17_why_not_moreP_time ) %>%
+    summarise(n = n()) %>%
+    mutate(percent =(freq = n / sum(n)),
+           type = "Q17_why_not_moreP_time") %>% 
+    filter( Q17_why_not_moreP_time != "NA") %>% 
+    select(percent, type)
+  
+  Q17_why_not_moreP_lab_cost <- data %>%
+    group_by(  Q17_why_not_moreP_lab_cost ) %>%
+    summarise(n = n()) %>%
+    mutate(percent =(freq = n / sum(n)),
+           type = "Q17_why_not_moreP_lab_cost")%>% 
+    filter( Q17_why_not_moreP_lab_cost != "NA") %>% 
+    select(percent, type)
+  
+  Q17_why_not_moreP_variability <- data %>%
+    group_by(  Q17_why_not_moreP_variability ) %>%
+    summarise(n = n()) %>%
+    mutate(percent =(freq = n / sum(n)),
+           type = "Q17_why_not_moreP_variability")%>% 
+    filter( Q17_why_not_moreP_variability != "NA") %>% 
+    select(percent, type)
+  
+  Q17_why_not_moreP_lab_accuracy <- data %>%
+    group_by(  Q17_why_not_moreP_lab_accuracy ) %>%
+    summarise(n = n()) %>%
+    mutate(percent =(freq = n / sum(n)),
+           type = "Q17_why_not_moreP_lab_accuracy")%>% 
+    filter( Q17_why_not_moreP_lab_accuracy != "NA") %>% 
+    select(percent, type)
+  
+  Q17_why_not_moreP_test_profit_decis <- data %>%
+    group_by(  Q17_why_not_moreP_test_profit_decis ) %>%
+    summarise(n = n()) %>%
+    mutate(percent =(freq = n / sum(n)),
+           type = "Q17_why_not_moreP_test_profit_decis")%>% 
+    filter( Q17_why_not_moreP_test_profit_decis != "NA") %>% 
+    select(percent, type)
+  
+  Q17_why_not_moreP_too_slow <- data %>%
+    group_by(  Q17_why_not_moreP_too_slow ) %>%
+    summarise(n = n()) %>%
+    mutate(percent =(freq = n / sum(n)),
+           type = "Q17_why_not_moreP_too_slow") %>% 
+    filter( Q17_why_not_moreP_too_slow != "NA") %>% 
+    select(percent, type)
+  
+  
+  
+  Q17_why_not_moreP <- rbind(Q17_why_not_moreP_cost,
+                             Q17_why_not_moreP_time,
+                             Q17_why_not_moreP_lab_cost,
+                             Q17_why_not_moreP_variability,
+                             Q17_why_not_moreP_lab_accuracy,
+                             Q17_why_not_moreP_test_profit_decis,
+                             Q17_why_not_moreP_too_slow)
+  Q17_why_not_moreP <- mutate(Q17_why_not_moreP,
+                              percent1 = round(percent*100,2),
+                              label_name = case_when(
+                                type == "Q17_why_not_moreP_cost" ~ "cost",
+                                type == "Q17_why_not_moreP_time" ~ "time",
+                                type == "Q17_why_not_moreP_lab_cost" ~ "cost of lab analysis",
+                                type == "Q17_why_not_moreP_variability" ~ "variability",
+                                type == "Q17_why_not_moreP_lab_accuracy" ~ "accuracy",
+                                type == "Q17_why_not_moreP_test_profit_decis" ~ "translate profitable decision",
+                                type == "Q17_why_not_moreP_too_slow" ~ "get results at right time") ) 
+  
+  
+  
+  
+  head(Q17_why_not_moreP)
+  ggplot(Q17_why_not_moreP, aes(x = reorder(label_name, -percent), y = percent))+
+    geom_col()+
+    geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+    theme_classic()+
+    labs(x= "reasons",
+         y = "",
+         title = "Please indicate why you don't do more SOIL P testing:",
+         subtitle = "Agronomist",
+         caption = "Please indicate why you don't do more SOIL Phosphorous testing")+
+    theme(axis.text.x=element_text(angle=45,hjust=1),
+          plot.caption = element_text(size = 8, hjust = 0))+
+    scale_y_continuous(labels = scales::percent, limits=c(0, 0.5))
+  
+```
+  
+  
 
 
 
