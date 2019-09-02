@@ -66,7 +66,7 @@ data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee",
 ```
 
 #### **Question 1** 
-In which argo-elecological region do you work / are your clients based?
+In which argo-ecological region do you work / are your clients based?
 
 This is not done yet
 
@@ -112,7 +112,7 @@ Of the land you manage with clients, what percentage would be the following crop
 (please enter a whole number without the % sign.
 Every row needs a number, so if there is none grown, please enter 0.)
 
-Cerals (wheat, barley, oats)
+Cereals (wheat, barley, oats)
 
 Canola
 
@@ -191,8 +191,8 @@ ggplot(aes(names_display, percent))+
   geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions",
-       y = "Do not recommending testing",
-       title = "Not recomming soil and or plant testing",
+       y = "Do not recommend testing",
+       title = "Not recommending soil and or plant testing",
        subtitle = "Agronomist",
        caption = "Q) Do you recommend soil and or plant testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
@@ -314,7 +314,7 @@ Q12_percent_testing_for_table <- mutate(Q12_percent_testing,
 
 
 filter(Q12_percent_testing_for_table, bins != "NA") %>% 
-  datatable(colnames = c("testing for", "bins", "percentage of tetsing done"))
+  datatable(colnames = c("testing for", "bins", "percentage of testing done"))
 
 
 ```
