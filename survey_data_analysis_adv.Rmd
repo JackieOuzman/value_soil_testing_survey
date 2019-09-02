@@ -16,10 +16,12 @@ library(DT)
 library(scales)
 ```
 
-#### Do analysis in sections 
-first section is question 1 to XXX
+#### General notes 
+* Do analysis in sections
+* First analysis is the question Therese has identified for the field days
+* Bring in the data and assign the correct headings
+* Note I have made some adjustment to the heading names in the excel sheet - many questions don't have numbers.
 
-Bring in the data and assign the correct headings
 ```{r import dataset advisor, include=FALSE}
 
 #These names are very long perhaps we can make them shorter?
@@ -35,9 +37,7 @@ names(data) <- headers
 
 ```
 
-#### subset of data
-
-setting the display names and the order I want them to appear
+* Setting the display names and the order I want them to appear
 
 ```{r setting up the region names and order, include=FALSE}
 data <- mutate(data,
@@ -65,13 +65,15 @@ data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee",
 
 ```
 
-#### Question 1 
+#### **Question 1** 
 In which argo-elecological region do you work / are your clients based?
+
 This is not done yet
 
 #### **Question 2** 
 What is the average total area cropped (hectares) that you have managed for clients over the last 3 seasons?
-**Analysed copped area by regions**
+
+**Analysed by regions, should we do by cropped area too?**
 
 
 ```{r Q2 analysis and table, echo=FALSE}
@@ -104,21 +106,29 @@ ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
   scale_y_continuous(labels =  comma)
 ```
 
-#### Question 3 
-Of the land you manage with clients, what percentage would be the following crops, by area? (please enter a whole number without the % sign.
+#### **Question 3** 
+Of the land you manage with clients, what percentage would be the following crops, by area? 
+
+(please enter a whole number without the % sign.
 Every row needs a number, so if there is none grown, please enter 0.)
 
 Cerals (wheat, barley, oats)
+
 Canola
+
 Pulses (peas, beans, lupins, lentils, chickpeas)
+
 Pasture
+
 Hay
+
 Fallow
 
-#### Question 4
+
+#### **Question 4**
 When thinking about your average client's annual variable costs, what percentage would fertilisers account for?
 
-#### Question 5
+#### **Question 5**
 What are the main nutrient deficiencies your clients encounter?
 
 #### **Question 6** 
@@ -134,7 +144,7 @@ Q6_all <- data %>%
 
 ggplot(Q6_all, aes(Q6_recommend_testing, percent))+
   geom_col()+
-  geom_text(aes(label = percent(signif(percent),1), vjust = "inward", hjust = "inward"))+
+  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "All regions",
        y = "Recommend testing",
@@ -143,7 +153,7 @@ ggplot(Q6_all, aes(Q6_recommend_testing, percent))+
        caption = "Q) Do you recommend soil and or plant testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent, limits=c(0, 1.1))
 
 
 #agronomist by region
@@ -181,8 +191,8 @@ ggplot(aes(names_display, percent))+
   geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions",
-       y = "Do not recommend testing",
-       title = "Recommend soil and or plant testing",
+       y = "Do not recommending testing",
+       title = "Not recomming soil and or plant testing",
        subtitle = "Agronomist",
        caption = "Q) Do you recommend soil and or plant testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
@@ -191,35 +201,49 @@ ggplot(aes(names_display, percent))+
 
 ```
 
-#### Question 7
-Of your clients, how many of them rely entirely on you to make the nutrient decisions?
-Of your clients, how many of them rely somewhat on you to make the nutrient decisions?
-Of your clients, how many of them make their own nutrient decisions?
+#### **Question 7**
 
-#### Question 8
+* Of your clients, how many of them rely entirely on you to make the nutrient decisions?
+* Of your clients, how many of them rely somewhat on you to make the nutrient decisions?
+* Of your clients, how many of them make their own nutrient decisions?
+
+#### **Question 8**
 To what extent are you responsible for determining how much testing is done on your clients' farms?
 
-#### Question 9
+#### **Question 9**
 To what extent do the test results influence your recommendations?
 
-#### Question 10
-What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? #Indicate if this is different for N, P and other nutrients
-Source 1
-Source 2
-Source 3
+#### **Question 10**
+What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? 
 
-#### Question 11
-#### Explain your approach to soil testing P, N and other micronutrients ...
-P
-N
-Micronutrients
+Indicate if this is different for N, P and other nutrients
+
+* Source 1
+* Source 2
+* Source 3
+
+#### **Question 11**
+Explain your approach to soil testing P, N and other micronutrients ...
+
+* P
+* N
+* Micronutrients
 
 #### **Question 12**
-#### Can you please provide some specific information on ..
-#### What % of your clients soil tested in 2018?
-#### What % of your clients tested for N in 2018?
-What % of your clients tested for N to at least 60cm in 2018?
-#### What % of your clients tested for P in 2018?
+Can you please provide some specific information on ..
+
+* What % of your clients soil tested in 2018? (any testing)
+* What % of your clients tested for N in 2018? (N)
+* What % of your clients tested for N to at least 60cm in 2018?
+* What % of your clients tested for P in 2018? (P)
+
+Note for this question agronomist were asked to nominate the bin.
+
+* 0
+* 10-15%
+* 15-20%
+* 5-10%
+* 50 -100%
 
 
 ```{r Q12 data work up and DT summary, echo=FALSE}
@@ -302,113 +326,132 @@ caption <- c(
 Q) What % of your clients tested for N in 2018?
 Q) What % of your clients tested for P in 2018?")
 
-
-
-filter(Q12_percent_testing, bins != "NA") %>% 
-ggplot( aes(bins, percent))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
-  theme_classic()+
-  facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
-  labs(x= "bins",
-       y = "",
-       title = "In 2018 what % of your clients tested...",
-       subtitle = "Agronomist",
-       caption = caption)+
-       theme(axis.text.x=element_text(angle=90,hjust=1),
-       plot.caption = element_text(size = 8, hjust = 0))+
-       scale_y_continuous(labels = scales::percent)
+#get the correct order for my labeles
+ Q12_percent_testing <- mutate(Q12_percent_testing,
+                                bin_as_factors = case_when(
+                                  bins == "0" ~ 0,
+                                  bins == "5-10%" ~ 5,
+                                  bins == "10-15%" ~ 10,
+                                  bins == "15-20%" ~ 15,
+                                  bins == "20-50%" ~ 20,
+                                  bins == "50-100%" ~ 50
+                                ))
+  Q12_percent_testing$bin_as_factors <- factor(Q12_percent_testing$bin_as_factors,
+                                        levels=c(0,5,10,15,20,50),
+                                        labels=c("0","5-10%","10-15%","15-20%", "20-50%", "50-100%")) 
+  
+  filter(Q12_percent_testing, bin_as_factors != "NA") %>% 
+    ggplot( aes(bin_as_factors, percent))+
+    geom_col()+
+    #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+    theme_classic()+
+    facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
+    labs(x= "bins",
+         y = "",
+         title = "In 2018 what % of your clients tested...",
+         subtitle = "Agronomist",
+         caption = caption)+
+    theme(axis.text.x=element_text(angle=90,hjust=1),
+          plot.caption = element_text(size = 8, hjust = 0))+
+    scale_y_continuous(labels = scales::percent)
 
 ```
 
-#### Question 13
+#### **Question 13 N**
 Which tests do you currently use for soil N testing?
-Nitrogen 1 - Type of test
-Nitrogen 1 - Frequency (times per season)
-Nitrogen 1 - How many representative samples per paddock
-Nitrogen 2 - Type of test
-Nitrogen 2 - Frequency (times per season)
-Nitrogen 2 - How many representative samples per paddock
-Nitrogen 3 - Type of test
-Nitrogen 3 - Frequency (times per season)
-Nitrogen 3 - How many representative samples per paddock
-How frequently are paddocks tested i.e. every 3 years, every 5 years ... other?
 
-#### Question 14
+* Nitrogen 1 - Type of test
+* Nitrogen 1 - Frequency (times per season)
+* Nitrogen 1 - How many representative samples per paddock
+* Nitrogen 2 - Type of test
+* Nitrogen 2 - Frequency (times per season)
+* Nitrogen 2 - How many representative samples per paddock
+* Nitrogen 3 - Type of test
+* Nitrogen 3 - Frequency (times per season)
+* Nitrogen 3 - How many representative samples per paddock
+* How frequently are paddocks tested i.e. every 3 years, every 5 years ... other?
+
+#### **Question 14 P**
 Which tests do you use for P tests?
-Phosphorus 1 - Type of test
-Phosphorus 1 - Frequency (times per season)
-Phosphorus 1 - How many representative samples per paddock
-Phosphorus 2 - Type of test
-Phosphorus 2 - Frequency (times per season)
-Phosphorus 2 - How many representative samples per paddock
-Phosphorus 3 - Type of test
-Phosphorus 3 - Frequency (times per season)
-Phosphorus 3 - How many representative samples per paddock
-Phosphorus 4 - Type of test
-Phosphorus 4 - Frequency (times per season)
-Phosphorus 4 - How many representative samples per paddock
-Phosphorus 5 - Type of test
-Phosphorus 5 - Frequency (times per season)
-Phosphorus 5 - How many representative samples per paddock
-How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?
 
-#### Question 14
+* Phosphorus 1 - Type of test
+* Phosphorus 1 - Frequency (times per season)
+* Phosphorus 1 - How many representative samples per paddock
+* Phosphorus 2 - Type of test
+* Phosphorus 2 - Frequency (times per season)
+* Phosphorus 2 - How many representative samples per paddock
+* Phosphorus 3 - Type of test
+* Phosphorus 3 - Frequency (times per season)
+* Phosphorus 3 - How many representative samples per paddock
+* Phosphorus 4 - Type of test
+* Phosphorus 4 - Frequency (times per season)
+* Phosphorus 4 - How many representative samples per paddock
+* Phosphorus 5 - Type of test
+* Phosphorus 5 - Frequency (times per season)
+* Phosphorus 5 - How many representative samples per paddock
+* How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?
+
+#### **Question 14 Potassium**
 What tests do you use for Potassium testing ...
-Potassium 1 - Type of test
-Potassium 1 - Frequency (times per season)
-Potassium 1 - How many representative samples per paddock
-Potassium 2 - Type of test
-Potassium 2 - Frequency (times per season)
-Potassium 2 - How many representative samples per paddock
-Potassium 3 - Type of test
-Potassium 3 - Frequency (times per season)
-Potassium 3 - How many representative samples per paddock
-How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?9
 
-#### Question 14
+* Potassium 1 - Type of test
+* Potassium 1 - Frequency (times per season)
+* Potassium 1 - How many representative samples per paddock
+* Potassium 2 - Type of test
+* Potassium 2 - Frequency (times per season)
+* Potassium 2 - How many representative samples per paddock
+* Potassium 3 - Type of test
+* Potassium 3 - Frequency (times per season)
+* Potassium 3 - How many representative samples per paddock
+* How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?9
+
+#### **Question 14 micronutrients**
 And, which tests do you use for micronutrients?
-1 - Type of test
-1 - Frequency (times per season)
-1 - How many cores per paddock
-2 - Type of test
-2 - Frequency (times per season)
-2 - How many cores per paddock
-3 - Type of test
-3 - Frequency (times per season)
-3 - How many cores per paddock
-4 - Type of test
-4 - Frequency (times per season)
-4 - How many cores per paddock
-5 - Type of test
-5 - Frequency (times per season)
-5 - How many cores per paddock
-6 - Type of test
-6 - Frequency (times per season)
-6 - How many cores per paddock
-7 - Type of test
-7 - Frequency (times per season)
-7 - How many cores per paddock
-8 - Type of test
-8 - Frequency (times per season)
-8 - How many cores per paddock
-How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?10
 
-#### Question 15
+* 1 - Type of test
+* 1 - Frequency (times per season)
+* 1 - How many cores per paddock
+* 2 - Type of test
+* 2 - Frequency (times per season)
+* 2 - How many cores per paddock
+* 3 - Type of test
+* 3 - Frequency (times per season)
+* 3 - How many cores per paddock
+* 4 - Type of test
+* 4 - Frequency (times per season)
+* 4 - How many cores per paddock
+* 5 - Type of test
+* 5 - Frequency (times per season)
+* 5 - How many cores per paddock
+* 6 - Type of test
+* 6 - Frequency (times per season)
+* 6 - How many cores per paddock
+* 7 - Type of test
+* 7 - Frequency (times per season)
+* 7 - How many cores per paddock
+* 8 - Type of test
+* 8 - Frequency (times per season)
+* 8 - How many cores per paddock
+* How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?10
+
+#### **Question 15**
 What are the top 3 reasons for soil testing on your clients farms ...
-1
-2
-3
-#### Question 16
+
+* 1
+* 2
+* 3
+
+#### **Question 16**
 Please indicate why you don't do more SOIL Nitrogen testing:
-The cost of soil sampling
-The time required for soil sampling
-The cost of soil testing lab analysis
-The difficulty in being able to represent the variability in a paddock
-The level of accuracy of soil testing lab analysis
-The ability to translate soil test results into a profitable fertiliser decision for my paddock
-Not being able to get soil test results at the right time for decision making
-General comments:
+
+* The cost of soil sampling
+* The time required for soil sampling
+* The cost of soil testing lab analysis
+* The difficulty in being able to represent the variability in a paddock
+* The level of accuracy of soil testing lab analysis
+* The ability to translate soil test results into a profitable fertiliser decision for my paddock
+* Not being able to get soil test results at the right time for decision making
+* General comments:
 
 ```{r Q16 data work up and DT summary, echo=FALSE}
 Q16_why_not_moreN_time <- data %>%
@@ -504,16 +547,17 @@ ggplot(Q16_why_not_moreN, aes(x = reorder(label_name, -percent), y = percent))+
 ```
 
 
-#### Question 17
+#### **Question 17**
 Please indicate why you don't do more SOIL Phosphorous testing
-The cost of soil sampling11
-The time required for soil sampling12
-The cost of soil testing lab analysis13
-The difficulty in being able to represent the variability in a paddock14
-The level of accuracy of soil testing lab analysis15
-The ability to translate soil test results into a profitable fertiliser decision for my paddock16
-Not being able to get soil test results at the right time for decision making17
-General comments:18
+
+* The cost of soil sampling
+* The time required for soil sampling
+* The cost of soil testing lab analysis
+* The difficulty in being able to represent the variability in a paddock
+* The level of accuracy of soil testing lab analysis
+* The ability to translate soil test results into a profitable fertiliser decision for my paddock
+* Not being able to get soil test results at the right time for decision making
+* General comments:
 
 
 ```{r Q17 data work up and graph, echo=FALSE}
@@ -608,7 +652,7 @@ General comments:18
   
   
   
-  head(Q17_why_not_moreP)
+  #head(Q17_why_not_moreP)
   ggplot(Q17_why_not_moreP, aes(x = reorder(label_name, -percent), y = percent))+
     geom_col()+
     geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
@@ -626,6 +670,134 @@ General comments:18
   
   
 
+#### **Question 18** 
+
+Please indicate if you agree/disagree with the following statements in relation to SOIL testing.
+
+* My clients businesses would be more profitable if they did more soil testing than they do now
+* Uncertainty about how the season will turn out makes it hard to get value from soil testing results
+* My clients recommend the use of regular soil testing to other local farmers
+* Feel free to comment on this response
+
+
+#### **Question 19** 
+On average, how much would your clients spend each year on soil testing (including sampling)?
+
+#### **Question 20** 
+Compared to five years' ago, has the amount of soil testing you do / recommend changed?
+
+#### **Question 21** 
+In five years' time, how much soil sampling do you expect to be doing / recommending?
+
+#### **Question 22**
+How do you currently use plant testing?
+
+#### **Question 23**
+Please list the main 3 reasons you use plant testing data?
+
+#### **Question 24**
+Please indicate why you don't do more PLANT testing
+
+* The cost of sampling
+* The time required for sampling
+* The cost of lab analysis
+* The difficulty in being able to represent the variability in a paddock29
+* The level of accuracy of lab analysis
+* The ability to translate test results into a profitable decision
+* Not being able to get test results at the right time for decision making
+* General comments
+
+
+#### **Question 25** 
+Please indicate if you agree/disagree with the following statements in relation to PLANT testing
+
+* My clients businesses would be more profitable if they did more plant testing than they do now
+* Uncertainty about how the season will turn out makes it hard to get value from plant testing results
+* My clients recommend the use of regular plant testing to other local farmers
+* Feel free to comment on this response
+
+#### **Question 26**
+On average, how much would your clients spend per year on plant testing (including sampling)?
+
+#### **Question 27** 
+Compared to five years' ago, has the amount of plant testing you do / recommend changed?
+
+#### **Question 28**
+In five years' time,how much plant sampling do you expect to be doing / recommending?
+
+Not in the excel sheet there seems to be duplication of question around here?
+Not sure what this is about - perhaps a mistakes?
+
+#### **Question 29** 
+Please indicate why you don't do any PLANT testing
+
+* The cost of plant sampling
+* The time required for plant sampling
+* The cost of plant analysis
+* The difficulty in being able to represent the variability in a paddock55
+* The level of accuracy of plant analysis
+* The ability to translate plant test results into a profitable fertiliser decision for my paddock
+* Not being able to get plant test results at the right time for decision making
+* Comment
+
+
+
+#### **Question 30**
+Please indicate if you agree/disagree with the following statements in relation to PLANT testing
+
+* My clients businesses would be more profitable if they did more plant testing than they do now
+* Uncertainty about how the season will turn out makes it hard to get value from plant testing results
+* Feel free to comment on this response
+
+
+#### **Question 31** 
+What are the barriers to you undertaking...?
+
+* Soil testing? - Sampling cost
+* Soil testing? - Analysis cost
+* Soil testing? - Sampling time
+* Soil testing? - Analysis time
+* Soil testing? - Understanding / interpreting results
+* Soil testing? - Sampling method
+* Plant testing? - Sampling cost
+* Plant testing? - Analysis cost
+* Plant testing? - Sampling time
+* Plant testing? - Analysis time
+* Plant testing? - Understanding / interpreting results
+* Plant testing? - Sampling method
+* Other (please specify)
+
+#### **Question 32**
+Please feel free to add any other comments or suggestions
+
+#### **Question33**
+What information do you require to make better informed decisions regarding nutrient management?
+
+#### **Question 34**
+Where and how would you like to receive information regarding crop nutrition?
+
+* Rural newspapers
+* Farm consultants
+* Workshops
+* Merchandise companies
+* Government agencies
+* Field days
+* Brochures / booklets
+* Local trials
+* Fertilizer company information, e.g. fact sheets
+* Soil or plant testing companies
+* Researchers
+* Google
+* Social media
+* Other (please specify)
+
+
+#### **Question 35**
+How do you think researchers or the GRDC could assist you to get a better return on investment for your fertiliser decisions?
+
+
+#### **Question 36**
+Please feel free to add any other comments or suggestions
 
 
 
