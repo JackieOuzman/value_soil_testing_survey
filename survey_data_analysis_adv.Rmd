@@ -17,41 +17,41 @@ library(scales)
 ```
 
 #### General notes 
-* Do analysis in sections
-* First analysis is the question Therese has identified for the field days
-* Bring in the data and assign the correct headings
+* 
 * Note I have made some adjustment to the heading names in the excel sheet - many questions don't have numbers.
 
 ```{r import dataset advisor, include=FALSE}
 
 #These names are very long perhaps we can make them shorter?
 
-headers <- read_excel("Using soil and plant testing data to better inform nutrient management.xlsx", 
-                   sheet = "Data", col_names=FALSE, range = "A1:DO1")
-data <- read_excel("Using soil and plant testing data to better inform nutrient management.xlsx", 
-                   sheet = "Data", col_names=FALSE, range = "A4:DO74")
 
+
+headers <- read_excel("Nutrient Management Survey_Agrononomist09092019.xlsx", 
+                   sheet = "Data", col_names=FALSE, range = "A1:HL1")
+data <- read_excel("Nutrient Management Survey_Agrononomist09092019.xlsx", 
+                   sheet = "Data", col_names=FALSE, range = "A5:HL174")
 names(data) <- headers
-#names(data)
-
-
 ```
 
 * Setting the display names and the order I want them to appear
 
 ```{r setting up the region names and order, include=FALSE}
+
+table(data$Q_1)
 data <- mutate(data,
              names_display =case_when(
-               Q1_region == "SA - Mallee (low rainfall)" ~  "SA - Mallee",
-               Q1_region == "SA – Lower EP (medium rainfall)" ~  "SA – Lower EP",
-               Q1_region == "SA - Mid North (medium rainfall)" ~  "SA - Mid North",
-               Q1_region == "SA - Yorke Peninsula (medium rainfall)" ~  "SA - Yorke Peninsula",
-               Q1_region == "SA - Upper EP (low rainfall)" ~  "SA - Upper EP",
-               Q1_region == "SA - South East (medium rainfall)" ~  "SA - South East",
-               Q1_region == "VIC - Wimmera (medium rainfall)" ~  "VIC - Wimmera",
-               Q1_region == "VIC - Mallee (low rainfall)" ~  "VIC - Mallee",
-               Q1_region == "VIC - Southern region (high rainfall)" ~  "VIC - Southern region",
-               Q1_region == "Other (please specify)" ~  "Other"))
+               Q_1 == "SA - Mallee (low rainfall)" ~  "SA - Mallee",
+               Q_1 == "SA – Lower EP (medium rainfall)" ~  "SA – Lower EP",
+               Q_1 == "SA - Mid North (medium rainfall)" ~  "SA - Mid North",
+               Q_1 == "SA - Yorke Peninsula (medium rainfall)" ~  "SA - Yorke Peninsula",
+               Q_1 == "SA - Upper EP (low rainfall)" ~  "SA - Upper EP",
+               Q_1 == "SA - South East (medium rainfall)" ~  "SA - South East",
+               Q_1 == "VIC - Wimmera (medium rainfall)" ~  "VIC - Wimmera",
+               Q_1 == "VIC - Mallee (low rainfall)" ~  "VIC - Mallee",
+               Q_1 == "VIC - Southern region (high rainfall)" ~  "VIC - Southern region",
+               Q_1 == "Other (please specify)" ~  "Other"))
+
+
 data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee", 
                                        "SA – Lower EP", 
                                        "SA - Mid North", 
@@ -65,10 +65,93 @@ data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee",
 
 ```
 
-#### **Question 1** 
-In which argo-ecological region do you work / are your clients based?
 
-This is not done yet
+
+#### **The first series of questions looks at your current farming practices.**
+
+#### **Question 1** 
+Agronomist) In which argo-ecological region do you work / are your clients based?
+Grower) In which agro-ecological region do you farm
+
+```{r Q1 analysis and table, echo=FALSE}
+#both agro and growers
+Q1_resp_percent <- data %>% 
+  count(Resp_Group) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+#table
+print(Q1_resp_percent)
+#graph
+ggplot(Q1_resp_percent, aes(Resp_Group, percent ))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Respondants",
+       fill = "",
+       title = "",
+       subtitle = "Agronomist and Growers",
+       caption = "")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent)    
+ 
+```
+
+```{r Q1_by agro analysis and table, echo=FALSE}
+
+#split into agro and growers
+Q1_agro_region_perc <- filter(data, Resp_Group == "Agronomist") %>% 
+  count( names_display) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+#table
+print(Q1_agro_region_perc)
+#graph
+ggplot(Q1_agro_region_perc, aes(names_display, percent ))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Respondants",
+       fill = "",
+       title = "",
+       subtitle = "Agronomist",
+       caption = "")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent)    
+
+```
+
+
+```{r Q2_by growers analysis and table, echo=FALSE}
+
+#split into agro and growers
+Q1_grower_region_perc <- filter(data, Resp_Group == "Grower") %>% 
+  count( names_display) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+#table
+print(Q1_grower_region_perc)
+#graph
+ggplot(Q1_grower_region_perc, aes(names_display, percent ))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Respondants",
+       fill = "",
+       title = "",
+       subtitle = "Grower",
+       caption = "")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent)    
+
+```
 
 #### **Question 2** 
 What is the average total area cropped (hectares) that you have managed for clients over the last 3 seasons?
@@ -81,7 +164,7 @@ What is the average total area cropped (hectares) that you have managed for clie
 Q2_regions <- group_by(data, names_display) %>% 
   summarise(
     count = n(),
-    Ave_Cropped_Area = round(mean(`Q2_Cropped Area`), 0)) %>% 
+    Ave_Cropped_Area = round(mean(`Q_2`), 0)) %>% 
     arrange(names_display)
 
 #head(Q2_regions,3)
@@ -99,50 +182,57 @@ ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
   labs(x= "Regions",
        y = "Cropped area",
        title = "Total area cropped (hectares)",
-       subtitle = "Agronomist",
-       caption = "Q) What is the average total area cropped (hectares) that you have managed for clients over the last 3 seasons?")+
+       subtitle = "Agronomist and grower",
+       caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels =  comma)
 ```
 
 #### **Question 3** 
-Of the land you manage with clients, what percentage would be the following crops, by area? 
+Which of the following crops do you grow - percentage by area?
+ 
 
 (please enter a whole number without the % sign.
 Every row needs a number, so if there is none grown, please enter 0.)
 
-Cereals (wheat, barley, oats)
+3.1 Cereals (wheat, barley, oats)
 
-Canola
+3.2 Canola
 
-Pulses (peas, beans, lupins, lentils, chickpeas)
+3.3 Pulses (peas, beans, lupins, lentils, chickpeas)
 
-Pasture
+3.4 Pasture
 
-Hay
+3.5 Hay
 
-Fallow
+3.6 Fallow
 
 
 #### **Question 4**
-When thinking about your average client's annual variable costs, what percentage would fertilisers account for?
+Agro) When thinking about your average client's annual variable costs, what percentage would fertilisers account for?
+Grower) Of your total annual variable costs, what percentage would fertilisers account for?
+
 
 #### **Question 5**
 What are the main nutrient deficiencies your clients encounter?
+What are the main nutrient deficiencies on your farm?
+
 
 #### **Question 6** 
 Do you recommend soil and or plant testing?
+Do you do soil and/or plant testing on your farm?
 
-```{r Q6 summary, echo=FALSE}
-#All agronomist  
-Q6_all <- data %>% 
-  count(Q6_recommend_testing) %>% 
+
+```{r Q6 agro summary agro, echo=FALSE}
+
+Q6_all_agro <- filter(data, Resp_Group == "Agronomist") %>% 
+  count(Q_6) %>% 
   mutate(percent = 
         (freq = n / sum(n)))
-#head(Q6_all)
+head(Q6_all_agro)
 
-ggplot(Q6_all, aes(Q6_recommend_testing, percent))+
+ggplot(Q6_all_agro, aes(Q_6, percent))+
   geom_col()+
   geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
@@ -158,8 +248,8 @@ ggplot(Q6_all, aes(Q6_recommend_testing, percent))+
 
 #agronomist by region
 
-Q6_byRegion <- data %>%
-  group_by(names_display, Q6_recommend_testing) %>%
+Q6_by_Agro_Region <- filter(data, Resp_Group == "Agronomist") %>% 
+  group_by(names_display, Q_6) %>%
   summarise(n = n()) %>%
     mutate(percent = 
         (freq = n / sum(n)))
@@ -168,9 +258,9 @@ Q6_byRegion <- data %>%
 
 
 
-#head(Q6_byRegion)
+head(Q6_by_Agro_Region)
 
-ggplot(Q6_byRegion, aes(names_display, percent, fill=Q6_recommend_testing ))+
+ggplot(Q6_by_Agro_Region, aes(names_display, percent, fill=Q_6 ))+
   geom_col()+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
@@ -185,7 +275,7 @@ ggplot(Q6_byRegion, aes(names_display, percent, fill=Q6_recommend_testing ))+
   scale_y_continuous(labels = scales::percent)
 
 #graph of agronomist advising no
-filter(Q6_byRegion, Q6_recommend_testing == "No") %>% 
+filter(Q6_by_Agro_Region, Q_6 == "No") %>% 
 ggplot(aes(names_display, percent))+
   geom_col()+
   geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
@@ -200,6 +290,75 @@ ggplot(aes(names_display, percent))+
   scale_y_continuous(labels = scales::percent, limits=c(0, 0.2))
 
 ```
+
+
+```{r Q6 grower summary agro, echo=FALSE}
+
+Q6_all_grower <- filter(data, Resp_Group == "Grower") %>% 
+  count(Q_6) %>% 
+  mutate(percent = 
+        (freq = n / sum(n)))
+head(Q6_all_grower)
+
+ggplot(Q6_all_grower, aes(Q_6, percent))+
+  geom_col()+
+  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "All regions",
+       y = "Recommend testing",
+       title = "Recommend soil and or plant testing",
+       subtitle = "Grower",
+       caption = "Q) Do you recommend soil and or plant testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent, limits=c(0, 1.1))
+
+
+#grower by region
+
+Q6_by_grower_Region <- filter(data, Resp_Group == "Grower") %>% 
+  group_by(names_display, Q_6) %>%
+  summarise(n = n()) %>%
+    mutate(percent = 
+        (freq = n / sum(n)))
+   #mutate(percent = round(
+  #      (freq = n / sum(n))*100,3)) #having some trouble with the rounding
+
+
+
+head(Q6_by_grower_Region)
+
+ggplot(Q6_by_grower_Region, aes(names_display, percent, fill=Q_6 ))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Recommend testing",
+       fill = "",
+       title = "Recommend soil and or plant testing",
+       subtitle = "Grower",
+       caption = "Q) Do you recommend soil and or plant testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent)
+
+#graph of grower advising no
+filter(Q6_by_grower_Region, Q_6 == "No") %>% 
+ggplot(aes(names_display, percent))+
+  geom_col()+
+  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Do not recommend testing",
+       title = "Not recommending soil and or plant testing",
+       subtitle = "Grower",
+       caption = "Q) Do you recommend soil and or plant testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent, limits=c(0, 0.2))
+
+```
+
 
 #### **Question 7**
 
