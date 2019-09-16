@@ -14,6 +14,10 @@ library(readxl)
 library(DT)
 #install.packages("scales")
 library(scales)
+#install.packages("formattable")
+#install.packages("data.table")
+library(data.table)
+library(formattable)
 ```
 
 #### General notes 
@@ -103,11 +107,13 @@ ggplot(Q1_resp_percent, aes(Resp_Group, percent ))+
 #split into agro and growers
 Q1_agro_region_perc <- filter(data, Resp_Group == "Agronomist") %>% 
   count( names_display) %>% 
-  mutate(percent = 
-           (freq = n / sum(n)))
+  mutate(percent = round(
+           (freq = n / sum(n)),2))
 
 #table
 print(Q1_agro_region_perc)
+#formattable(Q1_agro_region_perc)
+datatable(Q1_agro_region_perc, colnames = c( "regions", "count", "percentage"), caption = "Respondents per region - Agronomist")
 #graph
 ggplot(Q1_agro_region_perc, aes(names_display, percent ))+
   geom_col()+
@@ -117,7 +123,7 @@ ggplot(Q1_agro_region_perc, aes(names_display, percent ))+
        y = "Respondants",
        fill = "",
        title = "",
-       subtitle = "Agronomist",
+       subtitle = "Agronomist per region",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
@@ -131,12 +137,13 @@ ggplot(Q1_agro_region_perc, aes(names_display, percent ))+
 #split into agro and growers
 Q1_grower_region_perc <- filter(data, Resp_Group == "Grower") %>% 
   count( names_display) %>% 
-  mutate(percent = 
-           (freq = n / sum(n)))
+  mutate(percent = round( 
+           (freq = n / sum(n)),2))
 
 #table
-print(Q1_grower_region_perc)
-#graph
+#print(Q1_grower_region_perc)
+datatable(Q1_grower_region_perc, colnames = c( "regions", "count", "percentage"), caption = "Respondents per region - Grower")
+#graph growers per region
 ggplot(Q1_grower_region_perc, aes(names_display, percent ))+
   geom_col()+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
@@ -145,7 +152,7 @@ ggplot(Q1_grower_region_perc, aes(names_display, percent ))+
        y = "Respondants",
        fill = "",
        title = "",
-       subtitle = "Grower",
+       subtitle = "Growers per region",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
@@ -169,7 +176,7 @@ Q2_regions <- group_by(data, names_display) %>%
 
 #head(Q2_regions,3)
 
-datatable(Q2_regions,  colnames = c( "names", "count", "average cropped area"),
+datatable(Q2_regions,  colnames = c( "names", "count", "average cropped area"), caption = "Cropped area per region - Argonomist and Grower",
           rownames = FALSE)
           
 
@@ -189,6 +196,33 @@ ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
   scale_y_continuous(labels =  comma)
 ```
 
+
+
+```{r Q2 graph regions agro only, echo=FALSE}
+head(data)
+
+Q2_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>% 
+  summarise(
+    count = n(),
+    Ave_Cropped_Area = round(mean(`Q_2`), 0)) %>% 
+    arrange(names_display)
+
+#head(Q2_regions_agro_grower)
+
+ggplot(Q2_regions_agro_grower, aes(names_display, Ave_Cropped_Area))+
+  geom_col()+
+  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
+  facet_wrap(.~ Resp_Group)+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Cropped area",
+       title = "Total area cropped (hectares)",
+       subtitle = "Agronomist and grower",
+       caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels =  comma)
+```
 #### **Question 3** 
 Which of the following crops do you grow - percentage by area?
  
@@ -208,11 +242,103 @@ Every row needs a number, so if there is none grown, please enter 0.)
 
 3.6 Fallow
 
+```{r Q3 graph regions agro only, echo=FALSE}
+#head(data)
+
+
+Q3_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>% 
+  summarise(
+    Ave_Percent_ceral = round(mean(`Q_3.1`), 0),
+    Ave_Percent_canola = round(mean(`Q_3.2`), 0),
+    Ave_Percent_pulse = round(mean(`Q_3.3`), 0),
+    Ave_Percent_pasture = round(mean(`Q_3.4`), 0),
+    Ave_Percent_hay = round(mean(`Q_3.5`), 0),
+    Ave_Percent_fallow = round(mean(`Q_3.6`), 0)
+    )
+    
+
+
+head(Q3_regions_agro_grower)
+Q3_regions_agro_grower_narrow <- gather(Q3_regions_agro_grower, key = "crop", value = "ave_area",Ave_Percent_ceral:Ave_Percent_fallow )
+
+filter(Q3_regions_agro_grower_narrow, Resp_Group == "Agronomist" ) %>% 
+ggplot( aes(names_display, ave_area))+
+  geom_col()+
+  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
+  facet_wrap(.~ crop)+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Crops percent area",
+       title = "Avearge percent area by crop",
+       subtitle = "Agronomist",
+       caption = "Q)  Which of the following crops do you grow - percentage by area?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels =  comma)
+
+filter(Q3_regions_agro_grower_narrow, Resp_Group == "Grower" ) %>% 
+ggplot( aes(names_display, ave_area))+
+  geom_col()+
+  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
+  facet_wrap(.~ crop)+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "Crops percent area",
+       title = "Avearge percent area by crop",
+       subtitle = "Agronomist",
+       caption = "Q)  Which of the following crops do you grow - percentage by area?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels =  comma)
+```
+
 
 #### **Question 4**
 Agro) When thinking about your average client's annual variable costs, what percentage would fertilisers account for?
 Grower) Of your total annual variable costs, what percentage would fertilisers account for?
 
+
+```{r Q4 graph regions agro only, echo=FALSE}
+#head(data)
+#table(data$Q_4)
+##Looks like an error with data entry'greater than 35% and greater than 35% should be the same
+
+
+data <- mutate(data,
+             Q_4 =case_when(
+               Q_4 == "'greater than 35%" ~  "greater than 35%",
+               Q_4 == "greater than 35%" ~  "greater than 35%",
+               TRUE ~ Q_4))
+               
+table(data$Q_4)
+
+data <- mutate(data, Q_4 = fct_relevel(Q_4, c("0-5%", 
+                                       "10-15%", 
+                                       "15-20%", 
+                                       "20-25%", 
+                                       "30-35%", 
+                                       "greater than 35%", 
+                                       "Unsure")))
+Q4_resp_percent <- data %>% 
+  count(Q_4) %>% 
+  mutate(percent = round(
+           (freq = n / sum(n)),2))
+Q4_resp_percent
+
+
+ggplot(Q4_resp_percent, aes(Q_4, percent))+
+  geom_col()+
+  theme_classic()+
+  labs(x= "of total varaible cost",
+       y = "Crops percent area",
+       title = "Avearge percent area by grouping",
+       subtitle = "Agronomist and grower",
+       caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels =  comma)
+
+```
 
 #### **Question 5**
 What are the main nutrient deficiencies your clients encounter?
@@ -224,7 +350,7 @@ Do you recommend soil and or plant testing?
 Do you do soil and/or plant testing on your farm?
 
 
-```{r Q6 agro summary agro, echo=FALSE}
+```{r Q6 agro summary agro and grower, echo=FALSE}
 
 Q6_all_agro <- filter(data, Resp_Group == "Agronomist") %>% 
   count(Q_6) %>% 
@@ -244,8 +370,10 @@ ggplot(Q6_all_agro, aes(Q_6, percent))+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
   scale_y_continuous(labels = scales::percent, limits=c(0, 1.1))
+```
 
 
+```{r Q6 agro summary agro, echo=FALSE}
 #agronomist by region
 
 Q6_by_Agro_Region <- filter(data, Resp_Group == "Agronomist") %>% 
@@ -253,11 +381,7 @@ Q6_by_Agro_Region <- filter(data, Resp_Group == "Agronomist") %>%
   summarise(n = n()) %>%
     mutate(percent = 
         (freq = n / sum(n)))
-   #mutate(percent = round(
-  #      (freq = n / sum(n))*100,3)) #having some trouble with the rounding
-
-
-
+  
 head(Q6_by_Agro_Region)
 
 ggplot(Q6_by_Agro_Region, aes(names_display, percent, fill=Q_6 ))+
@@ -274,7 +398,39 @@ ggplot(Q6_by_Agro_Region, aes(names_display, percent, fill=Q_6 ))+
         plot.caption = element_text(size = 8)) + 
   scale_y_continuous(labels = scales::percent)
 
+```
+
+
+```{r Q6 agro summary grower, echo=FALSE}
+#grower by region
+
+Q6_by_grower_Region <- filter(data, Resp_Group == "Grower") %>% 
+  group_by(names_display, Q_6) %>%
+  summarise(n = n()) %>%
+    mutate(percent = 
+        (freq = n / sum(n)))
+  
+head(Q6_by_grower_Region)
+
+ggplot(Q6_by_grower_Region, aes(names_display, percent, fill=Q_6 ))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "Regions",
+       y = "soil / plant testing",
+       fill = "",
+       title = "Do soil and or plant testing",
+       subtitle = "Grower",
+       caption = "Q) Do you do soil and/or plant testing on your farm?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent)
+
+```
+
+```{r Q6 agro summary agronomist saying no, echo=FALSE}
 #graph of agronomist advising no
+head(Q6_by_Agro_Region)
 filter(Q6_by_Agro_Region, Q_6 == "No") %>% 
 ggplot(aes(names_display, percent))+
   geom_col()+
@@ -291,88 +447,76 @@ ggplot(aes(names_display, percent))+
 
 ```
 
-
-```{r Q6 grower summary agro, echo=FALSE}
-
-Q6_all_grower <- filter(data, Resp_Group == "Grower") %>% 
-  count(Q_6) %>% 
-  mutate(percent = 
-        (freq = n / sum(n)))
-head(Q6_all_grower)
-
-ggplot(Q6_all_grower, aes(Q_6, percent))+
-  geom_col()+
-  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
-  theme_classic()+
-  labs(x= "All regions",
-       y = "Recommend testing",
-       title = "Recommend soil and or plant testing",
-       subtitle = "Grower",
-       caption = "Q) Do you recommend soil and or plant testing?")+
-  theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent, limits=c(0, 1.1))
-
-
-#grower by region
-
-Q6_by_grower_Region <- filter(data, Resp_Group == "Grower") %>% 
-  group_by(names_display, Q_6) %>%
-  summarise(n = n()) %>%
-    mutate(percent = 
-        (freq = n / sum(n)))
-   #mutate(percent = round(
-  #      (freq = n / sum(n))*100,3)) #having some trouble with the rounding
-
-
-
+```{r Q6 agro summary grower saying no, echo=FALSE}
+#graph of growers not testing
 head(Q6_by_grower_Region)
 
-ggplot(Q6_by_grower_Region, aes(names_display, percent, fill=Q_6 ))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
-  theme_classic()+
-  labs(x= "Regions",
-       y = "Recommend testing",
-       fill = "",
-       title = "Recommend soil and or plant testing",
-       subtitle = "Grower",
-       caption = "Q) Do you recommend soil and or plant testing?")+
-  theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent)
-
-#graph of grower advising no
 filter(Q6_by_grower_Region, Q_6 == "No") %>% 
-ggplot(aes(names_display, percent))+
-  geom_col()+
-  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
-  theme_classic()+
+ggplot(aes(names_display,percent ))+
+geom_col()+
+geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+theme_classic()+
   labs(x= "Regions",
-       y = "Do not recommend testing",
-       title = "Not recommending soil and or plant testing",
+       y = "No testing",
+       title = "Not soil and or plant testing",
        subtitle = "Grower",
-       caption = "Q) Do you recommend soil and or plant testing?")+
+       caption = "Q) Do you do soil and/or plant testing on your farm?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent, limits=c(0, 0.2))
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels = scales::percent, limits=c(0, 0.8))
+
+
 
 ```
 
 
+# **Decision making**
+
+
 #### **Question 7**
 
+Grower
+Who makes the nutrient decisions on your farm?
+* self
+* Agronomist
+* Combination of agronomist and self
+* Other
+* Other (please specify)
+
+
+#### **Question 8**
+
+Agronomist
 * Of your clients, how many of them rely entirely on you to make the nutrient decisions?
 * Of your clients, how many of them rely somewhat on you to make the nutrient decisions?
 * Of your clients, how many of them make their own nutrient decisions?
 
+
+
+
 #### **Question 8**
+Agronomist
 To what extent are you responsible for determining how much testing is done on your clients' farms?
+Grower
+To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
+
 
 #### **Question 9**
+Agronmist
+To what extent are you responsible for determining how much testing is done on your clients' farms?
+Grower
+To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
+
+#### **Question 10** 
+Note the script and the data base supplied dont match here??
+I think I have an out of date script
+Agronmist
+To what extent does your agronomist make recommendations based on the test results from your farm?
+Grower
 To what extent do the test results influence your recommendations?
 
-#### **Question 10**
+#### **Question 11**
+Agronmist
 What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? 
 
 Indicate if this is different for N, P and other nutrients
@@ -381,14 +525,30 @@ Indicate if this is different for N, P and other nutrients
 * Source 2
 * Source 3
 
-#### **Question 11**
+Grower
+What are your 3 main sources of information or advice for what nutrients you apply and at what rate? 
+
+Indicate if this is different for N, P and other nutrients
+
+* Source 1
+* Source 2
+* Source 3
+
+
+# **Soil testing** 
+This section explores how you use soil testing. If you have NOT done soil testing, please go to page  8.
+
+#### **Question 12**
+
+Grower
 Explain your approach to soil testing P, N and other micronutrients ...
 
 * P
 * N
 * Micronutrients
 
-#### **Question 12**
+#### **Question 13**
+Agronomist
 Can you please provide some specific information on ..
 
 * What % of your clients soil tested in 2018? (any testing)
@@ -404,55 +564,138 @@ Note for this question agronomist were asked to nominate the bin.
 * 5-10%
 * 50 -100%
 
+Grower
+Can you please provide some specific information on ..
+
+* What % of  your cropped land was soil tested in 2018 (any testing)
+* What % of your cropped land was tested for N in 2018? (N)
+* What % of your cropped land was tested for N to at least 60cm in 2018?
+* What % of your cropped land was tested for P in 2018? (P)
+
+Note for this question agronomist were asked to nominate the bin.
+
+* 0
+* 10-15%
+* 15-20%
+* 5-10%
+* 50 -100%
+
+Note the data set has NA these are not displayed in the graphs
+But they have been included in the analysis for the counts.
 
 ```{r Q12 data work up and DT summary, echo=FALSE}
-#All agronomist  
-#table(data$Q12_percent_testing_2018)
-#table(data$Q12_percent_N_testing_2018)
-#table(data$Q12_percent_testing_P_2018)
-#table(data$Q12_percent_testing_N_60cm_2018)
 
-Q12_percent_testing_2018 <- data %>%
-  group_by( Q12_percent_testing_2018 ) %>%
+data_agro <- filter(data, Resp_Group == "Agronomist" )
+data_grower <- filter(data, Resp_Group == "Grower" )
+
+### any test do argo and grower sep and then join
+
+Q13_percent_testing_2018_agro <- data_agro %>%
+  group_by( Q_13.1 ) %>%
   summarise(n = n()) %>%
   mutate(percent = (freq = n / sum(n)),
-         type = "percent_testing_2018")
-Q12_percent_testing_2018 <- Q12_percent_testing_2018 %>%
+         type = "percent_testing_2018",
+         Resp_Group = "Agronomist")
+Q13_percent_testing_2018_agro <- Q13_percent_testing_2018_agro %>%
   select(n,
         percent,
         type,
-        bins = Q12_percent_testing_2018)
+        bins = Q_13.1,
+        Resp_Group)
 
-Q12_percent_N_testing_2018 <- data %>%
-  group_by(  Q12_percent_N_testing_2018 ) %>%
+Q13_percent_testing_2018_grower <- data_grower %>%
+  group_by( Q_13.1 ) %>%
+  summarise(n = n()) %>%
+  mutate(percent = (freq = n / sum(n)),
+         type = "percent_testing_2018",
+         Resp_Group = "Grower")
+Q13_percent_testing_2018_grower <- Q13_percent_testing_2018_grower %>%
+  select(n,
+        percent,
+        type,
+        bins = Q_13.1,
+        Resp_Group)
+
+Q13_percent_testing_2018 <- rbind(Q13_percent_testing_2018_agro, Q13_percent_testing_2018_grower)
+tail(Q13_percent_testing_2018)
+
+#####  N test do agro and grower sep and then join
+
+Q13_percent_N_testing_2018_argo <- data_agro %>%
+  group_by(  Q_13.2  ) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "percent_N_testing_2018")
-Q12_percent_N_testing_2018 <- Q12_percent_N_testing_2018 %>%
+         type = "percent_N_testing_2018",
+         Resp_Group = "Agronomist")
+Q13_percent_N_testing_2018_argo <- Q13_percent_N_testing_2018_argo %>%
   select(n,
          percent,
          type,
-         bins = Q12_percent_N_testing_2018)
-
-Q12_percent_testing_P_2018 <- data %>%
-  group_by(  Q12_percent_testing_P_2018 ) %>%
+         bins = Q_13.2,
+         Resp_Group)
+Q13_percent_N_testing_2018_grower <- data_grower %>%
+  group_by(  Q_13.2  ) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "percent_P_testing_2018")
-Q12_percent_testing_P_2018 <- Q12_percent_testing_P_2018 %>%
+         type = "percent_N_testing_2018",
+         Resp_Group = "Grower")
+Q13_percent_N_testing_2018_grower <- Q13_percent_N_testing_2018_grower %>%
   select(n,
          percent,
          type,
-         bins = Q12_percent_testing_P_2018)
+         bins = Q_13.2,
+         Resp_Group)
 
-Q12_percent_testing <- rbind(Q12_percent_testing_2018,
-                             Q12_percent_N_testing_2018,
-                             Q12_percent_testing_P_2018)
-Q12_percent_testing <- select(Q12_percent_testing,
+Q13_percent_N_testing_2018 <- rbind(Q13_percent_N_testing_2018_argo, Q13_percent_N_testing_2018_grower)
+tail(Q13_percent_N_testing_2018)
+
+
+#### P test do agro and grower sep and then join (sorry its messy!)
+Q13_percent_P_testing_2018_argo <- data_agro %>%
+  group_by(Q_13.4) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_P_testing_2018",
+         Resp_Group = "Agronomist")
+Q13_percent_P_testing_2018_argo <- Q13_percent_P_testing_2018_argo %>%
+  select(n,
+         percent,
+         type,
+         bins = Q_13.4,
+         Resp_Group)
+temp <- rbind(Q13_percent_testing_2018,
+              Q13_percent_N_testing_2018)
+
+temp <- rbind(temp,
+              Q13_percent_P_testing_2018_argo)
+
+
+Q13_percent_P_testing_2018_grower <- data_grower %>%
+  group_by(  Q_13.4  ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_P_testing_2018",
+         Resp_Group = "Grower")
+Q13_percent_P_testing_2018_grower <- Q13_percent_P_testing_2018_grower %>%
+  select(n,
+         percent,
+         type,
+         bins = Q_13.4,
+         Resp_Group)
+
+head(Q13_percent_P_testing_2018_grower)
+
+Q13_percent_testing <- rbind(temp,
+              Q13_percent_P_testing_2018_grower)
+
+
+print(Q13_percent_testing)
+
+Q13_percent_testing <- select(Q13_percent_testing,
                               type,
                               bins,
-                              percent, n)      
-#head(Q12_percent_testing) 
+                              percent, n, Resp_Group)      
+#head(Q13_percent_testing) 
 
 
 labels <- c(percent_N_testing_2018 = "N", 
@@ -461,32 +704,38 @@ labels <- c(percent_N_testing_2018 = "N",
 
 
 #head(Q12_percent_testing)
-Q12_percent_testing_for_table <- mutate(Q12_percent_testing,
+Q13_percent_testing_for_table <- mutate(Q13_percent_testing,
                                         percent1 = round(percent*100,2),
                                         label_name = case_when(
                                           type == "percent_N_testing_2018" ~ "N",
                                           type == "percent_P_testing_2018" ~ "P",
                                           type == "percent_testing_2018" ~ "any testing")) %>% 
-                                select(label_name, bins, percent1 )
+                                select(label_name, bins, percent1, Resp_Group )
 
-#head(Q12_percent_testing_for_table)
+head(Q13_percent_testing_for_table)
 
 
-filter(Q12_percent_testing_for_table, bins != "NA") %>% 
-  datatable(colnames = c("testing for", "bins", "percentage of testing done"))
+filter(Q13_percent_testing_for_table, bins != "NA") %>% 
+  datatable(colnames = c("testing for", "bins", "percentage of testing done", "Resp_Group" ))
 
 
 ```
 
-```{r Q12 graphs , echo=FALSE}
+```{r Q13 graphs , echo=FALSE}
 
-caption <- c(
+caption_agro <- c(
 "Q) What % of your clients soil tested in 2018?
 Q) What % of your clients tested for N in 2018?
 Q) What % of your clients tested for P in 2018?")
 
+caption_grower <- c(
+"Q) What % of  your cropped land was soil tested in 2018?
+Q) What % of your cropped land was tested for N in 2018?
+Q) What % of your cropped land was tested for P in 2018?")
+
+
 #get the correct order for my labeles
- Q12_percent_testing <- mutate(Q12_percent_testing,
+ Q13_percent_testing <- mutate(Q13_percent_testing,
                                 bin_as_factors = case_when(
                                   bins == "0" ~ 0,
                                   bins == "5-10%" ~ 5,
@@ -495,11 +744,12 @@ Q) What % of your clients tested for P in 2018?")
                                   bins == "20-50%" ~ 20,
                                   bins == "50-100%" ~ 50
                                 ))
-  Q12_percent_testing$bin_as_factors <- factor(Q12_percent_testing$bin_as_factors,
+  Q13_percent_testing$bin_as_factors <- factor(Q13_percent_testing$bin_as_factors,
                                         levels=c(0,5,10,15,20,50),
                                         labels=c("0","5-10%","10-15%","15-20%", "20-50%", "50-100%")) 
-  
-  filter(Q12_percent_testing, bin_as_factors != "NA") %>% 
+  datatable(Q13_percent_testing)
+  filter(Q13_percent_testing, bin_as_factors != "NA" &
+           Resp_Group == "Agronomist") %>% 
     ggplot( aes(bin_as_factors, percent))+
     geom_col()+
     #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
@@ -509,14 +759,176 @@ Q) What % of your clients tested for P in 2018?")
          y = "",
          title = "In 2018 what % of your clients tested...",
          subtitle = "Agronomist",
-         caption = caption)+
+         caption = caption_agro)+
     theme(axis.text.x=element_text(angle=90,hjust=1),
           plot.caption = element_text(size = 8, hjust = 0))+
     scale_y_continuous(labels = scales::percent)
 
+  
+  
+  filter(Q13_percent_testing, bin_as_factors != "NA" &
+           Resp_Group == "Grower") %>% 
+    ggplot( aes(bin_as_factors, percent))+
+    geom_col()+
+    #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+    theme_classic()+
+    facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
+    labs(x= "bins",
+         y = "",
+         title = "In 2018 what % of your cropped land was tested...",
+         subtitle = "Grower",
+         caption = caption_grower)+
+    theme(axis.text.x=element_text(angle=90,hjust=1),
+          plot.caption = element_text(size = 8, hjust = 0))+
+    scale_y_continuous(labels = scales::percent)
 ```
 
-#### **Question 13 N**
+Try totake out the percenatge of percentage graph
+Can try:
+* Agronomists with more than half of clients soil testing in 2018 
+* Agronomists with less than 20% of clients  soil testing in 2018 
+* Agronomists with no clients soil testing in 2018
+
+* Growers with more than half of clients soil testing in 2018 
+* Growers with less than 20% of clients  soil testing in 2018 
+* Growers with no clients soil testing in 2018
+
+```{r Q13 graphs other options , echo=FALSE}
+
+
+
+subset_soil_testQ_13 <- select(data, Resp_Group, Q_13.1, Q_13.2, Q_13.4)
+
+#Recode to only have 50% or more
+
+table(subset_soil_testQ_13)
+subset_soil_testQ_13 <- mutate(subset_soil_testQ_13,
+                              recode_13.1 = case_when(
+                                Q_13.1 == "50-100%" ~ "more than half",
+                                #Q_13.1 == "0" ~ "less than 20%",
+                                Q_13.1 == "10-15%" ~ "less than 20%",
+                                Q_13.1 == "15-20%" ~ "less than 20%",
+                                Q_13.1 == "0" ~ "Zero"
+                                ))
+
+subset_soil_testQ_13 <- mutate(subset_soil_testQ_13,
+                               recode_13.2 = case_when(
+                                 Q_13.2 == "50-100%" ~ "more than half",
+                                 #Q_13.2 == "0" ~ "less than 20%",
+                                 Q_13.2 == "10-15%" ~ "less than 20%",
+                                 Q_13.2 == "15-20%" ~ "less than 20%",
+                                 Q_13.2 == "0" ~ "Zero"
+                               ))
+
+subset_soil_testQ_13 <- mutate(subset_soil_testQ_13,
+                               recode_13.4 = case_when(
+                                 Q_13.4 == "50-100%" ~ "more than half",
+                                 #Q_13.4 == "0" ~ "less than 20%",
+                                 Q_13.4 == "10-15%" ~ "less than 20%",
+                                 Q_13.4 == "15-20%" ~ "less than 20%",
+                                 Q_13.4 == "0" ~ "Zero"
+                               ))
+head(subset_soil_testQ_13)
+subset_soil_testQ_13_agro <- filter(subset_soil_testQ_13, Resp_Group == "Agronomist" )
+subset_soil_testQ_13_grower <- filter(subset_soil_testQ_13, Resp_Group == "Grower" )
+
+#any test agro and grower sep and then join
+subset_soil_testQ_13_agro_test <- filter(subset_soil_testQ_13_agro, recode_13.1 != "NA") %>%  
+  group_by(   recode_13.1  ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_testing_2018",
+         Resp_Group = "Agronomist")
+subset_soil_testQ_13_agro_test <- subset_soil_testQ_13_agro_test %>%
+  select(n,
+         percent,
+         type,
+         bins = recode_13.1,
+         Resp_Group)
+
+subset_soil_testQ_13_grower_test <- filter(subset_soil_testQ_13_grower, recode_13.1 != "NA") %>%  
+  group_by(   recode_13.1  ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_testing_2018",
+         Resp_Group = "Grower")
+subset_soil_testQ_13_grower_test <- subset_soil_testQ_13_grower_test %>%
+  select(n,
+         percent,
+         type,
+         bins = recode_13.1,
+         Resp_Group)
+
+subset_soil_testQ_13_test <- rbind(subset_soil_testQ_13_grower_test, subset_soil_testQ_13_agro_test)
+
+
+#N test agro and grower sep and then join
+subset_soil_NQ_13_agro_test <- filter(subset_soil_testQ_13_agro, recode_13.2 != "NA") %>%  
+  group_by(   recode_13.2  ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_N_testing_2018",
+         Resp_Group = "Agronomist")
+subset_soil_NQ_13_agro_test <- subset_soil_NQ_13_agro_test %>%
+  select(n,
+         percent,
+         type,
+         bins = recode_13.2,
+         Resp_Group)
+
+subset_soil_testNQ_13_grower_test <- filter(subset_soil_testQ_13_grower, recode_13.2 != "NA") %>%  
+  group_by(   recode_13.2  ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_N_testing_2018",
+         Resp_Group = "Grower")
+subset_soil_testNQ_13_grower_test <- subset_soil_testNQ_13_grower_test %>%
+  select(n,
+         percent,
+         type,
+         bins = recode_13.2,
+         Resp_Group)
+
+subset_soil_N_testQ_13_test <- rbind(subset_soil_testNQ_13_grower_test, subset_soil_NQ_13_agro_test)
+
+
+#P test agro and grower sep and then join
+subset_soil_PQ_13_agro_test <- filter(subset_soil_testQ_13_agro, recode_13.4 != "NA") %>%  
+  group_by(   recode_13.4  ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_P_testing_2018",
+         Resp_Group = "Agronomist")
+subset_soil_PQ_13_agro_test <- subset_soil_PQ_13_agro_test %>%
+  select(n,
+         percent,
+         type,
+         bins = recode_13.4,
+         Resp_Group)
+
+subset_soil_testPQ_13_grower_test <- filter(subset_soil_testQ_13_grower, recode_13.4 != "NA") %>%  
+  group_by(   recode_13.4  ) %>%
+  summarise(n = n()) %>%
+  mutate(percent =(freq = n / sum(n)),
+         type = "percent_P_testing_2018",
+         Resp_Group = "Grower")
+subset_soil_testPQ_13_grower_test <- subset_soil_testPQ_13_grower_test %>%
+  select(n,
+         percent,
+         type,
+         bins = recode_13.4,
+         Resp_Group)
+
+subset_soil_P_testQ_13_test <- rbind(subset_soil_testPQ_13_grower_test, subset_soil_PQ_13_agro_test)
+
+subset_soil_N_P_Any_Q_13 <- rbind(subset_soil_P_testQ_13_test,
+                                  subset_soil_N_testQ_13_test,
+                                  subset_soil_testQ_13_test)
+
+
+```
+#### **Question 14 N**
+Grower
 Which tests do you currently use for soil N testing?
 
 * Nitrogen 1 - Type of test
@@ -530,7 +942,8 @@ Which tests do you currently use for soil N testing?
 * Nitrogen 3 - How many representative samples per paddock
 * How frequently are paddocks tested i.e. every 3 years, every 5 years ... other?
 
-#### **Question 14 P**
+#### **Question 15 P**
+grower
 Which tests do you use for P tests?
 
 * Phosphorus 1 - Type of test
@@ -550,7 +963,7 @@ Which tests do you use for P tests?
 * Phosphorus 5 - How many representative samples per paddock
 * How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?
 
-#### **Question 14 Potassium**
+#### **Question 16 Potassium**
 What tests do you use for Potassium testing ...
 
 * Potassium 1 - Type of test
@@ -564,7 +977,7 @@ What tests do you use for Potassium testing ...
 * Potassium 3 - How many representative samples per paddock
 * How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?9
 
-#### **Question 14 micronutrients**
+#### **Question 17 micronutrients**
 And, which tests do you use for micronutrients?
 
 * 1 - Type of test
@@ -593,14 +1006,14 @@ And, which tests do you use for micronutrients?
 * 8 - How many cores per paddock
 * How frequently are your clients paddocks tested i.e. every 3 years, every 5 years ... other?10
 
-#### **Question 15**
+#### **Question 18**
 What are the top 3 reasons for soil testing on your clients farms ...
 
 * 1
 * 2
 * 3
 
-#### **Question 16**
+#### **Question 19**
 Please indicate why you don't do more SOIL Nitrogen testing:
 
 * The cost of soil sampling
@@ -706,7 +1119,7 @@ ggplot(Q16_why_not_moreN, aes(x = reorder(label_name, -percent), y = percent))+
 ```
 
 
-#### **Question 17**
+#### **Question 20**
 Please indicate why you don't do more SOIL Phosphorous testing
 
 * The cost of soil sampling
@@ -829,7 +1242,7 @@ Please indicate why you don't do more SOIL Phosphorous testing
   
   
 
-#### **Question 18** 
+#### **Question 21** 
 
 Please indicate if you agree/disagree with the following statements in relation to SOIL testing.
 
@@ -839,22 +1252,24 @@ Please indicate if you agree/disagree with the following statements in relation 
 * Feel free to comment on this response
 
 
-#### **Question 19** 
+#### **Question 22** 
 On average, how much would your clients spend each year on soil testing (including sampling)?
 
-#### **Question 20** 
+#### **Question 23** 
 Compared to five years' ago, has the amount of soil testing you do / recommend changed?
 
-#### **Question 21** 
+#### **Question 24** 
 In five years' time, how much soil sampling do you expect to be doing / recommending?
 
-#### **Question 22**
+# PLANT TESTING 
+
+#### **Question 25**
 How do you currently use plant testing?
 
-#### **Question 23**
+#### **Question 26**
 Please list the main 3 reasons you use plant testing data?
 
-#### **Question 24**
+#### **Question 27**
 Please indicate why you don't do more PLANT testing
 
 * The cost of sampling
@@ -867,7 +1282,8 @@ Please indicate why you don't do more PLANT testing
 * General comments
 
 
-#### **Question 25** 
+#### **Question 28** 
+Agronomist
 Please indicate if you agree/disagree with the following statements in relation to PLANT testing
 
 * My clients businesses would be more profitable if they did more plant testing than they do now
@@ -875,19 +1291,80 @@ Please indicate if you agree/disagree with the following statements in relation 
 * My clients recommend the use of regular plant testing to other local farmers
 * Feel free to comment on this response
 
-#### **Question 26**
+Grower
+Please indicate if you agree/disagree with the following statements in relation to  PLANT testing
+* My farm business would be more profitable if I did more plant testing than I do now
+* Uncertainty about how the season will turn out makes it hard to get value from plant testing results
+* I would recommend the use of regular plant testing to other local farmers
+
+
+#### **Question 29**
+Agronomist
 On average, how much would your clients spend per year on plant testing (including sampling)?
+Grower
+On average, how much would you spend per year on  plant testing (including sampling)?
 
-#### **Question 27** 
+#### **Question 30** 
+Agronomist
 Compared to five years' ago, has the amount of plant testing you do / recommend changed?
+Grower
+Compared to five years' ago, has the amount of plant testing you do on your farm changed?
 
-#### **Question 28**
+
+#### **Question 31**
+Agronomist
 In five years' time,how much plant sampling do you expect to be doing / recommending?
+Grower
+In five years' time, how much plant sampling do you expect to be doing?
 
-Not in the excel sheet there seems to be duplication of question around here?
-Not sure what this is about - perhaps a mistakes?
 
-#### **Question 29** 
+#### **Question 32**
+Agronomist
+Grower
+Is the use of soil testing on your farm increasing your profitability?
+
+
+#### **Question 33**
+Agronomist
+Grower
+Please indicate why you don't do SOIL Nitrogen testing
+
+The cost of soil sampling 
+The level of accuracy of soil testing lab analysis
+The ability to translate soil test results into a profitable fertiliser decision for my paddock
+Not being able to get soil test results at the right time for decision making 
+The time required for soil sampling 
+The cost of soil testing lab analysis 
+The difficulty in being able to represent the variability in a paddock 
+General comments:
+
+
+#### **Question 34**
+Agronomist
+Grower
+Please indicate why you don't do SOIL Phosphorous  testing
+
+The cost of soil sampling 
+The level of accuracy of soil testing lab analysis
+The ability to translate soil test results into a profitable fertiliser decision for my paddock
+Not being able to get soil test results at the right time for decision making 
+The time required for soil sampling 
+The cost of soil testing lab analysis 
+The difficulty in being able to represent the variability in a paddock 
+General comments:
+
+
+#### **Question 35** 
+Agronomist
+Grower
+Please indicate if you agree/disagree with the following statements in relation to SOIL testing
+* My farm business would be more profitable if I did more soil testing than I do now
+* Uncertainty about how the season will turn out makes it hard to get value from soil testing results
+
+
+#### **Question 36** 
+Agronomist
+Grower
 Please indicate why you don't do any PLANT testing
 
 * The cost of plant sampling
@@ -901,15 +1378,23 @@ Please indicate why you don't do any PLANT testing
 
 
 
-#### **Question 30**
+#### **Question 37**
+Agronomist
 Please indicate if you agree/disagree with the following statements in relation to PLANT testing
 
 * My clients businesses would be more profitable if they did more plant testing than they do now
 * Uncertainty about how the season will turn out makes it hard to get value from plant testing results
 * Feel free to comment on this response
 
+Grower
+Please indicate if you agree/disagree with the following statements in relation to  PLANT testing
+* My farm business would be more profitable if I did more plant testing than I do now
+* Uncertainty about how the season will turn out makes it hard to get value from plant testing results
 
-#### **Question 31** 
+
+
+
+#### **Question 38** 
 What are the barriers to you undertaking...?
 
 * Soil testing? - Sampling cost
@@ -926,13 +1411,15 @@ What are the barriers to you undertaking...?
 * Plant testing? - Sampling method
 * Other (please specify)
 
-#### **Question 32**
+#### **Question 40**
 Please feel free to add any other comments or suggestions
 
-#### **Question33**
+#### **Question 41**
+Grower
 What information do you require to make better informed decisions regarding nutrient management?
 
-#### **Question 34**
+#### **Question 42**
+Grower
 Where and how would you like to receive information regarding crop nutrition?
 
 * Rural newspapers
@@ -951,11 +1438,11 @@ Where and how would you like to receive information regarding crop nutrition?
 * Other (please specify)
 
 
-#### **Question 35**
+#### **Question 44**
 How do you think researchers or the GRDC could assist you to get a better return on investment for your fertiliser decisions?
 
 
-#### **Question 36**
+#### **Question 45**
 Please feel free to add any other comments or suggestions
 
 
