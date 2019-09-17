@@ -75,7 +75,9 @@ data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee",
 
 #### **Question 1** 
 Agronomist) In which argo-ecological region do you work / are your clients based?
+
 Grower) In which agro-ecological region do you farm
+
 
 ```{r Q1 analysis and table, echo=FALSE}
 #both agro and growers
@@ -84,8 +86,8 @@ Q1_resp_percent <- data %>%
   mutate(percent = 
            (freq = n / sum(n)))
 #table
-print(Q1_resp_percent)
-#graph
+#print(Q1_resp_percent)
+####graph
 ggplot(Q1_resp_percent, aes(Resp_Group, percent ))+
   geom_col()+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
@@ -111,7 +113,7 @@ Q1_agro_region_perc <- filter(data, Resp_Group == "Agronomist") %>%
            (freq = n / sum(n)),2))
 
 #table
-print(Q1_agro_region_perc)
+#print(Q1_agro_region_perc)
 #formattable(Q1_agro_region_perc)
 datatable(Q1_agro_region_perc, colnames = c( "regions", "count", "percentage"), caption = "Respondents per region - Agronomist")
 #graph
@@ -199,7 +201,7 @@ ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
 
 
 ```{r Q2 graph regions agro only, echo=FALSE}
-head(data)
+#head(data)
 
 Q2_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>% 
   summarise(
@@ -223,7 +225,10 @@ ggplot(Q2_regions_agro_grower, aes(names_display, Ave_Cropped_Area))+
         plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels =  comma)
 ```
+
+
 #### **Question 3** 
+
 Which of the following crops do you grow - percentage by area?
  
 
@@ -258,7 +263,7 @@ Q3_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>%
     
 
 
-head(Q3_regions_agro_grower)
+#head(Q3_regions_agro_grower)
 Q3_regions_agro_grower_narrow <- gather(Q3_regions_agro_grower, key = "crop", value = "ave_area",Ave_Percent_ceral:Ave_Percent_fallow )
 
 filter(Q3_regions_agro_grower_narrow, Resp_Group == "Agronomist" ) %>% 
@@ -294,8 +299,11 @@ ggplot( aes(names_display, ave_area))+
 
 
 #### **Question 4**
+
 Agro) When thinking about your average client's annual variable costs, what percentage would fertilisers account for?
+
 Grower) Of your total annual variable costs, what percentage would fertilisers account for?
+
 
 
 ```{r Q4 graph regions agro only, echo=FALSE}
@@ -310,7 +318,7 @@ data <- mutate(data,
                Q_4 == "greater than 35%" ~  "greater than 35%",
                TRUE ~ Q_4))
                
-table(data$Q_4)
+#table(data$Q_4)
 
 data <- mutate(data, Q_4 = fct_relevel(Q_4, c("0-5%", 
                                        "10-15%", 
@@ -323,7 +331,7 @@ Q4_resp_percent <- data %>%
   count(Q_4) %>% 
   mutate(percent = round(
            (freq = n / sum(n)),2))
-Q4_resp_percent
+#Q4_resp_percent
 
 
 ggplot(Q4_resp_percent, aes(Q_4, percent))+
@@ -356,7 +364,7 @@ Q6_all_agro <- filter(data, Resp_Group == "Agronomist") %>%
   count(Q_6) %>% 
   mutate(percent = 
         (freq = n / sum(n)))
-head(Q6_all_agro)
+#head(Q6_all_agro)
 
 ggplot(Q6_all_agro, aes(Q_6, percent))+
   geom_col()+
@@ -382,7 +390,7 @@ Q6_by_Agro_Region <- filter(data, Resp_Group == "Agronomist") %>%
     mutate(percent = 
         (freq = n / sum(n)))
   
-head(Q6_by_Agro_Region)
+#head(Q6_by_Agro_Region)
 
 ggplot(Q6_by_Agro_Region, aes(names_display, percent, fill=Q_6 ))+
   geom_col()+
@@ -410,7 +418,7 @@ Q6_by_grower_Region <- filter(data, Resp_Group == "Grower") %>%
     mutate(percent = 
         (freq = n / sum(n)))
   
-head(Q6_by_grower_Region)
+#head(Q6_by_grower_Region)
 
 ggplot(Q6_by_grower_Region, aes(names_display, percent, fill=Q_6 ))+
   geom_col()+
@@ -430,7 +438,7 @@ ggplot(Q6_by_grower_Region, aes(names_display, percent, fill=Q_6 ))+
 
 ```{r Q6 agro summary agronomist saying no, echo=FALSE}
 #graph of agronomist advising no
-head(Q6_by_Agro_Region)
+#head(Q6_by_Agro_Region)
 filter(Q6_by_Agro_Region, Q_6 == "No") %>% 
 ggplot(aes(names_display, percent))+
   geom_col()+
@@ -449,7 +457,7 @@ ggplot(aes(names_display, percent))+
 
 ```{r Q6 agro summary grower saying no, echo=FALSE}
 #graph of growers not testing
-head(Q6_by_grower_Region)
+#head(Q6_by_grower_Region)
 
 filter(Q6_by_grower_Region, Q_6 == "No") %>% 
 ggplot(aes(names_display,percent ))+
@@ -617,7 +625,7 @@ Q13_percent_testing_2018_grower <- Q13_percent_testing_2018_grower %>%
         Resp_Group)
 
 Q13_percent_testing_2018 <- rbind(Q13_percent_testing_2018_agro, Q13_percent_testing_2018_grower)
-tail(Q13_percent_testing_2018)
+#tail(Q13_percent_testing_2018)
 
 #####  N test do agro and grower sep and then join
 
@@ -647,7 +655,7 @@ Q13_percent_N_testing_2018_grower <- Q13_percent_N_testing_2018_grower %>%
          Resp_Group)
 
 Q13_percent_N_testing_2018 <- rbind(Q13_percent_N_testing_2018_argo, Q13_percent_N_testing_2018_grower)
-tail(Q13_percent_N_testing_2018)
+#tail(Q13_percent_N_testing_2018)
 
 
 #### P test do agro and grower sep and then join (sorry its messy!)
@@ -689,7 +697,7 @@ Q13_percent_testing <- rbind(temp,
               Q13_percent_P_testing_2018_grower)
 
 
-print(Q13_percent_testing)
+#print(Q13_percent_testing)
 
 Q13_percent_testing <- select(Q13_percent_testing,
                               type,
@@ -712,7 +720,7 @@ Q13_percent_testing_for_table <- mutate(Q13_percent_testing,
                                           type == "percent_testing_2018" ~ "any testing")) %>% 
                                 select(label_name, bins, percent1, Resp_Group )
 
-head(Q13_percent_testing_for_table)
+#head(Q13_percent_testing_for_table)
 
 
 filter(Q13_percent_testing_for_table, bins != "NA") %>% 
@@ -783,8 +791,10 @@ Q) What % of your cropped land was tested for P in 2018?")
     scale_y_continuous(labels = scales::percent)
 ```
 
-Try totake out the percenatge of percentage graph
+Try to take out the percenatge of percentage graph
+
 Can try:
+
 * Agronomists with more than half of clients soil testing in 2018 
 * Agronomists with less than 20% of clients  soil testing in 2018 
 * Agronomists with no clients soil testing in 2018
@@ -801,7 +811,7 @@ subset_soil_testQ_13 <- select(data, Resp_Group, Q_13.1, Q_13.2, Q_13.4)
 
 #Recode to only have 50% or more
 
-table(subset_soil_testQ_13)
+#table(subset_soil_testQ_13)
 subset_soil_testQ_13 <- mutate(subset_soil_testQ_13,
                               recode_13.1 = case_when(
                                 Q_13.1 == "50-100%" ~ "more than half",
@@ -828,7 +838,7 @@ subset_soil_testQ_13 <- mutate(subset_soil_testQ_13,
                                  Q_13.4 == "15-20%" ~ "less than 20%",
                                  Q_13.4 == "0" ~ "Zero"
                                ))
-head(subset_soil_testQ_13)
+#head(subset_soil_testQ_13)
 subset_soil_testQ_13_agro <- filter(subset_soil_testQ_13, Resp_Group == "Agronomist" )
 subset_soil_testQ_13_grower <- filter(subset_soil_testQ_13, Resp_Group == "Grower" )
 
@@ -921,10 +931,35 @@ subset_soil_testPQ_13_grower_test <- subset_soil_testPQ_13_grower_test %>%
 
 subset_soil_P_testQ_13_test <- rbind(subset_soil_testPQ_13_grower_test, subset_soil_PQ_13_agro_test)
 
-subset_soil_N_P_Any_Q_13 <- rbind(subset_soil_P_testQ_13_test,
-                                  subset_soil_N_testQ_13_test,
-                                  subset_soil_testQ_13_test)
+# get the format I am after I need to make each data frame wide and then join togther
+subset_soil_testQ_13_test_wide <- spread(subset_soil_testQ_13_test, key = type, value = percent) %>% mutate(id= paste0(Resp_Group, "_", bins))
+subset_soil_N_testQ_13_test_wide <- spread(subset_soil_N_testQ_13_test, key = type, value = percent)%>% mutate(id= paste0(Resp_Group, "_", bins))
+subset_soil_P_testQ_13_test_wide <- spread(subset_soil_P_testQ_13_test, key = type, value = percent)%>% mutate(id= paste0(Resp_Group, "_", bins))
 
+
+subset_soil_N_P_Any_Q_13_wide <- left_join(subset_soil_testQ_13_test_wide, 
+                                           subset_soil_N_testQ_13_test_wide,
+                                           subset_soil_P_testQ_13_test_wide,
+                                           by = "id")
+
+
+subset_soil_N_P_Any_Q_13_wide <-  subset_soil_testQ_13_test_wide %>%
+                                  left_join(subset_soil_N_testQ_13_test_wide, by='id') %>%
+                                  left_join(subset_soil_P_testQ_13_test_wide, by='id')
+
+#print(subset_soil_N_P_Any_Q_13_wide$percent_P_testing_2018)
+subset_soil_N_P_Any_Q_13_wide <- select( subset_soil_N_P_Any_Q_13_wide,
+                                         bins = bins.x,
+                                         Resp_Group = Resp_Group.x,
+                                         percent_testing_2018,
+                                         percent_N_testing_2018,
+                                         percent_P_testing_2018)
+
+subset_soil_N_P_Any_Q_13_wide <- mutate_if(subset_soil_N_P_Any_Q_13_wide,
+                                           is.double, round,2)
+
+datatable(subset_soil_N_P_Any_Q_13_wide) %>% 
+  formatPercentage(c("percent_testing_2018", "percent_N_testing_2018", "percent_P_testing_2018"))
 
 ```
 #### **Question 14 N**
@@ -1025,91 +1060,99 @@ Please indicate why you don't do more SOIL Nitrogen testing:
 * Not being able to get soil test results at the right time for decision making
 * General comments:
 
-```{r Q16 data work up and DT summary, echo=FALSE}
-Q16_why_not_moreN_time <- data %>%
-  group_by(  Q16_why_not_moreN_time ) %>%
+```{r Q19 for agro and grower data work up and DT summary, echo=FALSE}
+
+Q19_why_not_moreN_cost <- data %>%
+  group_by(  Q_19.1 ) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "Q16_why_not_moreN_time") %>% 
-  filter( Q16_why_not_moreN_time != "NA") %>% 
+         type = "Q19_why_not_moreN_cost") %>% 
+  filter( Q_19.1 != "NA") %>% 
   select(percent, type)
 
-Q16_why_not_moreN_lab_cost <- data %>%
-  group_by(  Q16_why_not_moreN_lab_cost ) %>%
+
+Q19_why_not_moreN_time <- data %>%
+  group_by(  Q_19.2) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "Q16_why_not_moreN_lab_cost") %>% 
-  filter( Q16_why_not_moreN_lab_cost != "NA") %>% 
+         type = "Q19_why_not_moreN_time") %>% 
+  filter( Q_19.2 != "NA") %>% 
   select(percent, type)
 
-Q16_why_not_moreN_lab_accuracy <- data %>%
-  group_by(  Q16_why_not_moreN_lab_accuracy ) %>%
+Q19_why_not_moreN_lab_cost <- data %>%
+  group_by(  Q_19.3 ) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "Q16_why_not_moreN_lab_accuracy")%>% 
-  filter( Q16_why_not_moreN_lab_accuracy != "NA") %>% 
+         type = "Q19_why_not_moreN_lab_cost") %>% 
+  filter( Q_19.3 != "NA") %>% 
   select(percent, type)
 
-Q16_why_not_moreN_test_profit_decis <- data %>%
-  group_by(  Q16_why_not_moreN_test_profit_decis ) %>%
+Q19_why_not_moreN_variability <- data %>%
+  group_by(  Q_19.4 ) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "Q16_why_not_moreN_test_profit_decis")%>% 
-  filter( Q16_why_not_moreN_test_profit_decis != "NA") %>% 
+         type = "Q19_why_not_moreN_variability")%>% 
+  filter( Q_19.4 != "NA") %>% 
   select(percent, type)
 
-Q16_why_not_moreN_too_slow <- data %>%
-  group_by(  Q16_why_not_moreN_too_slow ) %>%
+
+Q19_why_not_moreN_lab_accuracy <- data %>%
+  group_by(  Q_19.5 ) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "Q16_why_not_moreN_too_slow")%>% 
-  filter( Q16_why_not_moreN_too_slow != "NA") %>% 
+         type = "Q19_why_not_moreN_lab_accuracy")%>% 
+  filter( Q_19.5 != "NA") %>% 
   select(percent, type)
 
-Q16_why_not_moreN_variability <- data %>%
-  group_by(  Q16_why_not_moreN_variability ) %>%
+
+Q19_why_not_moreN_test_profit_decis <- data %>%
+  group_by(  Q_19.6 ) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "Q16_why_not_moreN_variability")%>% 
-  filter( Q16_why_not_moreN_variability != "NA") %>% 
+         type = "Q19_why_not_moreN_test_profit_decis")%>% 
+  filter( Q_19.6 != "NA") %>% 
   select(percent, type)
 
-Q16_why_not_moreN_cost <- data %>%
-  group_by(  Q16_why_not_moreN_cost ) %>%
+Q19_why_not_moreN_too_slow <- data %>%
+  group_by(  Q_19.7 ) %>%
   summarise(n = n()) %>%
   mutate(percent =(freq = n / sum(n)),
-         type = "Q16_why_not_moreN_cost") %>% 
-  filter( Q16_why_not_moreN_cost != "NA") %>% 
+         type = "Q19_why_not_moreN_too_slow")%>% 
+  filter( Q_19.7 != "NA") %>% 
   select(percent, type)
+
+
+
+
 #merge all my dataframes into one
-Q16_why_not_moreN <- rbind(Q16_why_not_moreN_cost,
-                           Q16_why_not_moreN_time,
-                           Q16_why_not_moreN_lab_cost,
-                           Q16_why_not_moreN_variability,
-                           Q16_why_not_moreN_lab_accuracy,
-                           Q16_why_not_moreN_test_profit_decis,
-                           Q16_why_not_moreN_too_slow) %>% 
+Q19_why_not_moreN <- rbind(Q19_why_not_moreN_cost,
+                           Q19_why_not_moreN_time,
+                           Q19_why_not_moreN_lab_cost,
+                           Q19_why_not_moreN_variability,
+                           Q19_why_not_moreN_lab_accuracy,
+                           Q19_why_not_moreN_test_profit_decis,
+                           Q19_why_not_moreN_too_slow) %>% 
                            arrange(desc(percent))
 #make a new column for names to use when graphing
-Q16_why_not_moreN <- mutate(Q16_why_not_moreN,
+Q19_why_not_moreN <- mutate(Q19_why_not_moreN,
                                         percent1 = round(percent*100,2),
                                         label_name = case_when(
-                                          type == "Q16_why_not_moreN_cost" ~ "cost",
-                                          type == "Q16_why_not_moreN_time" ~ "time",
-                                          type == "Q16_why_not_moreN_lab_cost" ~ "cost of lab analysis",
-                                          type == "Q16_why_not_moreN_variability" ~ "variability",
-                                          type == "Q16_why_not_moreN_lab_accuracy" ~ "accuracy",
-                                          type == "Q16_why_not_moreN_test_profit_decis" ~ "translate profitable decision",
-                                          type == "Q16_why_not_moreN_too_slow" ~ "get results at right time") ) 
+                                          type == "Q19_why_not_moreN_cost" ~ "cost",
+                                          type == "Q19_why_not_moreN_time" ~ "time",
+                                          type == "Q19_why_not_moreN_lab_cost" ~ "cost of lab analysis",
+                                          type == "Q19_why_not_moreN_variability" ~ "variability",
+                                          type == "Q19_why_not_moreN_lab_accuracy" ~ "accuracy",
+                                          type == "Q19_why_not_moreN_test_profit_decis" ~ "translate profitable decision",
+                                          type == "Q19_why_not_moreN_too_slow" ~ "get results at right time") ) 
 
-ggplot(Q16_why_not_moreN, aes(x = reorder(label_name, -percent), y = percent))+
+ggplot(Q19_why_not_moreN, aes(x = reorder(label_name, -percent), y = percent))+
   geom_col()+
   geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "reasons",
        y = "",
        title = "Please indicate why you don't do more SOIL Nitrogen testing:",
-       subtitle = "Agronomist",
+       subtitle = "Agronomist and grower",
        caption = "Please indicate why you don't do more SOIL Nitrogen testing:")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
         plot.caption = element_text(size = 8, hjust = 0))+
@@ -1132,107 +1175,100 @@ Please indicate why you don't do more SOIL Phosphorous testing
 * General comments:
 
 
-```{r Q17 data work up and graph, echo=FALSE}
+```{r Q20 agro and grower data work up and graph, echo=FALSE}
 
 
- #table(data$Q17_why_not_moreP_cost)
-#  table(data$Q17_why_not_moreP_time)
-#  table(data$Q17_why_not_moreP_lab_cost)
-#  table(data$Q17_why_not_moreP_variability)
-#  table(data$Q17_why_not_moreP_lab_accuracy)
-#  table(data$Q17_why_not_moreP_test_profit_decis)
-#  table(data$Q17_why_not_moreP_too_slow) 
-#  table(data$Q17_why_not_moreP_text)
+
   
   
-  Q17_why_not_moreP_cost <- data %>%
-    group_by(  Q17_why_not_moreP_cost ) %>%
+  Q20_why_not_moreP_cost <- data %>%
+    group_by(  Q_20.1 ) %>%
     summarise(n = n()) %>%
     mutate(percent =(freq = n / sum(n)),
-           type = "Q17_why_not_moreP_cost") %>% 
-    filter( Q17_why_not_moreP_cost != "NA") %>% 
+           type = "Q20_why_not_moreP_cost") %>% 
+    filter( Q_20.1 != "NA") %>% 
     select(percent, type)
   
-  Q17_why_not_moreP_time <- data %>%
-    group_by(  Q17_why_not_moreP_time ) %>%
+  Q20_why_not_moreP_time <- data %>%
+    group_by(  Q_20.2 ) %>%
     summarise(n = n()) %>%
     mutate(percent =(freq = n / sum(n)),
-           type = "Q17_why_not_moreP_time") %>% 
-    filter( Q17_why_not_moreP_time != "NA") %>% 
+           type = "Q20_why_not_moreP_time") %>% 
+    filter( Q_20.2 != "NA") %>% 
     select(percent, type)
   
-  Q17_why_not_moreP_lab_cost <- data %>%
-    group_by(  Q17_why_not_moreP_lab_cost ) %>%
+  Q20_why_not_moreP_lab_cost <- data %>%
+    group_by(  Q_20.3 ) %>%
     summarise(n = n()) %>%
     mutate(percent =(freq = n / sum(n)),
-           type = "Q17_why_not_moreP_lab_cost")%>% 
-    filter( Q17_why_not_moreP_lab_cost != "NA") %>% 
+           type = "Q20_why_not_moreP_lab_cost")%>% 
+    filter( Q_20.3 != "NA") %>% 
     select(percent, type)
   
-  Q17_why_not_moreP_variability <- data %>%
-    group_by(  Q17_why_not_moreP_variability ) %>%
+  Q20_why_not_moreP_variability <- data %>%
+    group_by(  Q_20.4 ) %>%
     summarise(n = n()) %>%
     mutate(percent =(freq = n / sum(n)),
-           type = "Q17_why_not_moreP_variability")%>% 
-    filter( Q17_why_not_moreP_variability != "NA") %>% 
+           type = "Q20_why_not_moreP_variability")%>% 
+    filter( Q_20.4 != "NA") %>% 
     select(percent, type)
   
-  Q17_why_not_moreP_lab_accuracy <- data %>%
-    group_by(  Q17_why_not_moreP_lab_accuracy ) %>%
+  Q20_why_not_moreP_lab_accuracy <- data %>%
+    group_by(  Q_20.5) %>%
     summarise(n = n()) %>%
     mutate(percent =(freq = n / sum(n)),
-           type = "Q17_why_not_moreP_lab_accuracy")%>% 
-    filter( Q17_why_not_moreP_lab_accuracy != "NA") %>% 
+           type = "Q20_why_not_moreP_lab_accuracy")%>% 
+    filter( Q_20.5 != "NA") %>% 
     select(percent, type)
   
-  Q17_why_not_moreP_test_profit_decis <- data %>%
-    group_by(  Q17_why_not_moreP_test_profit_decis ) %>%
+  Q20_why_not_moreP_test_profit_decis <- data %>%
+    group_by( Q_20.6 ) %>%
     summarise(n = n()) %>%
     mutate(percent =(freq = n / sum(n)),
-           type = "Q17_why_not_moreP_test_profit_decis")%>% 
-    filter( Q17_why_not_moreP_test_profit_decis != "NA") %>% 
+           type = "Q20_why_not_moreP_test_profit_decis")%>% 
+    filter( Q_20.6 != "NA") %>% 
     select(percent, type)
   
-  Q17_why_not_moreP_too_slow <- data %>%
-    group_by(  Q17_why_not_moreP_too_slow ) %>%
+  Q20_why_not_moreP_too_slow <- data %>%
+    group_by(  Q_20.7 ) %>%
     summarise(n = n()) %>%
     mutate(percent =(freq = n / sum(n)),
-           type = "Q17_why_not_moreP_too_slow") %>% 
-    filter( Q17_why_not_moreP_too_slow != "NA") %>% 
+           type = "Q20_why_not_moreP_too_slow") %>% 
+    filter( Q_20.7 != "NA") %>% 
     select(percent, type)
   
   
   
-  Q17_why_not_moreP <- rbind(Q17_why_not_moreP_cost,
-                             Q17_why_not_moreP_time,
-                             Q17_why_not_moreP_lab_cost,
-                             Q17_why_not_moreP_variability,
-                             Q17_why_not_moreP_lab_accuracy,
-                             Q17_why_not_moreP_test_profit_decis,
-                             Q17_why_not_moreP_too_slow)
-  Q17_why_not_moreP <- mutate(Q17_why_not_moreP,
+  Q20_why_not_moreP <- rbind(Q20_why_not_moreP_cost,
+                             Q20_why_not_moreP_time,
+                             Q20_why_not_moreP_lab_cost,
+                             Q20_why_not_moreP_variability,
+                             Q20_why_not_moreP_lab_accuracy,
+                             Q20_why_not_moreP_test_profit_decis,
+                             Q20_why_not_moreP_too_slow)
+Q20_why_not_moreP <- mutate(Q20_why_not_moreP,
                               percent1 = round(percent*100,2),
                               label_name = case_when(
-                                type == "Q17_why_not_moreP_cost" ~ "cost",
-                                type == "Q17_why_not_moreP_time" ~ "time",
-                                type == "Q17_why_not_moreP_lab_cost" ~ "cost of lab analysis",
-                                type == "Q17_why_not_moreP_variability" ~ "variability",
-                                type == "Q17_why_not_moreP_lab_accuracy" ~ "accuracy",
-                                type == "Q17_why_not_moreP_test_profit_decis" ~ "translate profitable decision",
-                                type == "Q17_why_not_moreP_too_slow" ~ "get results at right time") ) 
+                                type == "Q20_why_not_moreP_cost" ~ "cost",
+                                type == "Q20_why_not_moreP_time" ~ "time",
+                                type == "Q20_why_not_moreP_lab_cost" ~ "cost of lab analysis",
+                                type == "Q20_why_not_moreP_variability" ~ "variability",
+                                type == "Q20_why_not_moreP_lab_accuracy" ~ "accuracy",
+                                type == "Q20_why_not_moreP_test_profit_decis" ~ "translate profitable decision",
+                                type == "Q20_why_not_moreP_too_slow" ~ "get results at right time") ) 
   
   
   
   
   #head(Q17_why_not_moreP)
-  ggplot(Q17_why_not_moreP, aes(x = reorder(label_name, -percent), y = percent))+
+  ggplot(Q20_why_not_moreP, aes(x = reorder(label_name, -percent), y = percent))+
     geom_col()+
     geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
     theme_classic()+
     labs(x= "reasons",
          y = "",
          title = "Please indicate why you don't do more SOIL P testing:",
-         subtitle = "Agronomist",
+         subtitle = "Agronomist and growers",
          caption = "Please indicate why you don't do more SOIL Phosphorous testing")+
     theme(axis.text.x=element_text(angle=45,hjust=1),
           plot.caption = element_text(size = 8, hjust = 0))+
