@@ -1,12 +1,14 @@
 ---
 title: "Survey data analysis"
-author: "Jackie Ouzman"
+author: "Jackie Ouzman and Belinda Stummers"
 date: "22/08/2019"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#install.packages("dplyr")
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
@@ -21,8 +23,9 @@ library(formattable)
 ```
 
 #### General notes 
-* 
+
 * Note I have made some adjustment to the heading names in the excel sheet - many questions don't have numbers.
+* I have used survey script to get the order correct.
 
 ```{r import dataset advisor, include=FALSE}
 
@@ -37,7 +40,7 @@ data <- read_excel("Nutrient Management Survey_Agrononomist09092019.xlsx",
 names(data) <- headers
 ```
 
-* Setting the display names and the order I want them to appear
+
 
 ```{r setting up the region names and order, include=FALSE}
 
@@ -71,12 +74,17 @@ data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee",
 
 
 
+
 #### **The first series of questions looks at your current farming practices.**
 
-#### **Question 1** 
-Agronomist) In which argo-ecological region do you work / are your clients based?
 
-Grower) In which agro-ecological region do you farm
+#### **Question 1** 
+
+Agronomist) 
+In which argo-ecological region do you work / are your clients based?
+
+Grower) 
+In which agro-ecological region do you farm?
 
 
 ```{r Q1 analysis and table, echo=FALSE}
@@ -86,7 +94,7 @@ Q1_resp_percent <- data %>%
   mutate(percent = 
            (freq = n / sum(n)))
 #table
-#print(Q1_resp_percent)
+print(Q1_resp_percent)
 ####graph
 ggplot(Q1_resp_percent, aes(Resp_Group, percent ))+
   geom_col()+
@@ -96,14 +104,17 @@ ggplot(Q1_resp_percent, aes(Resp_Group, percent ))+
        y = "Respondants",
        fill = "",
        title = "",
-       subtitle = "Agronomist and Growers",
-       caption = "")+
+       subtitle = "Survey respondants",
+       caption = "Agronomist and Growers")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
   scale_y_continuous(labels = scales::percent)    
  
 ```
 
+#### **Question 1 by region** 
+ 
+ 
 ```{r Q1_by agro analysis and table, echo=FALSE}
 
 #split into agro and growers
@@ -115,7 +126,11 @@ Q1_agro_region_perc <- filter(data, Resp_Group == "Agronomist") %>%
 #table
 #print(Q1_agro_region_perc)
 #formattable(Q1_agro_region_perc)
-datatable(Q1_agro_region_perc, colnames = c( "regions", "count", "percentage"), caption = "Respondents per region - Agronomist")
+
+
+#datatable(Q1_agro_region_perc, colnames = c( "regions", "count", "percentage"), caption = "Respondents per region - Agronomist")
+
+
 #graph
 ggplot(Q1_agro_region_perc, aes(names_display, percent ))+
   geom_col()+
@@ -144,7 +159,9 @@ Q1_grower_region_perc <- filter(data, Resp_Group == "Grower") %>%
 
 #table
 #print(Q1_grower_region_perc)
-datatable(Q1_grower_region_perc, colnames = c( "regions", "count", "percentage"), caption = "Respondents per region - Grower")
+#datatable(Q1_grower_region_perc, colnames = c( "regions", "count", "percentage"), caption = "Respondents per region - Grower")
+
+
 #graph growers per region
 ggplot(Q1_grower_region_perc, aes(names_display, percent ))+
   geom_col()+
@@ -162,10 +179,19 @@ ggplot(Q1_grower_region_perc, aes(names_display, percent ))+
 
 ```
 
+
+#### **Comments notes on Question 1** 
+
+* We have more grower(99) respondants than agronomist (71)
+* For the growers we have some very low responses rates eg lower EP
+  this grouping cannot be used as is an will need to be merged results are to reflect regional differences.
+
+
+
 #### **Question 2** 
 What is the average total area cropped (hectares) that you have managed for clients over the last 3 seasons?
 
-**Analysed by regions, should we do by cropped area too?**
+
 
 
 ```{r Q2 analysis and table, echo=FALSE}
@@ -178,12 +204,14 @@ Q2_regions <- group_by(data, names_display) %>%
 
 #head(Q2_regions,3)
 
-datatable(Q2_regions,  colnames = c( "names", "count", "average cropped area"), caption = "Cropped area per region - Argonomist and Grower",
-          rownames = FALSE)
+#datatable(Q2_regions,  colnames = c( "names", "count", "average cropped area"), caption = "Cropped area per region - Argonomist and Grower",
+#          rownames = FALSE)
           
 
 ```
-```{r Q2 graph regions, echo=FALSE}
+
+
+```{r Q2 graph regions, eval=FALSE, include=FALSE}
 ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
   geom_col()+
   #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
@@ -226,6 +254,20 @@ ggplot(Q2_regions_agro_grower, aes(names_display, Ave_Cropped_Area))+
   scale_y_continuous(labels =  comma)
 ```
 
+#### **Comments notes on Question 2** 
+
+* total area of copping land is very different for agronomist compared to growers.
+* Can't combine the data for this - perhaps indicates a pattern for the whole study (combine the two groups with causion)
+* Belinda Cay has added a grouping for this question, her farms size grouping is:
+
+* 0-1,000
+* 1,000  - 5,000
+* 5,000  - 10,000
+* 10,000 - 20,000
+* 20,000 - 30,000
+* 30,000 - 40,000
+* 40,000 - 50,000
+* 50,000 - 100,000
 
 #### **Question 3** 
 
@@ -233,6 +275,7 @@ Which of the following crops do you grow - percentage by area?
  
 
 (please enter a whole number without the % sign.
+
 Every row needs a number, so if there is none grown, please enter 0.)
 
 3.1 Cereals (wheat, barley, oats)
@@ -251,7 +294,17 @@ Every row needs a number, so if there is none grown, please enter 0.)
 #head(data)
 
 
-Q3_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>% 
+#Q3_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>% 
+#  summarise(
+#    Ave_Percent_ceral = round(mean(`Q_3.1`), 0),
+#    Ave_Percent_canola = round(mean(`Q_3.2`), 0),
+#    Ave_Percent_pulse = round(mean(`Q_3.3`), 0),
+#    Ave_Percent_pasture = round(mean(`Q_3.4`), 0),
+#    Ave_Percent_hay = round(mean(`Q_3.5`), 0),
+#    Ave_Percent_fallow = round(mean(`Q_3.6`), 0)
+#    )
+    
+Q3_regions_agro_grower <- group_by(data,  Resp_Group) %>% 
   summarise(
     Ave_Percent_ceral = round(mean(`Q_3.1`), 0),
     Ave_Percent_canola = round(mean(`Q_3.2`), 0),
@@ -260,18 +313,35 @@ Q3_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>%
     Ave_Percent_hay = round(mean(`Q_3.5`), 0),
     Ave_Percent_fallow = round(mean(`Q_3.6`), 0)
     )
-    
-
 
 #head(Q3_regions_agro_grower)
 Q3_regions_agro_grower_narrow <- gather(Q3_regions_agro_grower, key = "crop", value = "ave_area",Ave_Percent_ceral:Ave_Percent_fallow )
+#Q3_regions_agro_grower_narrow
+#filter(Q3_regions_agro_grower_narrow, Resp_Group == "Agronomist" ) %>% 
+#ggplot( aes(crop, ave_area))+
+#  geom_col()+
+  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
+  #facet_wrap(.~ crop)+
+#  theme_classic()+
+#  scale_x_discrete("crop", labels=c("Canola", "Ceral", "Fallow", "Hay", "Pasture", "Pulse"))+
+#  labs(x= "Regions",
+#       y = "Crops percent area",
+#       title = "Avearge percent area by crop",
+#       subtitle = "Agronomist",
+#       caption = "Q)  Which of the following crops do you grow - percentage by area?")+
+#  theme(axis.text.x=element_text(angle=90,hjust=1),
+#        plot.caption = element_text(size = 8)) +
+#  scale_y_continuous(labels =  comma)
 
-filter(Q3_regions_agro_grower_narrow, Resp_Group == "Agronomist" ) %>% 
-ggplot( aes(names_display, ave_area))+
+#filter(Q3_regions_agro_grower_narrow, Resp_Group == "Grower" ) %>% 
+
+  
+  ggplot(Q3_regions_agro_grower_narrow, aes(crop, ave_area))+
   geom_col()+
   #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
-  facet_wrap(.~ crop)+
+  facet_wrap(.~ Resp_Group)+
   theme_classic()+
+  scale_x_discrete("crop", labels=c("Canola", "Ceral", "Fallow", "Hay", "Pasture", "Pulse"))+
   labs(x= "Regions",
        y = "Crops percent area",
        title = "Avearge percent area by crop",
@@ -281,28 +351,20 @@ ggplot( aes(names_display, ave_area))+
         plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels =  comma)
 
-filter(Q3_regions_agro_grower_narrow, Resp_Group == "Grower" ) %>% 
-ggplot( aes(names_display, ave_area))+
-  geom_col()+
-  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
-  facet_wrap(.~ crop)+
-  theme_classic()+
-  labs(x= "Regions",
-       y = "Crops percent area",
-       title = "Avearge percent area by crop",
-       subtitle = "Agronomist",
-       caption = "Q)  Which of the following crops do you grow - percentage by area?")+
-  theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) +
-  scale_y_continuous(labels =  comma)
+#merge the two datasets
+
+
+
 ```
 
 
 #### **Question 4**
 
-Agro) When thinking about your average client's annual variable costs, what percentage would fertilisers account for?
+Agro) 
+When thinking about your average client's annual variable costs, what percentage would fertilisers account for?
 
-Grower) Of your total annual variable costs, what percentage would fertilisers account for?
+Grower) 
+Of your total annual variable costs, what percentage would fertilisers account for?
 
 
 
@@ -320,22 +382,23 @@ data <- mutate(data,
                
 #table(data$Q_4)
 
-data <- mutate(data, Q_4 = fct_relevel(Q_4, c("0-5%", 
-                                       "10-15%", 
-                                       "15-20%", 
-                                       "20-25%", 
-                                       "30-35%", 
-                                       "greater than 35%", 
-                                       "Unsure")))
+
 Q4_resp_percent <- data %>% 
+  group_by(Resp_Group) %>% 
   count(Q_4) %>% 
   mutate(percent = round(
            (freq = n / sum(n)),2))
-#Q4_resp_percent
+Q4_resp_percent
 
 
+Q4_resp_percent$Q_4 <- factor(Q4_resp_percent$Q_4, 
+                              levels = c("0-5%","5-10%", "10-15%","15-20%",
+                                         "20-25%","25-30%", "30-35%", "greater than 35%", "Unsure" ))
+ 
+ 
 ggplot(Q4_resp_percent, aes(Q_4, percent))+
   geom_col()+
+  facet_wrap(~Resp_Group)+
   theme_classic()+
   labs(x= "of total varaible cost",
        y = "Crops percent area",
@@ -348,13 +411,22 @@ ggplot(Q4_resp_percent, aes(Q_4, percent))+
 
 ```
 
+
+#### **Comments notes on Question 4** 
+
+
+* question was asked as percent of percent - convert to a table?
+
+
 #### **Question 5**
 What are the main nutrient deficiencies your clients encounter?
+
 What are the main nutrient deficiencies on your farm?
 
 
 #### **Question 6** 
 Do you recommend soil and or plant testing?
+
 Do you do soil and/or plant testing on your farm?
 
 
@@ -484,7 +556,9 @@ theme_classic()+
 #### **Question 7**
 
 Grower
+
 Who makes the nutrient decisions on your farm?
+
 * self
 * Agronomist
 * Combination of agronomist and self
@@ -495,6 +569,7 @@ Who makes the nutrient decisions on your farm?
 #### **Question 8**
 
 Agronomist
+
 * Of your clients, how many of them rely entirely on you to make the nutrient decisions?
 * Of your clients, how many of them rely somewhat on you to make the nutrient decisions?
 * Of your clients, how many of them make their own nutrient decisions?
@@ -504,27 +579,36 @@ Agronomist
 
 #### **Question 8**
 Agronomist
+
 To what extent are you responsible for determining how much testing is done on your clients' farms?
 Grower
+
 To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
 
 
 #### **Question 9**
 Agronmist
+
 To what extent are you responsible for determining how much testing is done on your clients' farms?
 Grower
+
 To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
 
 #### **Question 10** 
 Note the script and the data base supplied dont match here??
+
 I think I have an out of date script
 Agronmist
+
 To what extent does your agronomist make recommendations based on the test results from your farm?
+
 Grower
+
 To what extent do the test results influence your recommendations?
 
 #### **Question 11**
 Agronmist
+
 What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? 
 
 Indicate if this is different for N, P and other nutrients
@@ -534,6 +618,7 @@ Indicate if this is different for N, P and other nutrients
 * Source 3
 
 Grower
+
 What are your 3 main sources of information or advice for what nutrients you apply and at what rate? 
 
 Indicate if this is different for N, P and other nutrients
@@ -549,6 +634,7 @@ This section explores how you use soil testing. If you have NOT done soil testin
 #### **Question 12**
 
 Grower
+
 Explain your approach to soil testing P, N and other micronutrients ...
 
 * P
@@ -557,6 +643,7 @@ Explain your approach to soil testing P, N and other micronutrients ...
 
 #### **Question 13**
 Agronomist
+
 Can you please provide some specific information on ..
 
 * What % of your clients soil tested in 2018? (any testing)
@@ -573,6 +660,7 @@ Note for this question agronomist were asked to nominate the bin.
 * 50 -100%
 
 Grower
+
 Can you please provide some specific information on ..
 
 * What % of  your cropped land was soil tested in 2018 (any testing)
