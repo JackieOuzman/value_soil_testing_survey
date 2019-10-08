@@ -19,7 +19,7 @@ library(scales)
 #install.packages("formattable")
 #install.packages("data.table")
 library(data.table)
-library(formattable)
+#library(formattable)
 ```
 
 #### General notes 
@@ -192,8 +192,6 @@ ggplot(Q1_grower_region_perc, aes(names_display, percent ))+
 What is the average total area cropped (hectares) that you have managed for clients over the last 3 seasons?
 
 
-
-
 ```{r Q2 analysis and table, echo=FALSE}
 
 Q2_regions <- group_by(data, names_display) %>% 
@@ -252,8 +250,35 @@ ggplot(Q2_regions_agro_grower, aes(names_display, Ave_Cropped_Area))+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels =  comma)
+
 ```
 
+
+```{r Q2 graph agro_grower, echo=FALSE}
+head(data)
+
+Q2_agro_grower <- group_by(data, Resp_Group) %>% 
+  summarise(
+    count = n(),
+    Ave_Cropped_Area = round(mean(`Q_2`), 0)) 
+
+
+head(Q2_agro_grower)
+
+ggplot(Q2_agro_grower, aes(Resp_Group, Ave_Cropped_Area))+
+  geom_col()+
+  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
+ #facet_wrap(.~ Resp_Group)+
+  theme_classic()+
+  labs(x= "",
+       y = "Cropped area",
+       title = "Total area cropped (hectares)",
+       subtitle = "Agronomist and grower",
+       caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels =  comma)
+```
 #### **Comments notes on Question 2** 
 
 * Total area of copping land is very different for agronomist compared to growers.
