@@ -279,6 +279,7 @@ ggplot(Q2_agro_grower, aes(Resp_Group, Ave_Cropped_Area))+
         plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels =  comma)
 ```
+
 #### **Comments notes on Question 2** 
 
 * Total area of copping land is very different for agronomist compared to growers.
@@ -314,72 +315,53 @@ Which of the following crops do you grow - percentage by area?
 3.6 Fallow
 
 ```{r Q3 graph regions agro only, echo=FALSE}
-#head(data)
 
 
-#Q3_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>% 
-#  summarise(
-#    Ave_Percent_ceral = round(mean(`Q_3.1`), 0),
-#    Ave_Percent_canola = round(mean(`Q_3.2`), 0),
-#    Ave_Percent_pulse = round(mean(`Q_3.3`), 0),
-#    Ave_Percent_pasture = round(mean(`Q_3.4`), 0),
-#    Ave_Percent_hay = round(mean(`Q_3.5`), 0),
-#    Ave_Percent_fallow = round(mean(`Q_3.6`), 0)
-#    )
-    
+
+data <- mutate(data,  area_cereal = Q_2 * (Q_3.1/100), 
+                      area_canola = Q_2 * (Q_3.2/100),
+                      area_pulses = Q_2 * (Q_3.3/100),
+                      area_pasture = Q_2 * (Q_3.4/100),
+                      area_hay = Q_2 * (Q_3.5/100),
+                      area_fallow = Q_2 * (Q_3.6/100)
+               )
+
 Q3_regions_agro_grower <- group_by(data,  Resp_Group) %>% 
   summarise(
-    Ave_Percent_ceral = round(mean(`Q_3.1`), 0),
-    Ave_Percent_canola = round(mean(`Q_3.2`), 0),
-    Ave_Percent_pulse = round(mean(`Q_3.3`), 0),
-    Ave_Percent_pasture = round(mean(`Q_3.4`), 0),
-    Ave_Percent_hay = round(mean(`Q_3.5`), 0),
-    Ave_Percent_fallow = round(mean(`Q_3.6`), 0)
-    )
+    Ave_ceral = round(mean(area_cereal), 0),
+    Ave_canola = round(mean(area_canola), 0),
+    Ave_pulse = round(mean(area_pulses), 0),
+    Ave_pasture = round(mean(area_pasture), 0),
+    Ave_hay = round(mean(area_hay), 0),
+    Ave_fallow = round(mean(area_fallow), 0)
+  )
+#Q3_regions_agro_grower
 
-#head(Q3_regions_agro_grower)
-Q3_regions_agro_grower_narrow <- gather(Q3_regions_agro_grower, key = "crop", value = "ave_area",Ave_Percent_ceral:Ave_Percent_fallow )
-#Q3_regions_agro_grower_narrow
-#filter(Q3_regions_agro_grower_narrow, Resp_Group == "Agronomist" ) %>% 
-#ggplot( aes(crop, ave_area))+
-#  geom_col()+
-  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
-  #facet_wrap(.~ crop)+
-#  theme_classic()+
-#  scale_x_discrete("crop", labels=c("Canola", "Ceral", "Fallow", "Hay", "Pasture", "Pulse"))+
-#  labs(x= "Regions",
-#       y = "Crops percent area",
-#       title = "Avearge percent area by crop",
-#       subtitle = "Agronomist",
-#       caption = "Q)  Which of the following crops do you grow - percentage by area?")+
-#  theme(axis.text.x=element_text(angle=90,hjust=1),
-#        plot.caption = element_text(size = 8)) +
-#  scale_y_continuous(labels =  comma)
 
-#filter(Q3_regions_agro_grower_narrow, Resp_Group == "Grower" ) %>% 
+Q3_regions_agro_grower_narrow <- gather(Q3_regions_agro_grower, 
+                                        key = "crop", value = "ave_area",Ave_ceral:Ave_fallow )
 
-  
-  ggplot(Q3_regions_agro_grower_narrow, aes(crop, ave_area))+
+#head(Q3_regions_agro_grower_narrow, 40)
+
+ggplot(Q3_regions_agro_grower_narrow, aes(x = crop, y = ave_area))+
   geom_col()+
-  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
   facet_wrap(.~ Resp_Group)+
   theme_classic()+
-  scale_x_discrete("crop", labels=c("Canola", "Ceral", "Fallow", "Hay", "Pasture", "Pulse"))+
-  labs(x= "Regions",
-       y = "Crops percent area",
-       title = "Avearge percent area by crop",
-       subtitle = "Agronomist",
-       caption = "Q)  Which of the following crops do you grow - percentage by area?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) +
-        scale_y_continuous("percentage", breaks=seq(0, 100, 20), labels=c("0%", "20%", "40%", "60%", "80%", "100%"))
-        
-
-
-
+  scale_x_discrete("crop", labels=c("Canola", "Ceral", "Fallow", "Hay", "Pasture", "Pulse"))+
+  labs(x= "Regions",
+       y = "Croped area",
+       title = "Avearge area by crop",
+       subtitle = "Agronomist and grower",
+       caption = "Q)  Which of the following crops do you grow - percentage by area? NB area of cropped land is over the last 3 seasons")
+  
 
 ```
 
+
+#### **Comments notes on Question 2 and 3** 
+We have cal the area and percenatge of crop.
 
 #### **Question 4**
 
