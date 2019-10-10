@@ -70,6 +70,31 @@ data <- mutate(data, names_display = fct_relevel(names_display, c("SA - Mallee",
                                        "VIC - Southern region",
                                        "Other")))
 
+data <- mutate(data,
+             region_merge =case_when(
+               Q_1 == "SA - Mallee (low rainfall)" ~  "SA - Mallee",
+               Q_1 == "SA – Lower EP (medium rainfall)" ~  "SA – EP",
+               Q_1 == "SA - Mid North (medium rainfall)" ~  "SA - Mid North",
+               Q_1 == "SA - Yorke Peninsula (medium rainfall)" ~  "SA - Yorke Peninsula",
+               Q_1 == "SA - Upper EP (low rainfall)" ~  "SA – EP",
+               Q_1 == "SA - South East (medium rainfall)" ~  "SA - South East",
+               Q_1 == "VIC - Wimmera (medium rainfall)" ~  "VIC - Wimmera",
+               Q_1 == "VIC - Mallee (low rainfall)" ~  "VIC - Mallee",
+               Q_1 == "VIC - Southern region (high rainfall)" ~  "VIC - Southern region",
+               Q_1 == "Other (please specify)" ~  "Other"))
+
+data <- mutate(data, region_merge = fct_relevel(region_merge, c("SA - Mallee", 
+                                       "SA – EP", 
+                                       "SA - Mid North", 
+                                       "SA - Yorke Peninsula", 
+                                       
+                                       "SA - South East", 
+                                       "VIC - Wimmera",
+                                       "VIC - Mallee",
+                                       "VIC - Southern region",
+                                       "Other")))
+
+
 ```
 
 
@@ -146,7 +171,7 @@ ggplot(Q1_resp_percent, aes(Resp_Group, percent ))+
        caption = "Agronomist and Growers")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent)    
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))   
  
 ```
 
@@ -182,7 +207,7 @@ ggplot(Q1_agro_region_perc, aes(names_display, percent ))+
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent)    
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))    
 
 ```
 
@@ -213,7 +238,59 @@ ggplot(Q1_grower_region_perc, aes(names_display, percent ))+
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent)    
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))    
+
+```
+
+#### **Question 1 by merged region** 
+
+
+```{r Q1_by agro and grower by mergered region, echo=FALSE}
+
+#split into agro and growers
+Q1_agro_region_mereged_perc <- filter(data, Resp_Group == "Agronomist") %>% 
+  count( region_merge) %>% 
+  mutate(percent = round(
+           (freq = n / sum(n)),2))
+
+
+#graph
+ggplot(Q1_agro_region_mereged_perc, aes(region_merge, percent ))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "Regions mergered",
+       y = "Respondents",
+       fill = "",
+       title = "",
+       subtitle = "Agronomist per region",
+       caption = "")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))  
+
+
+#split into agro and growers
+Q1_grower_region_mereged_perc <- filter(data, Resp_Group == "Grower") %>% 
+  count( region_merge) %>% 
+  mutate(percent = round(
+           (freq = n / sum(n)),2))
+
+
+#graph
+ggplot(Q1_grower_region_mereged_perc, aes(region_merge, percent ))+
+  geom_col()+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "Regions mergered",
+       y = "Respondents",
+       fill = "",
+       title = "",
+       subtitle = "Grower per region",
+       caption = "")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))    
 
 ```
 
@@ -319,6 +396,7 @@ ggplot(Q1_grower_rainfall_perc, aes(rainfall, percent ))+
 * We have more grower(99) respondents than agronomist (71)
 * For the growers by region we have some very low responses rates for certain regions (e.g. lower EP).
   This regional grouping (for growers) cannot be used as is, we will need to be merged regions are to reflect regional differences.
+* I have added a merged region with EP upper and lower added togther.
 
 
 
@@ -334,11 +412,7 @@ Q2_regions <- group_by(data, names_display) %>%
     Ave_Cropped_Area = round(mean(`Q_2`), 0)) %>% 
     arrange(names_display)
 
-#head(Q2_regions,3)
 
-#datatable(Q2_regions,  colnames = c( "names", "count", "average cropped area"), caption = "Cropped area per region - Argonomist and Grower",
-#          rownames = FALSE)
-          
 
 ```
 
@@ -358,7 +432,7 @@ ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
   scale_y_continuous(labels =  comma)
 ```
 
-
+**Question 2 by regions** 
 
 ```{r Q2 graph regions agro only, echo=FALSE}
 #head(data)
@@ -386,6 +460,38 @@ ggplot(Q2_regions_agro_grower, aes(names_display, Ave_Cropped_Area))+
   scale_y_continuous(labels =  comma)
 
 ```
+
+**Question 2 by regions merged** 
+
+
+
+```{r Q2 graph regions merged agro only, echo=FALSE}
+
+
+Q2_regions_merged_agro_grower <- group_by(data, region_merge, Resp_Group) %>% 
+  summarise(
+    count = n(),
+    Ave_Cropped_Area = round(mean(`Q_2`), 0))
+    
+#Q2_regions_merged_agro_grower
+
+ggplot(Q2_regions_merged_agro_grower, aes(region_merge, Ave_Cropped_Area))+
+  geom_col()+
+  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
+  facet_wrap(.~ Resp_Group)+
+  theme_classic()+
+  labs(x= "Regions merged",
+       y = "Cropped area",
+       title = "Total area cropped (hectares)",
+       subtitle = "",
+       caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels =  comma)
+
+```
+
+**Question 2** 
 
 
 ```{r Q2 graph agro_grower, echo=FALSE}
@@ -574,6 +680,8 @@ ggplot(Q4_resp_percent, aes(Q_4, percent))+
 
 ```
 
+**Question 4 with bins grouped**
+
 ```{r Q4 graph more grouping, echo=FALSE}
 
 data <- mutate(data,
@@ -620,10 +728,113 @@ ggplot(Q4group_resp_percent, aes(Q_4_group, percent))+
 
 ```
 
+**Question 4 with bins grouped and by regions merged**
+
+```{r Q4 gregions, echo=FALSE}
+
+
+
+Q4group_resp__regions_merged_percent <- data %>% 
+  group_by(Resp_Group, region_merge) %>% 
+  count(Q_4_group) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2))
+
+
+Q4group_resp__regions_merged_percent$Q_4_group <- factor(Q4group_resp__regions_merged_percent$Q_4_group, 
+                              levels = c("<20%","20-35%", ">35%", "Unsure" ))
+
+filter(Q4group_resp__regions_merged_percent, Resp_Group == "Agronomist") %>% 
+ggplot( aes(Q_4_group, percent))+
+  geom_col()+
+  facet_wrap(. ~ region_merge)+
+  theme_classic()+
+  labs(x= "percentage of total variable cost",
+       y = "percent response",
+       title = "Percent of annual variable costs attributed to fertilisers - more grouping",
+       subtitle = "Agronomist",
+       caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+
+
+filter(Q4group_resp__regions_merged_percent, Resp_Group == "Grower") %>% 
+ggplot( aes(Q_4_group, percent))+
+  geom_col()+
+  facet_wrap(. ~ region_merge)+
+  theme_classic()+
+  labs(x= "percentage of total variable cost",
+       y = "percent response",
+       title = "Percent of annual variable costs attributed to fertilisers - more grouping",
+       subtitle = "Grower",
+       caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+
+```
+
+
+**Question 4 with bins grouped and by rainfall**
+
+```{r Q4 regions, echo=FALSE}
+
+
+
+Q4group_resp__rainfall_percent <- data %>% 
+  group_by(Resp_Group, rainfall) %>% 
+  count(Q_4_group) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2))
+
+
+Q4group_resp__rainfall_percent$Q_4_group <- factor(Q4group_resp__rainfall_percent$Q_4_group, 
+                              levels = c("<20%","20-35%", ">35%", "Unsure" ))
+Q4group_resp__rainfall_percent
+filter(Q4group_resp__rainfall_percent, Resp_Group == "Agronomist") %>% 
+ggplot( aes(Q_4_group, percent))+
+  geom_col()+
+  facet_wrap(. ~ rainfall)+
+  theme_classic()+
+  labs(x= "percentage of total variable cost",
+       y = "percent response",
+       title = "Percent of annual variable costs attributed to fertilisers - more grouping",
+       subtitle = "Agronomist",
+       caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+
+
+filter(Q4group_resp__rainfall_percent, Resp_Group == "Grower") %>% 
+ggplot( aes(Q_4_group, percent))+
+  geom_col()+
+  facet_wrap(. ~ rainfall)+
+  theme_classic()+
+  labs(x= "percentage of total variable cost",
+       y = "percent response",
+       title = "Percent of annual variable costs attributed to fertilisers - more grouping",
+       subtitle = "Grower",
+       caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+
+```
+
+
 #### **Comments notes on Question 4** 
 
 
 * Question and answer results in a percent of percent - convert to a table?
+* I have grouped the bins
+* Note that in the orginal survey there is a problem with the coding of >35%, it is fixed here. This means that prelim report is wrong, the report says 5% but is more like 9% of growers estimate the fertiliser expenditure was more than 30%.
+* Agronomist estimate that over 20% of there clients spend more than 35% of there variable cost on fertiliser, while less than 10% of growers spend this amount.
+* Generally growers spend less on fertilisers than what agromomist suggest. Almost 40% of growers spend less than 20% of there vraible costs on fertilisers.
+* when the bins are grouped into 4 classes only, close to 50% of both growers and agronomits suggest that they spend between 20-35% of there vraiable costs on fertilisers.
+* I have reported fertiliser cost per region and rainfall, but the sample size is very low for some of these classes.
+
 
 
 #### **Question 5**
