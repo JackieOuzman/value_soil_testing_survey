@@ -846,6 +846,118 @@ Grower)
 
 What are the main nutrient deficiencies on your farm?
 
+```{r Q5 new nutrient def clms, echo=FALSE}
+data <- mutate(data, 
+               Q_5.2_N = case_when(str_detect(Q_5.2,   fixed("N",  ignore_case = TRUE)) ~ "N", TRUE ~ "NA"),
+               Q_5.2_P = case_when(str_detect(Q_5.2,   fixed("P",  ignore_case = TRUE)) ~ "P", TRUE ~ "NA"),
+               Q_5.2_S = case_when(str_detect(Q_5.2,   fixed("S",  ignore_case = TRUE)) ~ "S", TRUE ~ "NA"),
+               Q_5.2_Zn = case_when(str_detect(Q_5.2,  fixed("Zn",  ignore_case = TRUE)) ~ "Zn", TRUE ~ "NA"),
+               Q_5.2_Cu = case_when(str_detect(Q_5.2,  fixed("Cu",  ignore_case = TRUE)) ~ "Cu", TRUE ~ "NA"),
+               Q_5.2_Mn = case_when(str_detect(Q_5.2,  fixed("Mn",  ignore_case = TRUE)) ~ "Mn", TRUE ~ "NA"),
+               Q_5.2_pH = case_when(str_detect(Q_5.2,  fixed("pH",  ignore_case = TRUE)) ~ "pH", TRUE ~ "NA"),
+               Q_5.2_Fe = case_when(str_detect(Q_5.2,  fixed("Fe",  ignore_case = TRUE)) ~ "Fe", TRUE ~ "NA"),
+               Q_5.2_Mg = case_when(str_detect(Q_5.2,  fixed("Mg",  ignore_case = TRUE)) ~ "Mg", TRUE ~ "NA")
+)
+
+
+Q_5.2_N <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_N) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  filter(Q_5.2_N != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "N")
+
+Q_5.2_P <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_P) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2)) %>% 
+  filter(Q_5.2_P != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "P")
+
+Q_5.2_S <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_S) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2)) %>% 
+  filter(Q_5.2_S != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "S")
+
+Q_5.2_Zn <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_Zn) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2)) %>% 
+  filter(Q_5.2_Zn != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "Zn")
+
+Q_5.2_Cu <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_Cu) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2)) %>% 
+  filter(Q_5.2_Cu != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "Cu")
+
+Q_5.2_Mn <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_Mn) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2)) %>% 
+  filter(Q_5.2_Mn != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "Mn")
+
+Q_5.2_pH <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_pH) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2)) %>% 
+  filter(Q_5.2_pH != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "pH")
+
+Q_5.2_Fe <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_Fe) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2)) %>% 
+  filter(Q_5.2_Fe != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "Fe")
+
+Q_5.2_Mg <- data %>% 
+  group_by(Resp_Group) %>% 
+  count(Q_5.2_Mg) %>% 
+  mutate(percent = round(
+    (freq = n / sum(n)),2)) %>% 
+  filter(Q_5.2_Mg != "NA") %>% 
+  select(Resp_Group, percent) %>% 
+  mutate( nutrient = "Mg")
+
+### These are the same size and can be mereged as is...
+test <- rbind(Q_5.2_N, Q_5.2_P, Q_5.2_S,  Q_5.2_Zn,
+              Q_5.2_Cu, Q_5.2_Mn, Q_5.2_pH, Q_5.2_Fe, Q_5.2_Mg ) 
+
+
+  ggplot( test, aes(nutrient, percent))+
+  geom_col()+
+  facet_wrap(. ~ Resp_Group)+
+  theme_classic()+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+  
+```
+
+
+#### Up to here need to arrange N, P 
+
+
 
 #### **Question 6** 
 Agro) 
