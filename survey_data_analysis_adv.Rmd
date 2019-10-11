@@ -942,20 +942,41 @@ Q_5.2_Mg <- data %>%
   mutate( nutrient = "Mg")
 
 ### These are the same size and can be mereged as is...
-test <- rbind(Q_5.2_N, Q_5.2_P, Q_5.2_S,  Q_5.2_Zn,
+nutr_def <- rbind(Q_5.2_N, Q_5.2_P, Q_5.2_S,  Q_5.2_Zn,
               Q_5.2_Cu, Q_5.2_Mn, Q_5.2_pH, Q_5.2_Fe, Q_5.2_Mg ) 
 
+add_lines <- tibble (Resp_Group = c("Grower", "Grower"),
+                         percent = c(0, 0),
+                         nutrient = c("Fe", "Mg"))
 
-  ggplot( test, aes(nutrient, percent))+
+nutr_def_all <- full_join(nutr_def, add_lines)
+
+
+nutr_def_all <- mutate(nutr_def_all, nutrient = fct_relevel(nutrient, c("N", "P", 
+                                                                "S", 
+                                                                "Zn", 
+                                                                "Cu", 
+                                                                "Mn",
+                                                                "pH",
+                                                                "Fe",
+                                                                "Mg")))
+ggplot( nutr_def_all, aes(nutrient, percent))+
   geom_col()+
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       title = "Perecent of clients / growers with type of nutrient deficiencies",
+       subtitle = "",
+       caption = "Q)  What are the main nutrient deficiencies")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
-  
+
+
 ```
 
 
-#### Up to here need to arrange N, P 
 
 
 
@@ -990,7 +1011,7 @@ Q6_all_agro <- group_by(data, Resp_Group) %>%
 
 ggplot(Q6_all_agro, aes(Q_6, percent))+
   geom_col()+
-  geom_text(aes(label = percent(signif(percent),0), vjust = -1.0, hjust = 0.5))+
+  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   facet_wrap(~ Resp_Group)+
   labs(x= "All regions",
@@ -1004,30 +1025,31 @@ ggplot(Q6_all_agro, aes(Q_6, percent))+
 ```
 
 
-```{r Q6 agro summary agro, echo=FALSE}
+```{r Q6 regions merged summary , echo=FALSE}
 #agronomist by region
 
 #check out if we have any missing data for this question
   #data %>% group_by(Resp_Group) %>%
   #         summarise(sum(is.na(Q_6)))
 
-Q6_by_Agro_Region <- filter(data, Resp_Group == "Agronomist") %>% 
-  group_by(names_display, Q_6) %>%
-  summarise(n = n()) %>%
-    mutate(percent = 
-        (freq = n / sum(n)))
-  
-#head(Q6_by_Agro_Region)
+Q6_by_Region_merge <- 
+  group_by(data, region_merge, Resp_Group) %>%
+  count(Q_6) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
 
-ggplot(Q6_by_Agro_Region, aes(names_display, percent, fill=Q_6 ))+
+#head(Q6_by_Region_merge)
+
+ggplot(Q6_by_Region_merge, aes(region_merge, percent, fill=Q_6 ))+
   geom_col()+
+  facet_wrap(. ~ Resp_Group)+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions",
        y = "Recommend testing",
        fill = "",
        title = "Recommend soil and or plant testing",
-       subtitle = "Agronomist",
+       subtitle = "",
        caption = "Q) Do you recommend soil and or plant testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
@@ -1036,67 +1058,20 @@ ggplot(Q6_by_Agro_Region, aes(names_display, percent, fill=Q_6 ))+
 ```
 
 
-```{r Q6 agro summary grower, echo=FALSE}
-#grower by region
 
-Q6_by_grower_Region <- filter(data, Resp_Group == "Grower") %>% 
-  group_by(names_display, Q_6) %>%
-  summarise(n = n()) %>%
-    mutate(percent = 
-        (freq = n / sum(n)))
-  
-#head(Q6_by_grower_Region)
-
-ggplot(Q6_by_grower_Region, aes(names_display, percent, fill=Q_6 ))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
-  theme_classic()+
-  labs(x= "Regions",
-       y = "soil / plant testing",
-       fill = "",
-       title = "Do soil and or plant testing",
-       subtitle = "Grower",
-       caption = "Q) Do you do soil and/or plant testing on your farm?")+
-  theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent)
-
-```
 
 ```{r Q6 agro summary agronomist saying no, echo=FALSE}
-#graph of agronomist advising no
-#head(Q6_by_Agro_Region)
-filter(Q6_by_Agro_Region, Q_6 == "No") %>% 
-ggplot(aes(names_display, percent))+
+
+filter(Q6_by_Region_merge, Q_6 == "No") %>% 
+ggplot(aes(region_merge, percent))+
   geom_col()+
+  facet_wrap(~ Resp_Group)+
   geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions",
        y = "Do not recommend testing",
        title = "Not recommending soil and or plant testing",
-       subtitle = "Agronomist",
-       caption = "Q) Do you recommend soil and or plant testing?")+
-  theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent, limits=c(0, 0.2))
-
-#head(Q6_by_Agro_Region)
-#head(Q6_by_grower_Region)
-Q6_by_Agro_Region <- mutate(Q6_by_Agro_Region, Resp_Group = "Agronomist")
-Q6_by_grower_Region <- mutate(Q6_by_grower_Region, Resp_Group = "Grower")
-
-Q6_by_Agro_grower_Region <- rbind(Q6_by_Agro_Region, Q6_by_grower_Region)
-
-filter(Q6_by_Agro_grower_Region, Q_6 == "No") %>% 
-ggplot(aes(names_display, percent))+
-  geom_col()+
-  facet_wrap(~ Resp_Group)+
-  geom_text(aes(label = percent(signif(percent),0), vjust = -1.0, hjust = 0.5))+
-  theme_classic()+
-  labs(x= "Regions",
-       y = "Do not recommend testing",
-       title = "Not recommending soil and or plant testing",
-       subtitle = "Agronomist",
+       subtitle = "",
        caption = "Q) Do you recommend soil and or plant testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) +
@@ -1106,27 +1081,6 @@ ggplot(aes(names_display, percent))+
 
 ```
 
-```{r Q6 agro summary grower saying no, eval=FALSE, include=FALSE}
-#graph of growers not testing
-#head(Q6_by_grower_Region)
-
-filter(Q6_by_grower_Region, Q_6 == "No") %>% 
-ggplot(aes(names_display,percent ))+
-geom_col()+
-geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
-theme_classic()+
-  labs(x= "Regions",
-       y = "No testing",
-       title = "Not soil and or plant testing",
-       subtitle = "Grower",
-       caption = "Q) Do you do soil and/or plant testing on your farm?")+
-  theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) +
-  scale_y_continuous(labels = scales::percent, limits=c(0, 0.8))
-
-
-
-```
 
 
 # **Decision making**
@@ -1144,40 +1098,185 @@ Who makes the nutrient decisions on your farm?
 * Other
 * Other (please specify)
 
+```{r Q7 awho makes decision, echo=FALSE}
+
+Q7 <- filter (data, Resp_Group == "Grower" &  Q_7 !=  "NA")%>%
+  group_by( Resp_Group) %>%
+  count(Q_7) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+Q7 <- mutate(Q7, Q_7 = fct_relevel(Q_7, c("Agronomist", "Self", 
+                                                                "Combination of agronomist and self" , 
+                                                                "Other")))
+
+ggplot(Q7, aes(Q_7 , percent ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "Decisions on your farm?",
+       subtitle = "Growers only",
+       caption = "Q) Who makes the nutrient decisions on your farm?")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 1.1))
+```
+
+
+
 
 #### **Question 8**
 
 Agronomist
 
-* Of your clients, how many of them rely entirely on you to make the nutrient decisions?
 
-* Of your clients, how many of them rely somewhat on you to make the nutrient decisions?
+* Q8.1 Of your clients, how many of them rely **entirely** on you to make the nutrient decisions?
 
-* Of your clients, how many of them make their own nutrient decisions?
+* Q8.2 Of your clients, how many of them rely **somewhat** on you to make the nutrient decisions?
+
+* Q8.3 Of your clients, how many of them make their **own** nutrient decisions?
+
+```{r Q8.1 who makes decision, echo=FALSE}
+Q8_1 <- filter (data, Resp_Group == "Agronomist" &  Q_8.1 !=  "NA")%>%
+  group_by( Resp_Group) %>%
+  count(Q_8.1) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
 
 
+Q8_1 <- mutate(Q8_1, Q_8.1 = fct_relevel(Q_8.1, c("less than 10%", "10-30%", "30-50%", 
+                                                  "70-90%",         "50-70%", "90-100%"
+                                          )))
+
+ggplot(Q8_1, aes(Q_8.1 , percent ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "Rely entirely on agronomist to make nutrient decisions?",
+       subtitle = "Agronomist only",
+       caption = "Q) Of your clients, how many of them rely entirely on you to make the nutrient decisions?")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+```
 
 
-#### **Question 8**
+```{r Q8.2 who makes decision, echo=FALSE}
+Q8_2 <- filter (data, Resp_Group == "Agronomist" &  Q_8.2 !=  "NA")%>%
+  group_by( Resp_Group) %>%
+  count(Q_8.2) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+#Q8_2
 
-Agronomist
+Q8_2 <- mutate(Q8_2, Q_8.2 = fct_relevel(Q_8.2, c("less than 10%", "10-30%", "30-50%", 
+                                                  "70-90%",         "50-70%", "90-100%"
+)))
 
-To what extent are you responsible for determining how much testing is done on your clients' farms?
+ggplot(Q8_2, aes(Q_8.2 , percent ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "Rely somewhat on agronomist to make nutrient decisions?",
+       subtitle = "Agronomist only",
+       caption = "Q) Of your clients, how many of them rely somewhat on you to make the nutrient decisions?")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
 
-Grower
+```
 
-To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
+```{r Q8.3 who makes decision, echo=FALSE, warning=FALSE}
 
+Q8_3 <- filter (data, Resp_Group == "Agronomist" &  Q_8.3 !=  "NA")%>%
+  group_by( Resp_Group) %>%
+  count(Q_8.3) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+
+Q8_3 <- mutate(Q8_3, Q_8.3 = fct_relevel(Q_8.3, c("less than 10%", "10-30%", "30-50%",  "50-70%",
+                                                  "70-90%", "90-100%"
+)))
+
+ggplot(Q8_3, aes(Q_8.3 , percent ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "Make their own nutrient decisions?",
+       subtitle = "Agronomist only",
+       caption = "Q) Of your clients, how many of them make their own nutrient decisions??")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
+
+```
 
 #### **Question 9**
 
 Agronomist
 
-To what extent are you responsible for determining how much testing is done on your clients' farms?
+Q9.1 To what extent are you responsible for determining how much testing is done on your clients' farms?
 
 Grower
 
-To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
+Q 9.1 To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
+
+```{r Q8.3 who makes decision, echo=FALSE, message=FALSE, warning=TRUE}
+
+sum(is.na(data$Q_9.1)) #number of NA in this Question
+
+Q9_1 <- filter (data,   Q_9.1 !=  "NA")%>%
+  group_by( Resp_Group) %>%
+  count(Q_9.1) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+
+
+add_lines9 <- tibble (Resp_Group = c("Grower", "Grower", "Agronomist", "Agronomist"),
+                     percent = c(0, 0, 0, 0),
+                     Q_9.1 = c("90-100%", "less than 10%", "100%", "None" ))
+
+Q9_1 <- full_join(Q9_1, add_lines9)
+
+
+Q9_1 <- mutate(Q9_1, Q_9.1 = fct_relevel(Q_9.1, c("less than 10%", "10-30%", "30-50%", "50-70%",
+                                                  "70-90%", "90-100%", "100%", "None")))
+
+ggplot(Q9_1, aes(Q_9.1 , percent ))+
+  geom_col()+
+  facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "To what extent Agronomist make nutrient decisions?",
+       subtitle = "",
+       caption = "Q) To what extent are you responsible for determining how much testing is done on your clients' farms?
+                     To what extent does your agronomist determine how much testing is done on your farm? ")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+```
 
 #### **Question 10** 
 Note the script and the data base supplied don't match here??
