@@ -1239,7 +1239,7 @@ Grower
 
 Q 9.1 To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
 
-```{r Q8.3 who makes decision, echo=FALSE, message=FALSE, warning=TRUE}
+```{r Q9.1 how much testing, echo=FALSE, message=FALSE, warning=TRUE}
 
 sum(is.na(data$Q_9.1)) #number of NA in this Question
 
@@ -1279,17 +1279,123 @@ ggplot(Q9_1, aes(Q_9.1 , percent ))+
 ```
 
 #### **Question 10** 
-Note the script and the data base supplied don't match here??
 
-I think I have an out of date script
 
-Agronomist
+Agronomist (Q_10.1)
+
+To what extent do the test results influence your recommendations?
+
+Grower (Q_10.1)
 
 To what extent does your agronomist make recommendations based on the test results from your farm?
 
-Grower
 
-To what extent do the test results influence your recommendations?
+Agronomist other (Q_10.2)
+This is text answer nominated by 6 agronomists.
+
+* dependent upon nutrient
+* I do my own moisture test and own gut feel from visual and in season responses.
+* Historical decision making. 1 year once off can't guide too accurately.
+* basal amounts, peak and flow even around basal amounts 
+* rainfall 
+* Lime more than P
+
+
+```{r Q10.1 how much testing, echo=FALSE, message=FALSE, warning=TRUE}
+#suss out how many ans questions
+
+#temp_agro <- filter(data,Resp_Group == "Agronomist" ) 
+#sum(is.na(temp_agro$Q_10.1)) #number of NA in this Question
+#temp_grower <- filter(data,Resp_Group == "Grower" ) 
+#sum(is.na(temp_grower$Q_10.1)) #number of NA in this Question
+
+Q10_1 <- filter (data,   Q_10.1 !=  "NA")%>%
+  group_by( Resp_Group) %>%
+  count(Q_10.1) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+#Q10_1
+add_lines10 <- tibble (Resp_Group = c("Grower",  "Agronomist", "Agronomist"),
+                      percent = c(0, 0, 0),
+                      Q_10.1 = c("90-100%", "None", "100%" ))
+Q10_1 <- full_join(Q10_1, add_lines10)
+
+Q10_1 <- mutate(Q10_1, Q_10.1 = fct_relevel(Q_10.1, c("None", "10-30%", "30-50%", "50-70%",
+                                                  "70-90%", "90-100%", "100%" )))
+
+
+
+ggplot(Q10_1, aes(Q_10.1 , percent ))+
+  geom_col()+
+  facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "To what extent do test results have a influence?",
+       subtitle = "",
+       caption = "Q)  To what extent do the test results influence your recommendations? 
+       To what extent does your agronomist make recommendations based on the test results from your farm? ")+
+  
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(hjust = 0)) +
+ 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+
+
+
+```
+
+
+
+
+```{r Q10.1 how much testing more bins, echo=FALSE, message=FALSE, warning=TRUE}
+data <- mutate(data,
+               Q_10_1group =case_when(
+                 Q_10.1 == "None" ~  "not much of the time",
+                 Q_10.1 == "10-30%" ~  "not much of the time",
+                 #Q_10.1 == "30-50%" ~  "NA",
+                 Q_10.1 == "50-70%" ~  "most of the time",
+                 Q_10.1 == "70-90%" ~  "most of the time",
+                 Q_10.1 == "100%" ~  "most of the time"))
+
+Q10_1_group_df <- filter (data,   Q_10_1group !=  "NA")%>%
+  group_by( Resp_Group) %>%
+  count(Q_10_1group) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+#Q10_1_group_df
+
+ggplot(Q10_1_group_df, aes(Q_10_1group , percent ))+
+  geom_col()+
+  facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "To what extent do test results have influence?",
+       subtitle = "",
+       caption = "Q) To what extent do the test results influence your recommendations?
+                     To what extent does your agronomist make recommendations based on the test results from your farm? ")+
+  
+   theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(hjust = 1)) +
+ 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 1.0))
+
+```
+
+#### **Comments notes on Question 10** 
+
+* 51 people didnt responde to this question: 43 growers and 8 agronomists
+* the question was asked as a percenatge - this make the graph / analysis a perecenatge of a percenatge, whihc is hard to interperate
+* note that it seems agronomist had a bin 90-100% and growers had a bin 100%
+* more grouping and analysis?? for example most of the time > 50%  and not much of the time <30%
+
 
 #### **Question 11**
 Agronomist
@@ -1312,6 +1418,70 @@ Indicate if this is different for N, P and other nutrients
 * Source 2
 * Source 3
 
+Note 
+Q_11.1 is source 1 as answered (?)
+Q_11.2 is source 1 coded dropping the indication if different
+
+
+```{r Q11.2 source of advice, echo=FALSE, message=FALSE, warning=TRUE}
+
+######################          THIS IS BETTER              #####################
+
+### use this this to count the how many we have in each class
+subsetQ_11_coded_agro <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>% 
+  filter(Resp_Group == "Agronomist" )
+
+subsetQ_11_coded_grower <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>% 
+  filter(Resp_Group == "Grower" )
+
+
+
+###By Agro
+
+subsetQ_11.2_coded <- as.data.frame(count(subsetQ_11_coded_agro, vars = Q_11.2))
+names(subsetQ_11.2_coded) <- c("source", "Q_11.2_count") 
+subsetQ_11.4_coded <- as.data.frame(count(subsetQ_11_coded_agro, vars = Q_11.4))
+names(subsetQ_11.4_coded) <- c("source", "Q_11.4_count") 
+subsetQ_11.6_coded <- as.data.frame(count(subsetQ_11_coded_agro, vars = Q_11.6))
+names(subsetQ_11.6_coded) <- c("source", "Q_11.6_count") 
+
+#subsetQ_11.2_coded
+#subsetQ_11.4_coded
+#subsetQ_11.6_coded
+ #join all the count data togther
+
+subsetQ_11_coded_agro_1 <- full_join(subsetQ_11.2_coded, subsetQ_11.4_coded )
+subsetQ_11_coded_agro <- full_join(subsetQ_11_coded_agro_1, subsetQ_11.6_coded )
+subsetQ_11_coded_agro[is.na(subsetQ_11_coded_agro)] <- 0 # change NA to zero
+
+subsetQ_11_coded_agro <- mutate(subsetQ_11_coded_agro, sum_count_sources = (Q_11.2_count + Q_11.4_count + Q_11.6_count)) #count the numbers in each source
+#sum(subsetQ_11_coded_agro$sum_count_sources)
+subsetQ_11_coded_agro <- mutate(subsetQ_11_coded_agro, 
+                                percent = (sum_count_sources)/ sum(subsetQ_11_coded_agro$sum_count_sources))
+#sum(subsetQ_11_coded_agro$percent)
+
+
+
+ggplot(subsetQ_11_coded_agro, aes( source , percent ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "To what extent do test results have influence?",
+       subtitle = "",
+       caption = "Q) To what extent do the test results influence your recommendations?
+                     To what extent does your agronomist make recommendations based on the test results from your farm? ")+
+  
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(hjust = 1)) +
+  
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+```
+
+### up to here still Q11.2need work
 
 # **Soil testing** 
 This section explores how you use soil testing. If you have NOT done soil testing, please go to page  8.
