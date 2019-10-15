@@ -1292,7 +1292,10 @@ ggplot(Q9_1, aes(Q_9.1 , percent ))+
 
 otherQ9.2 <- filter(data, Q_9.2 !=  "NA") %>% select(Q_9.2, Resp_Group)
 otherQ9.2
+
 ```
+
+
 
 #### **Comments notes on Question 9.1 and 9.2** 
 Combined results for 90-100 and 100% to read >90%. Included None (reposnses) for Agronomist
@@ -1513,6 +1516,20 @@ subsetQ_11_coded_agro <- mutate(subsetQ_11_coded_agro,
 #subsetQ_11_coded_agro
 #sum(subsetQ_11_coded_agro$percent)
 
+subsetQ_11_coded_agro <- mutate(subsetQ_11_coded_agro, 
+                                source = fct_relevel(source, c("Test results", 
+                                                               "Farm history/experience", 
+                                                               "Industry data, research or agronomy tools",
+                                                                "Yield maps/Data", 
+                                                                "Yield modelling/estimates" ,
+                                                                "Industry contacts",
+                                                               "Local Trials",
+                                                               "Other agronomists",
+                                                               "Client expectations/targets",
+                                                               "Seasonal economic environment",
+                                                               "Local farming groups & events"
+                                                               )))
+
 ggplot(subsetQ_11_coded_agro, aes( source , percent_source1 ))+
   geom_col()+
   #facet_wrap(. ~ Resp_Group)+
@@ -1521,9 +1538,9 @@ ggplot(subsetQ_11_coded_agro, aes( source , percent_source1 ))+
   labs(x= "",
        y = "",
        fill = "",
-       title = "To what extent do test results have influence?",
-       subtitle = "",
-       caption = "Q) To what extent do the test results influence your recommendations?
+       title = "Main sources of information or advice for what nutrients (source one only)",
+       subtitle = "Agronomist only",
+       caption = "Q) What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? 
                      To what extent does your agronomist make recommendations based on the test results from your farm? ")+
   
   theme(axis.text.x=element_text(angle=45,hjust=1),
@@ -1533,7 +1550,12 @@ ggplot(subsetQ_11_coded_agro, aes( source , percent_source1 ))+
 
 ```
 
-### up to here only top response
+### up to here only top response need to run the growers next
+
+
+
+
+
 
 # **Soil testing** 
 This section explores how you use soil testing. If you have NOT done soil testing, please go to page  8.
