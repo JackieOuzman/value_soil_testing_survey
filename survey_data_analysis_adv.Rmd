@@ -1463,6 +1463,9 @@ Q_11.2 is source 1 coded dropping the indication if different
 
 ######################          THIS IS BETTER              #####################
 
+
+data$Q_11.2
+
 ### use this this to count the how many we have in each class
 subsetQ_11_coded_agro <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>% 
   filter(Resp_Group == "Agronomist" )
@@ -1471,11 +1474,13 @@ subsetQ_11_coded_grower <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>%
   filter(Resp_Group == "Grower" )
 
 
-
+subsetQ_11_coded_agro
 ###By Agro
 
 subsetQ_11.2_coded <- as.data.frame(count(subsetQ_11_coded_agro, vars = Q_11.2))
+#subsetQ_11.2_coded
 names(subsetQ_11.2_coded) <- c("source", "Q_11.2_count") 
+#subsetQ_11.2_coded
 subsetQ_11.4_coded <- as.data.frame(count(subsetQ_11_coded_agro, vars = Q_11.4))
 names(subsetQ_11.4_coded) <- c("source", "Q_11.4_count") 
 subsetQ_11.6_coded <- as.data.frame(count(subsetQ_11_coded_agro, vars = Q_11.6))
@@ -1484,27 +1489,37 @@ names(subsetQ_11.6_coded) <- c("source", "Q_11.6_count")
 #subsetQ_11.2_coded
 #subsetQ_11.4_coded
 #subsetQ_11.6_coded
- #join all the count data togther
+#join all the count data togther
 
 subsetQ_11_coded_agro_1 <- full_join(subsetQ_11.2_coded, subsetQ_11.4_coded )
+#subsetQ_11_coded_agro_1
 subsetQ_11_coded_agro <- full_join(subsetQ_11_coded_agro_1, subsetQ_11.6_coded )
-subsetQ_11_coded_agro[is.na(subsetQ_11_coded_agro)] <- 0 # change NA to zero
+#subsetQ_11_coded_agro
+
+subsetQ_11_coded_agro$Q_11.2_count[is.na(subsetQ_11_coded_agro$Q_11.2_count)] <- 0
+subsetQ_11_coded_agro$Q_11.4_count[is.na(subsetQ_11_coded_agro$Q_11.4_count)] <- 0
+subsetQ_11_coded_agro$Q_11.6_count[is.na(subsetQ_11_coded_agro$Q_11.6_count)] <- 0
+#subsetQ_11_coded_agro[is.na(subsetQ_11_coded_agro)] <- 0 # change NA to zero
+#subsetQ_11_coded_agro
+
+subsetQ_11_coded_agro <- filter(subsetQ_11_coded_agro, source != "NA")
 
 subsetQ_11_coded_agro <- mutate(subsetQ_11_coded_agro, sum_count_sources = (Q_11.2_count + Q_11.4_count + Q_11.6_count)) #count the numbers in each source
 #sum(subsetQ_11_coded_agro$sum_count_sources)
+#subsetQ_11_coded_agro
 subsetQ_11_coded_agro <- mutate(subsetQ_11_coded_agro, 
-                                percent = (sum_count_sources)/ sum(subsetQ_11_coded_agro$sum_count_sources))
+                                percent_source1 = (Q_11.2_count)/ sum(Q_11.2_count),
+                                percent_all_sources = (sum_count_sources)/ sum(subsetQ_11_coded_agro$sum_count_sources))
+#subsetQ_11_coded_agro
 #sum(subsetQ_11_coded_agro$percent)
 
-
-
-ggplot(subsetQ_11_coded_agro, aes( source , percent ))+
+ggplot(subsetQ_11_coded_agro, aes( source , percent_source1 ))+
   geom_col()+
   #facet_wrap(. ~ Resp_Group)+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "Percent",
+       y = "",
        fill = "",
        title = "To what extent do test results have influence?",
        subtitle = "",
@@ -1514,10 +1529,11 @@ ggplot(subsetQ_11_coded_agro, aes( source , percent ))+
   theme(axis.text.x=element_text(angle=45,hjust=1),
         plot.caption = element_text(hjust = 1)) +
   
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
+
 ```
 
-### up to here still Q11.2need work
+### up to here only top response
 
 # **Soil testing** 
 This section explores how you use soil testing. If you have NOT done soil testing, please go to page  8.
