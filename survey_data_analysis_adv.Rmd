@@ -1473,6 +1473,10 @@ data$Q_11.2
 subsetQ_11_coded_agro <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>% 
   filter(Resp_Group == "Agronomist" )
 
+#sum(is.na(subsetQ_11_coded_agro$Q_11.2)) #number of NA in this Question 11
+#sum(is.na(subsetQ_11_coded_agro$Q_11.4)) #number of NA in this Question 14
+#sum(is.na(subsetQ_11_coded_agro$Q_11.6)) #number of NA in this Question 24
+
 subsetQ_11_coded_grower <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>% 
   filter(Resp_Group == "Grower" )
 
@@ -1548,13 +1552,144 @@ ggplot(subsetQ_11_coded_agro, aes( source , percent_source1 ))+
   
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
 
+ggplot(subsetQ_11_coded_agro, aes( source , percent_all_sources ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "",
+       fill = "",
+       title = "Main three sources of information or advice for what nutrients",
+       subtitle = "Agronomist only",
+       caption = "What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? 
+                     To what extent does your agronomist make recommendations based on the test results from your farm?  ")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(hjust = 1)) +
+  
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
+
 ```
 
-### up to here only top response need to run the growers next
+
+```{r Q11.2 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}}
 
 
+### use this this to count the how many we have in each class
+
+subsetQ_11_coded_grower <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>% 
+  filter(Resp_Group == "Grower" )
 
 
+#sum(is.na(subsetQ_11_coded_grower$Q_11.2)) #number of NA in this Question 44
+#sum(is.na(subsetQ_11_coded_grower$Q_11.4)) #number of NA in this Question 47
+#sum(is.na(subsetQ_11_coded_grower$Q_11.6)) #number of NA in this Question 57
+
+#subsetQ_11_coded_grower
+###By Grower
+
+subsetQ_11.2_codedg <- as.data.frame(count(subsetQ_11_coded_grower, vars = Q_11.2))
+#subsetQ_11.2_codedg
+names(subsetQ_11.2_codedg) <- c("source", "Q_11.2_count") 
+#subsetQ_11.2_codedg
+subsetQ_11.4_codedg <- as.data.frame(count(subsetQ_11_coded_grower, vars = Q_11.4))
+names(subsetQ_11.4_codedg) <- c("source", "Q_11.4_count") 
+subsetQ_11.6_codedg <- as.data.frame(count(subsetQ_11_coded_grower, vars = Q_11.6))
+names(subsetQ_11.6_codedg) <- c("source", "Q_11.6_count") 
+
+#subsetQ_11.2_codedg
+#subsetQ_11.4_codedg
+#subsetQ_11.6_codedg
+#join all the count data togther
+
+subsetQ_11_coded_grower_1 <- full_join(subsetQ_11.2_codedg, subsetQ_11.4_codedg )
+#subsetQ_11_coded_grower_1
+subsetQ_11_coded_grower <- full_join(subsetQ_11_coded_grower_1, subsetQ_11.6_codedg )
+#subsetQ_11_coded_grower
+
+subsetQ_11_coded_grower$Q_11.2_count[is.na(subsetQ_11_coded_grower$Q_11.2_count)] <- 0
+subsetQ_11_coded_grower$Q_11.4_count[is.na(subsetQ_11_coded_grower$Q_11.4_count)] <- 0
+subsetQ_11_coded_grower$Q_11.6_count[is.na(subsetQ_11_coded_grower$Q_11.6_count)] <- 0
+#subsetQ_11_coded_agro[is.na(subsetQ_11_coded_agro)] <- 0 # change NA to zero
+#subsetQ_11_coded_grower
+subsetQ_11_coded_grower <- filter(subsetQ_11_coded_grower, source != "NA" & source != "c" 
+                                       & source != "x" 
+                                       & source != "y"
+                                       & source != "z" 
+                                       & source != "...")
+#subsetQ_11_coded_grower                                     
+
+subsetQ_11_coded_grower <- mutate(subsetQ_11_coded_grower, sum_count_sources = (Q_11.2_count + Q_11.4_count + Q_11.6_count)) #count the numbers in each source
+#sum(subsetQ_11_coded_grower$sum_count_sources)
+#subsetQ_11_coded_grower
+subsetQ_11_coded_grower <- mutate(subsetQ_11_coded_grower, 
+                                percent_source1 = (Q_11.2_count)/ sum(Q_11.2_count),
+                                percent_all_sources = (sum_count_sources)/ sum(subsetQ_11_coded_grower$sum_count_sources))
+#subsetQ_11_coded_grower
+subsetQ_11_coded_grower <- arrange(subsetQ_11_coded_grower,desc (percent_source1))
+
+#subsetQ_11_coded_grower
+
+subsetQ_11_coded_grower <- mutate(subsetQ_11_coded_grower, 
+                                source = fct_relevel(source, c( "Test results", 
+                                                                "Agronomist",
+                                                                "Farm history/experience",  
+                                                                "Yield maps/Data",
+                                                                "Industry data, research or agronomy tools", 
+                                                                "Supplier info", 
+                                                                "Yield modelling/estimates", 
+                                                                "Local Trials",
+                                                                "Local farming groups & events",
+                                                                "Other farmers",  
+                                                                "Seasonal economic environment" )))
+
+ggplot(subsetQ_11_coded_grower, aes( source , percent_source1 ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "",
+       fill = "",
+       title = "Main sources of information or advice for what nutrients (source one only)",
+       subtitle = "Growers only",
+       caption = "Q) What are your 3 main sources of information or advice for what nutrients you apply and at what rate? 
+       ")+
+  
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(hjust = 1)) +
+  
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+
+ggplot(subsetQ_11_coded_grower, aes( source , percent_all_sources ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "",
+       fill = "",
+       title = "Main three sources of information or advice for what nutrients",
+       subtitle = "Growers only",
+       caption = "Q) What are your 3 main sources of information or advice for what nutrients you apply and at what rate? 
+       ")+
+  
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(hjust = 1)) +
+  
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+
+```
+
+```
+Q11.2 11.4 & 11.4Graphed descending order grower and agronimst source 1 only and then combined source 1,2 & 3
+Questioned asked to indicate if difference between N P and other nutrients, we have not considerd this.
+Low response rate most didnt indicate a difference betweeen nutrients.
+
+For Agro response rate was source 1 = 11 NA , source 2 = 14 NA and source 3 = 24
+For growers response rate was source 1 = 44 NA , source 2 = 47 NA and source 3 = 57
 
 
 # **Soil testing** 
