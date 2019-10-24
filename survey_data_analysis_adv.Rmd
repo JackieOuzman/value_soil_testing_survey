@@ -1683,7 +1683,7 @@ ggplot(subsetQ_11_coded_grower, aes( source , percent_all_sources ))+
 
 ```
 
-```
+
 Q11.2 11.4 & 11.4Graphed descending order grower and agronimst source 1 only and then combined source 1,2 & 3
 Questioned asked to indicate if difference between N P and other nutrients, we have not considerd this.
 Low response rate most didnt indicate a difference betweeen nutrients.
@@ -1704,6 +1704,77 @@ Explain your approach to soil testing P, N and other micronutrients ...
 * P
 * N
 * Micronutrients
+
+
+
+
+```{r Q12.1 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}
+
+headers2 <- read_excel("Q12_ Assigning_Category ID_22.10.19.xlsx", 
+                      sheet = "Q12.1", col_names=FALSE, range = "B4:E4")
+
+#head(headers2)
+
+data_q12 <- read_excel("Q12_ Assigning_Category ID_22.10.19.xlsx", 
+                   sheet = "Q12.1", col_names=FALSE, range = "B5:E174")
+names(data_q12) <- headers2
+
+
+
+#head(data_q12)
+data_q12 <- mutate(data_q12,
+               names_display =case_when(
+                 Q_12.1_ID == "1" ~  "shallow",
+                 Q_12.1_ID  == "2" ~  "Cowell P",
+                 Q_12.1_ID  == "3" ~  "deep P",
+                 Q_12.1_ID  == "4" ~  "All depths",
+                 Q_12.1_ID  == "5" ~  "Yield maps",
+                 Q_12.1_ID  == "6" ~  "Programs",
+                 Q_12.1_ID  == "7" ~  "Combo",
+                 Q_12.1_ID  == "Combo (1,5)" ~  "Combo",
+                 Q_12.1_ID  == "8" ~  "Don't test",
+                 Q_12.1_ID  == "9" ~  "Unspecified/random",
+                 Q_12.1_ID  == "0" ~  "NA"))
+               
+
+
+data_q12summary <- filter (data_q12, Resp_Group == "Agronomist" & names_display !=  "NA")%>%
+  count(names_display) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+
+
+
+#data_q12summary 
+data_q12summary<- mutate(data_q12summary, names_display = fct_relevel(names_display, 
+                                          c("Programs",
+                                            "shallow", 
+                                            "Unspecified/random",
+                                           "All depths",
+                                            "Combo",
+                                            "Yield maps",
+                                            "Cowell P",
+                                            "Don't test")))
+
+ggplot(data_q12summary, aes(names_display , percent ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "Explain your approach to soil testing P?",
+       subtitle = "Agronomists only",
+       caption = "Q) Explain your approach to soil testing P?")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+  
+```
+
+
 
 #### **Question 13**
 Agronomist
