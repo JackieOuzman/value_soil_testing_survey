@@ -1671,7 +1671,7 @@ ggplot(subsetQ_11_coded_grower, aes( source , percent_all_sources ))+
        y = "",
        fill = "",
        title = "Main three sources of information or advice for what nutrients",
-       subtitle = "Growers only",
+       subtitle = "Grower only",
        caption = "Q) What are your 3 main sources of information or advice for what nutrients you apply and at what rate? 
        ")+
   
@@ -1766,11 +1766,46 @@ ggplot(data_q12summary, aes(names_display , percent ))+
        y = "Percent",
        fill = "",
        title = "Explain your approach to soil testing P?",
-       subtitle = "Agronomists only",
+       subtitle = "Agronomist only",
        caption = "Q) Explain your approach to soil testing P?")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
         plot.caption = element_text(size = 8)) + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+
+data_q12summary <- filter (data_q12, Resp_Group == "Grower" & names_display !=  "NA")%>%
+  count(names_display) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+
+data_q12summary 
+data_q12summary<- mutate(data_q12summary, names_display = fct_relevel(names_display, 
+                                                                      c("Programs",
+                                                                        "shallow", 
+                                                                        "Unspecified/random",
+                                                                        "All depths",
+                                                                        "Combo",
+                                                                        "Yield maps",
+                                                                        "Cowell P",
+                                                                        "Don't test")))
+
+ggplot(data_q12summary, aes(names_display , percent ))+
+  geom_col()+
+  #facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent",
+       fill = "",
+       title = "Explain your approach to soil testing P?",
+       subtitle = "Grower only",
+       caption = "Q) Explain your approach to soil testing P?")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+```
+
   
 ```
 
