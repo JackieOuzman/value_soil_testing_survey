@@ -3,19 +3,19 @@ test <- unique(data$Q_12.1)
 head(test)
 
 
-headers2 <- read_excel("Q12_ Assigning_Category ID_22.10.19.xlsx", 
+headers12_1 <- read_excel("Q12_ Assigning_Category ID_22.10.19.xlsx", 
                        sheet = "Q12.1", col_names=FALSE, range = "B4:E4")
 
 #head(headers2)
 
-data_q12 <- read_excel("Q12_ Assigning_Category ID_22.10.19.xlsx", 
+data_q12_1 <- read_excel("Q12_ Assigning_Category ID_22.10.19.xlsx", 
                        sheet = "Q12.1", col_names=FALSE, range = "B5:E174")
-names(data_q12) <- headers2
+names(data_q12_1) <- headers2
 
 
 
-#head(data_q12)
-data_q12 <- mutate(data_q12,
+#head(data_q12_1)
+data_q12_1 <- mutate(data_q12_1,
                    names_display =case_when(
                      Q_12.1_ID == "1" ~  "shallow",
                      Q_12.1_ID  == "2" ~  "Cowell P",
@@ -31,7 +31,7 @@ data_q12 <- mutate(data_q12,
 
 
 
-data_q12summary <- filter (data_q12, Resp_Group == "Agronomist" & names_display !=  "NA")%>%
+data_q12_1summary <- filter (data_q12_1, Resp_Group == "Agronomist" & names_display !=  "NA")%>%
   count(names_display) %>% 
   mutate(percent = 
            (freq = n / sum(n))) %>% 
@@ -39,8 +39,8 @@ data_q12summary <- filter (data_q12, Resp_Group == "Agronomist" & names_display 
 
 
 
-#data_q12summary 
-data_q12summary<- mutate(data_q12summary, names_display = fct_relevel(names_display, 
+data_q12_1summary 
+data_q12_1summary<- mutate(data_q12_1summary, names_display = fct_relevel(names_display, 
                                                                       c("Programs",
                                                                         "shallow", 
                                                                         "Unspecified/random",
@@ -50,7 +50,7 @@ data_q12summary<- mutate(data_q12summary, names_display = fct_relevel(names_disp
                                                                         "Cowell P",
                                                                         "Don't test")))
 
-ggplot(data_q12summary, aes(names_display , percent ))+
+ggplot(data_q12_1summary, aes(names_display , percent ))+
   geom_col()+
   #facet_wrap(. ~ Resp_Group)+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
