@@ -1807,7 +1807,6 @@ ggplot(data_q12summary, aes(names_display , percent ))+
 ```
 
   
-```
 
 
 
