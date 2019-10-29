@@ -2010,7 +2010,14 @@ ggplot(data_q12_3summary, aes(names_display , percent ))+
 
 ```
 
-  
+##### Question 12
+Explain your approach to soil testing P, N and other micronutrients ...
+
+Graphed in decsending order firstly Agronomist and then Grower responses to testing approach foe the 3 nutrient groups
+
+* P
+* N
+* Micronutrients
 
 
 
