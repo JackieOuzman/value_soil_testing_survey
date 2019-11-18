@@ -157,14 +157,17 @@ Q1_resp_percent <- data %>%
   mutate(percent = 
            (freq = n / sum(n)))
 #table
-print(Q1_resp_percent)
+datatable(Q1_resp_percent, colnames = c('Respondant' = 'Resp_Group')) %>%
+  formatPercentage('percent', 1) 
+  
 ####graph
-ggplot(Q1_resp_percent, aes(Resp_Group, percent ))+
+ggplot(Q1_resp_percent, aes(Resp_Group, percent, fill = Resp_Group))+
   geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  scale_fill_manual(values=c("grey70", "grey40"))+
   theme_classic()+
-  labs(x= "Regions",
-       y = "Respondents",
+  theme(legend.position = "none")+
+  labs(x= "",
+       y = "",
        fill = "",
        title = "",
        subtitle = "Survey respondents",
@@ -175,7 +178,7 @@ ggplot(Q1_resp_percent, aes(Resp_Group, percent ))+
  
 ```
 
-#### **Question 1 by region** 
+##### **Question 1 by region** 
  
  
 ```{r Q1_by agro analysis and table, echo=FALSE}
@@ -186,28 +189,22 @@ Q1_agro_region_perc <- filter(data, Resp_Group == "Agronomist") %>%
   mutate(percent = round(
            (freq = n / sum(n)),2))
 
-#table
-#print(Q1_agro_region_perc)
-#formattable(Q1_agro_region_perc)
-
-
-#datatable(Q1_agro_region_perc, colnames = c( "regions", "count", "percentage"), caption = "Respondents per region - Agronomist")
-
+# datatable(Q1_agro_region_perc, colnames = c('Region' = 'names_display')) %>%
+#   formatPercentage('percent', 0) 
 
 #graph
 ggplot(Q1_agro_region_perc, aes(names_display, percent ))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  geom_col(fill = "grey70", color = "black")+
   theme_classic()+
   labs(x= "Regions",
-       y = "Respondents",
+       y = "Agronomist",
        fill = "",
        title = "",
-       subtitle = "Agronomist per region",
+       subtitle = "Survey respondents per region",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))    
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0, .6))    
 
 ```
 
@@ -227,18 +224,17 @@ Q1_grower_region_perc <- filter(data, Resp_Group == "Grower") %>%
 
 #graph growers per region
 ggplot(Q1_grower_region_perc, aes(names_display, percent ))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  geom_col(fill = "grey40", color = "black")+
   theme_classic()+
   labs(x= "Regions",
-       y = "Respondents",
+       y = "Growers",
        fill = "",
        title = "",
-       subtitle = "Growers per region",
+       subtitle = "Survey respondents per region",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))    
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0, .6))    
 
 ```
 
@@ -256,18 +252,18 @@ Q1_agro_region_mereged_perc <- filter(data, Resp_Group == "Agronomist") %>%
 
 #graph
 ggplot(Q1_agro_region_mereged_perc, aes(region_merge, percent ))+
-  geom_col()+
+  geom_col(fill = "grey70", color = "black")+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions mergered",
-       y = "Respondents",
+       y = "Agronomist",
        fill = "",
        title = "",
-       subtitle = "Agronomist per region",
+       subtitle = "Survey respondents per region",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))  
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0,0.6))  
 
 
 #split into agro and growers
@@ -279,18 +275,18 @@ Q1_grower_region_mereged_perc <- filter(data, Resp_Group == "Grower") %>%
 
 #graph
 ggplot(Q1_grower_region_mereged_perc, aes(region_merge, percent ))+
-  geom_col()+
+  geom_col(fill = "grey40", color = "black")+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions mergered",
-       y = "Respondents",
+       y = "Grower",
        fill = "",
        title = "",
-       subtitle = "Grower per region",
+       subtitle = "Survey respondents per region",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))    
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0,0.6))    
 
 ```
 
@@ -312,33 +308,31 @@ Q1_grower_state_perc <- filter(data, Resp_Group == "Grower") %>%
 
 #graph agro per region
 ggplot(Q1_agro_state_perc, aes(states, percent ))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  geom_col(fill = "grey70", color = "black")+
   theme_classic()+
   labs(x= "States",
-       y = "Respondents",
+       y = "Agronomist",
        fill = "",
        title = "",
-       subtitle = "Agronomist per state",
+       subtitle = "Survey respondents per state",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0,0.6))
 
 #graph growers per region
 ggplot(Q1_grower_state_perc, aes(states, percent ))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  geom_col(fill = "grey40", color = "black")+
   theme_classic()+
   labs(x= "States",
-       y = "Respondents",
+       y = "Growers",
        fill = "",
        title = "",
-       subtitle = "Growers per state",
+       subtitle = "Survey respondents per state",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0,0.6))
 
 ```
 
@@ -361,33 +355,31 @@ Q1_grower_rainfall_perc <- filter(data, Resp_Group == "Grower") %>%
 
 #graph agro per region
 ggplot(Q1_agro_rainfall_perc, aes(rainfall, percent ))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  geom_col(fill = "grey70", color = "black")+
   theme_classic()+
   labs(x= "",
-       y = "Respondents",
+       y = "Agronomist",
        fill = "",
        title = "",
-       subtitle = "Agronomist per rainfall zone",
+       subtitle = "Survey respondents per rainfall zone",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0,0.6))
 
 #graph growers per region
 ggplot(Q1_grower_rainfall_perc, aes(rainfall, percent ))+
-  geom_col()+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  geom_col(fill = "grey40", color = "black")+
   theme_classic()+
   labs(x= "",
-       y = "Respondents",
+       y = "Growers",
        fill = "",
        title = "",
-       subtitle = "Growers per rainfall zone",
+       subtitle = "Survey respondents per rainfall zone",
        caption = "")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0,0.6))
 
 ```
 
@@ -420,11 +412,10 @@ Q2_regions <- group_by(data, names_display) %>%
 ```{r Q2 graph regions, eval=FALSE, include=FALSE}
 ggplot(Q2_regions, aes(names_display, Ave_Cropped_Area))+
   geom_col()+
-  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
   theme_classic()+
   labs(x= "Regions",
-       y = "Cropped area",
-       title = "Total area cropped (hectares)",
+       y = "ha",
+       title = "Total area cropped",
        subtitle = "Agronomist and grower",
        caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
@@ -445,14 +436,15 @@ Q2_regions_agro_grower <- group_by(data, names_display, Resp_Group) %>%
 
 #head(Q2_regions_agro_grower)
 
-ggplot(Q2_regions_agro_grower, aes(names_display, Ave_Cropped_Area))+
+ggplot(Q2_regions_agro_grower, aes(names_display, Ave_Cropped_Area, fill= Resp_Group))+
   geom_col()+
-  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
+  scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(.~ Resp_Group)+
   theme_classic()+
+  theme(legend.position = "none")+
   labs(x= "Regions",
-       y = "Cropped area",
-       title = "Total area cropped (hectares)",
+       y = "ha",
+       title = "Total area cropped",
        subtitle = "",
        caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
@@ -475,14 +467,15 @@ Q2_regions_merged_agro_grower <- group_by(data, region_merge, Resp_Group) %>%
     
 #Q2_regions_merged_agro_grower
 
-ggplot(Q2_regions_merged_agro_grower, aes(region_merge, Ave_Cropped_Area))+
+ggplot(Q2_regions_merged_agro_grower, aes(region_merge, Ave_Cropped_Area, fill =Resp_Group ))+
   geom_col()+
-  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
+  scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(.~ Resp_Group)+
   theme_classic()+
-  labs(x= "Regions merged",
-       y = "Cropped area",
-       title = "Total area cropped (hectares)",
+  theme(legend.position = "none")+
+  labs(x= "Regions",
+       y = "ha",
+       title = "Total area cropped",
        subtitle = "",
        caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
@@ -503,20 +496,20 @@ Q2_agro_grower <- group_by(data, Resp_Group) %>%
     Ave_Cropped_Area = round(mean(`Q_2`), 0)) 
 
 
-head(Q2_agro_grower)
+#head(Q2_agro_grower)
+datatable(Q2_agro_grower, colnames = c( "Respondants", "count", "Average cropped area"))
 
-ggplot(Q2_agro_grower, aes(Resp_Group, Ave_Cropped_Area))+
+ggplot(Q2_agro_grower, aes(Resp_Group, Ave_Cropped_Area, fill = Resp_Group))+
   geom_col()+
-  #geom_text(aes(label = Ave_Cropped_Area), vjust = -1.0, hjust = 0.5)+
- #facet_wrap(.~ Resp_Group)+
+  scale_fill_manual(values=c("grey70", "grey40"))+
   theme_classic()+
   labs(x= "",
        y = "Cropped area",
        title = "Total area cropped (hectares)",
-       subtitle = "Agronomist and grower",
+       subtitle = "",
        caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) +
+        plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels =  comma)
 ```
 
@@ -592,12 +585,13 @@ Q3_regions_agro_grower_narrow <- mutate(Q3_regions_agro_grower_narrow,
 
 #head(Q3_regions_agro_grower_narrow, 40)
 
-ggplot(Q3_regions_agro_grower_narrow, aes(x = crop, y = ave_area))+
+ggplot(Q3_regions_agro_grower_narrow, aes(x = crop, y = ave_area, fill = Resp_Group ))+
   geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(.~ Resp_Group)+
   theme_classic()+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(hjust = 0)) +
+        plot.caption = element_text(hjust = 0), legend.position = "none") +
   
   scale_x_discrete("crop", labels=c("Cereal","Canola", "Pulse", "Pasture","Hay", "Fallow"))+
   labs(x= "Regions",
@@ -661,26 +655,34 @@ Q4_resp_percent <- data %>%
 Q4_resp_percent$Q_4 <- factor(Q4_resp_percent$Q_4, 
                               levels = c("0-5%","5-10%", "10-15%","15-20%",
                                          "20-25%","25-30%", "30-35%", "greater than 35%", "Unsure" ))
-Q4_resp_percent
+
+filter(Q4_resp_percent, Resp_Group == 	"Agronomist" ) %>% 
+datatable(Q4_resp_percent, colnames = c('Respondant' = 'Resp_Group')) %>%
+  formatPercentage('percent', 0) 
+
+filter(Q4_resp_percent, Resp_Group == 	"Grower" ) %>% 
+datatable(Q4_resp_percent, colnames = c('Respondant' = 'Resp_Group')) %>%
+  formatPercentage('percent', 0) 
  
-ggplot(Q4_resp_percent, aes(Q_4, percent))+
+ggplot(Q4_resp_percent, aes(Q_4, percent, fill =Resp_Group ))+
   geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(~Resp_Group)+
   theme_classic()+
-  labs(x= "percentage of total variable cost",
-       y = "percent response",
+  labs(x= "",
+       y = "",
        title = "Percent of annual variable costs attributed to fertilisers",
        #subtitle = "Agronomist and grower",
        caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) +
-        scale_y_continuous("percentage", breaks=seq(0, 1.0, 0.1)
-                           , labels=c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"))
+        plot.caption = element_text(size = 8), legend.position = "none") +
+        scale_y_continuous("Respondant", breaks=seq(0, 1.0, 0.1)
+                           , labels=c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"), limits = c(0,0.5))
   
 
 ```
 
-**Question 4 with bins grouped**
+**Question 4 with extra grouping of bins**
 
 ```{r Q4 graph more grouping, echo=FALSE}
 
@@ -712,8 +714,9 @@ Q4group_resp_percent$Q_4_group <- factor(Q4group_resp_percent$Q_4_group,
                               levels = c("<20%","20-35%", ">35%", "Unsure" ))
 
 
-ggplot(Q4group_resp_percent, aes(Q_4_group, percent))+
+ggplot(Q4group_resp_percent, aes(Q_4_group, percent, fill = Resp_Group ))+
   geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(~Resp_Group)+
   theme_classic()+
   labs(x= "percentage of total variable cost - more grouping",
@@ -722,9 +725,9 @@ ggplot(Q4group_resp_percent, aes(Q_4_group, percent))+
        #subtitle = "Agronomist and grower",
        caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) +
-  scale_y_continuous("percentage", breaks=seq(0, 1.0, 0.1)
-                     , labels=c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"))
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous("Respondant", breaks=seq(0, 1.0, 0.1)
+                     , labels=c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"), limits = c(0,0.5))
 
 ```
 
