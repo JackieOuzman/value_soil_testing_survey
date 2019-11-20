@@ -31,10 +31,10 @@ subsetQ_15.1 <- select(data, Q_15.1.1, Q_15.1.3, Resp_Group, `Respondent ID`)
 head(subsetQ_15.1)
 
 
-sum(is.na(subsetQ_15.1$Q_15.1.1)) #number of NA in this Question 15.1.1
-sum(is.na(subsetQ_15.1$Q_15.1.3)) #number of NA in this Question 15.1.3
+sum(is.na(subsetQ_15.1$Q_15.1.1)) #number of NA in this Question 15.1.1#62
+sum(is.na(subsetQ_15.1$Q_15.1.3)) #number of NA in this Question 15.1.3#93
 
-#tail(subsetQ_15.1_coded_agro_PBI)
+
 
 subsetQ_15.1_PBI <- filter(subsetQ_15.1,
                           Q_15.1.1 == "PBI (Phosphorus Buffering Index)")
@@ -56,8 +56,8 @@ subsetQ_15.2<- select(data, Q_15.2.1, Q_15.2.3, Resp_Group, `Respondent ID`)
 
 head(subsetQ_15.2)
 
-sum(is.na(subsetQ_15.2$Q_15.2.1)) #number of NA in this Question 15.2.1
-sum(is.na(subsetQ_15.2$Q_15.2.3)) #number of NA in this Question 15.2.3
+sum(is.na(subsetQ_15.2$Q_15.2.1)) #number of NA in this Question 15.2.1 105
+sum(is.na(subsetQ_15.2$Q_15.2.3)) #number of NA in this Question 15.2.3 111
 
 #tail(subsetQ_15.2_coded_agro_OB_P)
 
@@ -81,8 +81,8 @@ subsetQ_15.3 <- select(data, Q_15.3.1, Q_15.3.3, Resp_Group, `Respondent ID`)
 
 head(subsetQ_15.3)
 
-sum(is.na(subsetQ_15.3$Q_15.3.1)) #number of NA in this Question 15.3.1
-sum(is.na(subsetQ_15.3$Q_15.3.3)) #number of NA in this Question 15.3.3
+sum(is.na(subsetQ_15.3$Q_15.3.1)) #number of NA in this Question 15.3.1 141
+sum(is.na(subsetQ_15.3$Q_15.3.3)) #number of NA in this Question 15.3.3 145
 
 #tail(subsetQ_15.3_CP)
 
@@ -107,8 +107,8 @@ subsetQ_15.4 <- select(data, Q_15.4.1, Q_15.4.3, Resp_Group, `Respondent ID`)
 
 head(subsetQ_15.4)
 
-sum(is.na(subsetQ_15.4$Q_15.4.1)) #number of NA in this Question 15.4.1
-sum(is.na(subsetQ_15.4$Q_15.4.3)) #number of NA in this Question 15.4.3
+sum(is.na(subsetQ_15.4$Q_15.4.1)) #number of NA in this Question 15.4.1 163
+sum(is.na(subsetQ_15.4$Q_15.4.3)) #number of NA in this Question 15.4.3 163
 
 #tail(subsetQ_15.4_DGT)
 
@@ -132,8 +132,8 @@ subsetQ_15.5 <- select(data, Q_15.5.1, Q_15.5.3, Resp_Group, `Respondent ID`)
 
 head(subsetQ_15.5)
 
-sum(is.na(subsetQ_15.5$Q_15.5.1)) #number of NA in this Question 15.5.1
-sum(is.na(subsetQ_15.5$Q_15.5.3)) #number of NA in this Question 15.5.3
+sum(is.na(subsetQ_15.5$Q_15.5.1)) #number of NA in this Question 15.5.1 169
+sum(is.na(subsetQ_15.5$Q_15.5.3)) #number of NA in this Question 15.5.3 169
 
 #tail(subsetQ_15.5_TP)
 
@@ -286,47 +286,47 @@ colnames(subsetQ_15.5_TP)[2] <- "Q_15_freq"
 Q15_TP <-bind_rows(subsetQ_15.1_TP, subsetQ_15.2_TP, subsetQ_15.3_TP, subsetQ_15.4_TP, subsetQ_15.5_TP)
 
 
-subsetQ15_TP<- Q15_TP %>%
-  filter(!is.na(Q_15)) %>%
-  group_by(Resp_Group) %>% 
-  count(Q_15_freq) %>% 
-  mutate(percent = round(
-    (freq = n / sum(n)),2))
-
-
-subsetQ15_OB_P <- Q15_OB_P %>% 
-  filter(!is.na(Q_15)) %>%
-  group_by(Resp_Group) %>% 
-  count(Q_15_freq) %>% 
-  mutate(percent = round(
-    (freq = n / sum(n)),2))
-
-subsetQ15_PBI <- Q15_PBI %>% 
-  filter(!is.na(Q_15)) %>%
-  group_by(Resp_Group) %>% 
-  count(Q_15_freq) %>% 
-  mutate(percent = round(
-    (freq = n / sum(n)),2))
-
-subsetQ15_C_P <- Q15_C_P %>% 
-  filter(!is.na(Q_15)) %>%
-  group_by(Resp_Group) %>% 
-  count(Q_15_freq) %>% 
-  mutate(percent = round(
-    (freq = n / sum(n)),2))
-
-subsetQ15_DGT <- Q15_DGT %>% 
-  filter(!is.na(Q_15)) %>%
-  group_by(Resp_Group) %>% 
-  count(Q_15_freq) %>% 
-  mutate(percent = round(
-    (freq = n / sum(n)),2))
-
-subsetQ15_TP
-subsetQ15_OB_P
-subsetQ15_PBI
-subsetQ15_C_P
-subsetQ15_DGT
+# subsetQ15_TP<- Q15_TP %>%
+#   filter(!is.na(Q_15)) %>%
+#   group_by(Resp_Group) %>% 
+#   count(Q_15_freq) %>% 
+#   mutate(percent = round(
+#     (freq = n / sum(n)),2))
+# subsetQ15_TP
+# 
+# subsetQ15_OB_P <- Q15_OB_P %>% 
+#   filter(!is.na(Q_15)) %>%
+#   group_by(Resp_Group) %>% 
+#   count(Q_15_freq) %>% 
+#   mutate(percent = round(
+#     (freq = n / sum(n)),2))
+# 
+# subsetQ15_PBI <- Q15_PBI %>% 
+#   filter(!is.na(Q_15)) %>%
+#   group_by(Resp_Group) %>% 
+#   count(Q_15_freq) %>% 
+#   mutate(percent = round(
+#     (freq = n / sum(n)),2))
+# 
+# subsetQ15_C_P <- Q15_C_P %>% 
+#   filter(!is.na(Q_15)) %>%
+#   group_by(Resp_Group) %>% 
+#   count(Q_15_freq) %>% 
+#   mutate(percent = round(
+#     (freq = n / sum(n)),2))
+# 
+# subsetQ15_DGT <- Q15_DGT %>% 
+#   filter(!is.na(Q_15)) %>%
+#   group_by(Resp_Group) %>% 
+#   count(Q_15_freq) %>% 
+#   mutate(percent = round(
+#     (freq = n / sum(n)),2))
+# 
+# subsetQ15_TP
+# subsetQ15_OB_P
+# subsetQ15_PBI
+# subsetQ15_C_P
+# subsetQ15_DGT
 
 ###join df with test
 Q15_TP
@@ -337,53 +337,58 @@ Q15_DGT
 
 
 Q15_all_test <- bind_rows ( Q15_TP, Q15_OB_P, Q15_PBI, Q15_C_P, Q15_DGT )
-
+Q15_all_test
 
 str(Q15_all_test) 
 
 # filter out NA? no need as by asking for resposes to "P" has automatically filtered out na#######
-subsetQ15_All_agro_grower <- Q15_all_test %>% 
+#summary stats - grouped by test used and agro / grower 
+subsetQ15_All_agro_grower_count <- Q15_all_test %>% 
   # filter(!is.na(Q_15)) %>%
   group_by(Resp_Group) %>% 
   count(Q_15) %>% 
   mutate(percent = round(
     (freq = n / sum(n)),2))
 
-subsetQ15_All_agro_grower
+subsetQ15_All_agro_grower_count
 
 # filter out NA in Q15_freq ######
-subsetQ15_All_agro_grower <- Q15_all_test %>% 
+#summary stats - grouped by number of times user is testing used and agro / grower
+subsetQ15_All_agro_grower_fre <- Q15_all_test %>%
   filter(!is.na(Q_15_freq)) %>%
-  group_by(Resp_Group) %>% 
-  count(Q_15_freq) %>% 
+  group_by(Resp_Group) %>%
+  count(Q_15_freq) %>%
   mutate(percent = round(
     (freq = n / sum(n)),2))
 
-subsetQ15_All_agro_grower
+subsetQ15_All_agro_grower_fre
 
 Q15_all_test
 
-subsetQ15_All_agro_grower <- Q15_all_test %>% 
-  filter(!is.na(Q_15_freq)) %>%
-  group_by(Resp_Group, Q_15) %>% 
-  count(Q_15_freq) %>% 
-  mutate(percent = round(
-    (freq = n / sum(n)),2))
+# subsetQ15_All_agro_grower <- Q15_all_test %>% 
+#   filter(!is.na(Q_15_freq)) %>%
+#   group_by(Resp_Group, Q_15) %>% 
+#   count(Q_15_freq) %>% 
+#   mutate(percent = round(
+#     (freq = n / sum(n)),2))
 
 
-subsetQ15_All_agro_grower$Q_15_freq <- factor(subsetQ15_All_agro_grower$Q_15_freq,levels = c("0-5",  "5-10", "10-15", 
+#we have 2 df that we need to order
+subsetQ15_All_agro_grower_fre
+subsetQ15_All_agro_grower_fre$Q_15_freq <- factor(subsetQ15_All_agro_grower_fre$Q_15_freq,levels = c("0-5",  "5-10", "10-15", 
                                                                                              "15-20", "20-25",  "25-30", 
                                                                                              "greater than 30"))
 
-subsetQ15_All_agro_grower$Q_15_freq
+                                                                                                    
+
 
 ###{r Q15 data graphs, echo=FALSE}
+subsetQ15_All_agro_grower_count
 
-
-ggplot(subsetQ15_All_agro_grower, aes (x = Q_15_freq, y = percent))+
+ggplot(subsetQ15_All_agro_grower_count, aes (x =  Q_15, y = percent ))+
   geom_col()+
   #geom_text(aes(label = percent), vjust = -1.0, hjust = 0.5)+
-  facet_wrap( Resp_Group ~ Q_15)+
+  facet_wrap( .~ Resp_Group)+
   theme_classic()+
   labs(x= "Samples per paddock",
        y = "",
@@ -395,36 +400,38 @@ ggplot(subsetQ15_All_agro_grower, aes (x = Q_15_freq, y = percent))+
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
 
-ggplot(subsetQ15_All_agro_grower, aes (x = Q_15_freq, y = n))+
+subsetQ15_All_agro_grower
+subsetQ15_All_agro_grower
+ggplot(subsetQ15_All_agro_grower, aes (x = Q_15_freq, y = percent))+
   geom_col()+
   #geom_text(aes(label = percent), vjust = -1.0, hjust = 0.5)+
   facet_wrap( Resp_Group ~ .)+
   theme_classic()+
   labs(x= "Samples per paddock",
-       y = "number of resp",
+       y = "",
        title = "Frequency of test",
        subtitle = "",
        caption = "Q)  Which tests do you currently use for your soil P testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) #+
-#scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+        plot.caption = element_text(size = 8)) +
+scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
+# subsetQ15_All_agro_grower
+# ggplot(subsetQ15_All_agro_grower, aes (x = Q_15_freq, y = n))+
+#   geom_col()+
+#   #geom_text(aes(label = percent), vjust = -1.0, hjust = 0.5)+
+#   facet_wrap( Q_15 ~ .)+
+#   theme_classic()+
+#   labs(x= "Samples per paddock",
+#        y = "number of resp",
+#        title = "Frequency of test",
+#        subtitle = "",
+#        caption = "Q)  Which tests do you currently use for your soil P testing?")+
+#   theme(axis.text.x=element_text(angle=90,hjust=1),
+#         plot.caption = element_text(size = 8)) #+
+# #scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
-ggplot(subsetQ15_All_agro_grower, aes (x = Q_15_freq, y = n))+
-  geom_col()+
-  #geom_text(aes(label = percent), vjust = -1.0, hjust = 0.5)+
-  facet_wrap( Q_15 ~ .)+
-  theme_classic()+
-  labs(x= "Samples per paddock",
-       y = "number of resp",
-       title = "Frequency of test",
-       subtitle = "",
-       caption = "Q)  Which tests do you currently use for your soil P testing?")+
-  theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) #+
-#scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
-
-
+subsetQ15_All_agro_grower
 
 ggplot(subsetQ15_All_agro_grower, aes (x = Q_15_freq, y = n))+
   geom_col()+
@@ -597,7 +604,7 @@ subsetQ16_All_agro_grower$Q_16_freq
 ggplot(subsetQ16_All_agro_grower, aes (x = Q_16_freq, y = percent))+
   geom_col()+
   #geom_text(aes(label = percent), vjust = -1.0, hjust = 0.5)+
-  facet_wrap( Resp_Group ~ Q_16)+
+  facet_wrap( . ~ Resp_Group )+
   theme_classic()+
   labs(x= "Samples per paddock",
        y = "",
@@ -608,35 +615,35 @@ ggplot(subsetQ16_All_agro_grower, aes (x = Q_16_freq, y = percent))+
         plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
-
-ggplot(subsetQ16_All_agro_grower, aes (x = Q_16_freq, y = n))+
+subsetQ16_All_agro_grower
+ggplot(subsetQ16_All_agro_grower, aes (x = Q_16_freq, y = percent))+
   geom_col()+
   #geom_text(aes(label = percent), vjust = -1.0, hjust = 0.5)+
   facet_wrap( Resp_Group ~ .)+
   theme_classic()+
   labs(x= "Samples per paddock",
-       y = "number of resp",
+       y = "",
        title = "Frequency of test",
        subtitle = "",
        caption = "Q)  Which tests do you currently use for your soil Potassium testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) #+
-#scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+        plot.caption = element_text(size = 8)) +
+scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
-
-ggplot(subsetQ16_All_agro_grower, aes (x = Q_16_freq, y = n))+
+subsetQ16_All_agro_grower
+ggplot(subsetQ16_All_agro_grower, aes (x = Q_16_freq, y = percent))+
   geom_col()+
   #geom_text(aes(label = percent), vjust = -1.0, hjust = 0.5)+
   facet_wrap( Q_16 ~ .)+
   theme_classic()+
   labs(x= "Samples per paddock",
-       y = "number of resp",
+       y = "",
        title = "Frequency of test",
        subtitle = "",
        caption = "Q)  Which tests do you currently use for your soil Potassium testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8)) #+
-#scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+        plot.caption = element_text(size = 8)) +
+scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
 
 
