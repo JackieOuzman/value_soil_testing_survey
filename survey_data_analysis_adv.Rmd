@@ -2615,7 +2615,9 @@ soil_test_use <- function(data_df, test1, numb_sample_test1,
   colnames(subset_test1)[1] <- "test"
   colnames(subset_test1)[2] <- "numb_of_test"
   
-  test1 <-  filter(subset_test1, test == soil_test)
+  test1 <- subset_test1 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   #test2
   subset_test2 <-
@@ -2624,7 +2626,9 @@ soil_test_use <- function(data_df, test1, numb_sample_test1,
   colnames(subset_test2)[1] <- "test"
   colnames(subset_test2)[2] <- "numb_of_test"
   
-  test2 <-  filter(subset_test2, test == soil_test)
+  test2 <- subset_test2 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   #test3
   subset_test3 <-
@@ -2633,7 +2637,9 @@ soil_test_use <- function(data_df, test1, numb_sample_test1,
   colnames(subset_test3)[1] <- "test"
   colnames(subset_test3)[2] <- "numb_of_test"
   
-  test3 <-  filter(subset_test3, test == soil_test)
+  test3 <- subset_test3 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   # merge all the test togther
   test_all_clm <-bind_rows(test1, test2, test3)
@@ -2665,13 +2671,16 @@ soil_test_use(data, quo(Q_14.1.1), quo(Q_14.1.3),
 
 #count the number of people using this test and join 
 OC <- test_OC %>%
+  filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test) 
 
 MN <- test_MN %>%
+  filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test)
 TN <- test_TN %>%
+  filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test)
 
@@ -2690,13 +2699,16 @@ N_test_counts
 ### number of people sampling at certain density number of samples per paddock
 
 OC_numb <- test_OC %>%
+  filter(!is.na(numb_of_test)) %>%
   group_by( Resp_Group) %>%
   count(numb_of_test) 
 
 MN_numb <- test_MN %>%
+  filter(!is.na(numb_of_test)) %>%
   group_by( Resp_Group) %>%
   count(numb_of_test)
 TN_numb <- test_TN %>%
+  filter(!is.na(numb_of_test)) %>%
   group_by( Resp_Group) %>%
   count(numb_of_test)
 
@@ -2797,7 +2809,9 @@ soil_test_use5_all <- function(data_df, test1, numb_sample_test1,
   colnames(subset_test1)[1] <- "test"
   colnames(subset_test1)[2] <- "numb_of_test"
   
-  test1 <-  filter(subset_test1, test == soil_test)
+  test1 <- subset_test1 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   #test2
   subset_test2 <-
@@ -2806,7 +2820,9 @@ soil_test_use5_all <- function(data_df, test1, numb_sample_test1,
   colnames(subset_test2)[1] <- "test"
   colnames(subset_test2)[2] <- "numb_of_test"
   
-  test2 <-  filter(subset_test2, test == soil_test)
+  test2 <- subset_test2 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   #test3
   subset_test3 <-
@@ -2815,7 +2831,9 @@ soil_test_use5_all <- function(data_df, test1, numb_sample_test1,
   colnames(subset_test3)[1] <- "test"
   colnames(subset_test3)[2] <- "numb_of_test"
   
-  test3 <-  filter(subset_test3, test == soil_test)
+  test3 <- subset_test3 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   
  #test4
@@ -2825,7 +2843,9 @@ soil_test_use5_all <- function(data_df, test1, numb_sample_test1,
   colnames(subset_test4)[1] <- "test"
   colnames(subset_test4)[2] <- "numb_of_test"
   
-  test4 <-  filter(subset_test4, test == soil_test)
+  test4 <- subset_test4 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
    #test5
    subset_test5 <-
@@ -2834,7 +2854,9 @@ soil_test_use5_all <- function(data_df, test1, numb_sample_test1,
    colnames(subset_test5)[1] <- "test"
    colnames(subset_test5)[2] <- "numb_of_test"
    
-  test5 <-  filter(subset_test5, test == soil_test)
+  test5 <- subset_test5 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
    
   # merge all the test togther
   test_all_clm <-bind_rows(test1, test2, test3, test4, 
@@ -2846,60 +2868,6 @@ soil_test_use5_all <- function(data_df, test1, numb_sample_test1,
   
 } 
 
-###modification on above function
-soil_test_use5_mod <- function(data_df, test1, numb_sample_test1, 
-                        test2, numb_sample_test2,
-                        test3, numb_sample_test3,
-                        test4, numb_sample_test4,
-                        #test5, numb_sample_test5,
-                        name, soil_test) {
-  #test1
-  subset_test1 <-
-    select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test1)[1] <- "test"
-  colnames(subset_test1)[2] <- "numb_of_test"
-  
-  test1 <-  filter(subset_test1, test == soil_test)
-  
-  #test2
-  subset_test2 <-
-    select(data_df, !! test2, !! numb_sample_test2, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test2)[1] <- "test"
-  colnames(subset_test2)[2] <- "numb_of_test"
-  
-  test2 <-  filter(subset_test2, test == soil_test)
-  
-  #test3
-  subset_test3 <-
-    select(data_df, !! test3, !! numb_sample_test3, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test3)[1] <- "test"
-  colnames(subset_test3)[2] <- "numb_of_test"
-  
-  test3 <-  filter(subset_test3, test == soil_test)
-  
-  
- #test4
-  subset_test4 <-
-    select(data_df, !! test4, !! numb_sample_test4, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test4)[1] <- "test"
-  colnames(subset_test4)[2] <- "numb_of_test"
-  
-  test4 <-  filter(subset_test4, test == soil_test)
-  
-  
-  # merge all the test togther
-  test_all_clm <-bind_rows(test1, test2, test3, test4, 
-                           # test5
-                           )
-  
-  #return(test_all_clm)
-  return(assign(name,test_all_clm,envir = .GlobalEnv))
-  
-} 
 
 
 ```
@@ -2914,11 +2882,11 @@ soil_test_use5_mod <- function(data_df, test1, numb_sample_test1,
 #"Colwell P"
 #"DGT"
 #"Total P"
-soil_test_use5_mod(data, quo(Q_15.1.1), quo(Q_15.1.3), 
+soil_test_use5_all(data, quo(Q_15.1.1), quo(Q_15.1.3), 
                      quo(Q_15.2.1), quo(Q_15.2.3),
                      quo(Q_15.3.1), quo(Q_15.3.3),
                      quo(Q_15.4.1), quo(Q_15.4.3),
-                     #quo(Q_15.5.1), quo(Q_15.5.3),
+                     quo(Q_15.5.1), quo(Q_15.5.3),
                     "test_PBI", "PBI (Phosphorus Buffering Index)")
 soil_test_use5_all(data, quo(Q_15.1.1), quo(Q_15.1.3), 
                      quo(Q_15.2.1), quo(Q_15.2.3),
@@ -2947,18 +2915,23 @@ soil_test_use5_all(data, quo(Q_15.1.1), quo(Q_15.1.3),
 
 #count the number of people using this test and join 
 PBI <- test_PBI %>%
+  filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test) 
 OB <- test_OB %>%
+  filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test)
 Col <- test_Col %>%
+  filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test)
 DGT <- test_DGT %>%
+  filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test)
 TP <- test_TP %>%
+  filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test)
 
@@ -2978,18 +2951,23 @@ percent = n/Resp_numb
 ### number of people sampling at certain density number of samples per paddock
 
 PBI_numb <- test_PBI %>%
+  filter(!is.na(numb_of_test)) %>%
   group_by( Resp_Group) %>%
   count(numb_of_test) 
 OB_numb <- test_OB %>%
+   filter(!is.na(numb_of_test)) %>%
   group_by( Resp_Group) %>%
   count(numb_of_test)
 Col_numb <- test_Col %>%
+   filter(!is.na(numb_of_test)) %>%
   group_by( Resp_Group) %>%
   count(numb_of_test)
 DGT_numb <- test_DGT %>%
+   filter(!is.na(numb_of_test)) %>%
   group_by( Resp_Group) %>%
   count(numb_of_test)
 TP_numb <- test_TP %>%
+   filter(!is.na(numb_of_test)) %>%
   group_by( Resp_Group) %>%
   count(numb_of_test)
 
@@ -3082,14 +3060,16 @@ soil_test_use2_all <- function(data_df, test1, numb_sample_test1,
                         #test4, numb_sample_test4,
                         #test5, numb_sample_test5,
                         name, soil_test) {
-  #test1
+ #test1
   subset_test1 <-
     select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
   
   colnames(subset_test1)[1] <- "test"
   colnames(subset_test1)[2] <- "numb_of_test"
   
-  test1 <-  filter(subset_test1, test == soil_test)
+  test1 <- subset_test1 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   #test2
   subset_test2 <-
@@ -3098,7 +3078,9 @@ soil_test_use2_all <- function(data_df, test1, numb_sample_test1,
   colnames(subset_test2)[1] <- "test"
   colnames(subset_test2)[2] <- "numb_of_test"
   
-  test2 <-  filter(subset_test2, test == soil_test)
+  test2 <- subset_test2 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
  
   # merge all the test togther
@@ -3128,9 +3110,11 @@ soil_test_use2_all(data, quo(Q_16.1.1), quo(Q_16.1.3),
 
 #count the number of people using this test and join 
 Col_K <- test_Col_K %>%
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test) 
 EXC <- test_EXC %>%
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 
@@ -3150,9 +3134,11 @@ percent = n/Resp_numb
 ### number of people sampling at certain density number of samples per paddock
 
 Col_K_numb <- test_Col_K %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test) 
 EXC_numb <- test_EXC %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test)
 
@@ -3253,207 +3239,7 @@ And, which tests do you use for micronutrients?
 #Define a function that can be used for many similar questions...
 
 ####slight modification to accomidate missing data!
-soil_test_use8_Al <- function(data_df, 
-                        #test1, numb_sample_test1, 
-                        test2, numb_sample_test2,
-                        test3, numb_sample_test3,
-                        test4, numb_sample_test4,
-                        test5, numb_sample_test5,
-                        test6, numb_sample_test6,
-                        test7, numb_sample_test7,
-                        #test8, numb_sample_test8,
-                        name, soil_test) {
-  # #test1
-  # subset_test1 <-
-  #   select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
-  # 
-  # colnames(subset_test1)[1] <- "test"
-  # colnames(subset_test1)[2] <- "numb_of_test"
-  # 
-  # test1 <-  filter(subset_test1, test == soil_test)
-  
-  #test2
-  subset_test2 <-
-    select(data_df, !! test2, !! numb_sample_test2, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test2)[1] <- "test"
-  colnames(subset_test2)[2] <- "numb_of_test"
-  
-  test2 <-  filter(subset_test2, test == soil_test)
-  
-  #test3
-  subset_test3 <-
-    select(data_df, !! test3, !! numb_sample_test3, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test3)[1] <- "test"
-  colnames(subset_test3)[2] <- "numb_of_test"
-  
-  test3 <-  filter(subset_test3, test == soil_test)
-  
-  
- #test4
-  subset_test4 <-
-    select(data_df, !! test4, !! numb_sample_test4, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test4)[1] <- "test"
-  colnames(subset_test4)[2] <- "numb_of_test"
-  
-  test4 <-  filter(subset_test4, test == soil_test)
-  
-   #test5
-   subset_test5 <-
-     select(data_df, !! test5, !! numb_sample_test5, Resp_Group, `Respondent ID`)
-   
-   colnames(subset_test5)[1] <- "test"
-   colnames(subset_test5)[2] <- "numb_of_test"
-   
-  test5 <-  filter(subset_test5, test == soil_test)
-  
-   #test6
-   subset_test6 <-
-     select(data_df, !! test6, !! numb_sample_test6, Resp_Group, `Respondent ID`)
-   
-   colnames(subset_test6)[1] <- "test"
-   colnames(subset_test6)[2] <- "numb_of_test"
-   
-  test6 <-  filter(subset_test6, test == soil_test)
-   
-   #test7
-   subset_test7 <-
-     select(data_df, !! test7, !! numb_sample_test7, Resp_Group, `Respondent ID`)
-   
-   colnames(subset_test7)[1] <- "test"
-   colnames(subset_test7)[2] <- "numb_of_test"
-   
-  test7 <-  filter(subset_test7, test == soil_test)
-  
-  #  #test8
-  #  subset_test8 <-
-  #    select(data_df, !! test8, !! numb_sample_test8, Resp_Group, `Respondent ID`)
-  #  
-  #  colnames(subset_test8)[1] <- "test"
-  #  colnames(subset_test8)[2] <- "numb_of_test"
-  #  
-  # test8 <-  filter(subset_test8, test == soil_test)
-   
-  # merge all the test togther
-  test_all_clm <- bind_rows(#test1,
-                            test2,
-                            test3,
-                            test4,
-                            test5,
-                            test6,
-                            test7,
-                            #test8
-                            )
-  
-  #return(test_all_clm)
-  return(assign(name,test_all_clm,envir = .GlobalEnv))
-  
-} 
-
-####slight modification to accomidate missing data!
-soil_test_use8_Boron <- function(data_df, 
-                        test1, numb_sample_test1, 
-                        test2, numb_sample_test2,
-                        test3, numb_sample_test3,
-                        test4, numb_sample_test4,
-                        test5, numb_sample_test5,
-                        test6, numb_sample_test6,
-                        #test7, numb_sample_test7,
-                        test8, numb_sample_test8,
-                        name, soil_test) {
-  #test1
-  subset_test1 <-
-    select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
-
-  colnames(subset_test1)[1] <- "test"
-  colnames(subset_test1)[2] <- "numb_of_test"
-
-  test1 <-  filter(subset_test1, test == soil_test)
-  
-  #test2
-  subset_test2 <-
-    select(data_df, !! test2, !! numb_sample_test2, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test2)[1] <- "test"
-  colnames(subset_test2)[2] <- "numb_of_test"
-  
-  test2 <-  filter(subset_test2, test == soil_test)
-  
-  #test3
-  subset_test3 <-
-    select(data_df, !! test3, !! numb_sample_test3, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test3)[1] <- "test"
-  colnames(subset_test3)[2] <- "numb_of_test"
-  
-  test3 <-  filter(subset_test3, test == soil_test)
-  
-  
- #test4
-  subset_test4 <-
-    select(data_df, !! test4, !! numb_sample_test4, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test4)[1] <- "test"
-  colnames(subset_test4)[2] <- "numb_of_test"
-  
-  test4 <-  filter(subset_test4, test == soil_test)
-  
-   #test5
-   subset_test5 <-
-     select(data_df, !! test5, !! numb_sample_test5, Resp_Group, `Respondent ID`)
-   
-   colnames(subset_test5)[1] <- "test"
-   colnames(subset_test5)[2] <- "numb_of_test"
-   
-  test5 <-  filter(subset_test5, test == soil_test)
-  
-   #test6
-   subset_test6 <-
-     select(data_df, !! test6, !! numb_sample_test6, Resp_Group, `Respondent ID`)
-   
-   colnames(subset_test6)[1] <- "test"
-   colnames(subset_test6)[2] <- "numb_of_test"
-   
-  test6 <-  filter(subset_test6, test == soil_test)
-   
-  #  #test7
-  #  subset_test7 <-
-  #    select(data_df, !! test7, !! numb_sample_test7, Resp_Group, `Respondent ID`)
-  #  
-  #  colnames(subset_test7)[1] <- "test"
-  #  colnames(subset_test7)[2] <- "numb_of_test"
-  #  
-  # test7 <-  filter(subset_test7, test == soil_test)
-  # 
-   #test8
-   subset_test8 <-
-     select(data_df, !! test8, !! numb_sample_test8, Resp_Group, `Respondent ID`)
-
-   colnames(subset_test8)[1] <- "test"
-   colnames(subset_test8)[2] <- "numb_of_test"
-
-  test8 <-  filter(subset_test8, test == soil_test)
-   
-  # merge all the test togther
-  test_all_clm <- bind_rows(test1,
-                            test2,
-                            test3,
-                            test4,
-                            test5,
-                            test6,
-                            #test7,
-                            test8
-                            )
-  
-  #return(test_all_clm)
-  return(assign(name,test_all_clm,envir = .GlobalEnv))
-  
-} 
-
-####slight modification to accomidate NO missing data!
-soil_test_use8_CalCarb <- function(data_df, 
+soil_test_use8_All <- function(data_df, 
                         test1, numb_sample_test1, 
                         test2, numb_sample_test2,
                         test3, numb_sample_test3,
@@ -3466,11 +3252,14 @@ soil_test_use8_CalCarb <- function(data_df,
   #test1
   subset_test1 <-
     select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
-
+  
   colnames(subset_test1)[1] <- "test"
   colnames(subset_test1)[2] <- "numb_of_test"
-
-  test1 <-  filter(subset_test1, test == soil_test)
+  
+  test1 <- subset_test1 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
+  
   
   #test2
   subset_test2 <-
@@ -3479,7 +3268,9 @@ soil_test_use8_CalCarb <- function(data_df,
   colnames(subset_test2)[1] <- "test"
   colnames(subset_test2)[2] <- "numb_of_test"
   
-  test2 <-  filter(subset_test2, test == soil_test)
+ test2 <- subset_test2 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   #test3
   subset_test3 <-
@@ -3488,7 +3279,9 @@ soil_test_use8_CalCarb <- function(data_df,
   colnames(subset_test3)[1] <- "test"
   colnames(subset_test3)[2] <- "numb_of_test"
   
-  test3 <-  filter(subset_test3, test == soil_test)
+  test3 <- subset_test3 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
   
  #test4
@@ -3498,7 +3291,9 @@ soil_test_use8_CalCarb <- function(data_df,
   colnames(subset_test4)[1] <- "test"
   colnames(subset_test4)[2] <- "numb_of_test"
   
-  test4 <-  filter(subset_test4, test == soil_test)
+  test4 <- subset_test4 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
    #test5
    subset_test5 <-
@@ -3507,7 +3302,9 @@ soil_test_use8_CalCarb <- function(data_df,
    colnames(subset_test5)[1] <- "test"
    colnames(subset_test5)[2] <- "numb_of_test"
    
-  test5 <-  filter(subset_test5, test == soil_test)
+  test5 <- subset_test5 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
   
    #test6
    subset_test6 <-
@@ -3516,17 +3313,21 @@ soil_test_use8_CalCarb <- function(data_df,
    colnames(subset_test6)[1] <- "test"
    colnames(subset_test6)[2] <- "numb_of_test"
    
-  test6 <-  filter(subset_test6, test == soil_test)
+  test6 <- subset_test6 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
    
    #test7
    subset_test7 <-
      select(data_df, !! test7, !! numb_sample_test7, Resp_Group, `Respondent ID`)
-
+   
    colnames(subset_test7)[1] <- "test"
    colnames(subset_test7)[2] <- "numb_of_test"
-
-  test7 <-  filter(subset_test7, test == soil_test)
-
+   
+  test7 <- subset_test7 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
+  
    #test8
    subset_test8 <-
      select(data_df, !! test8, !! numb_sample_test8, Resp_Group, `Respondent ID`)
@@ -3534,7 +3335,9 @@ soil_test_use8_CalCarb <- function(data_df,
    colnames(subset_test8)[1] <- "test"
    colnames(subset_test8)[2] <- "numb_of_test"
 
-  test8 <-  filter(subset_test8, test == soil_test)
+  test8 <- subset_test8 %>%
+    mutate(test  =
+             case_when(test == soil_test ~ soil_test))
    
   # merge all the test togther
   test_all_clm <- bind_rows(test1,
@@ -3552,405 +3355,7 @@ soil_test_use8_CalCarb <- function(data_df,
   
 } 
 
-####slight modification to accomidate NO missing data!
-soil_test_use8_Chloride <- function(data_df, 
-                        #test1, numb_sample_test1, 
-                        test2, numb_sample_test2,
-                        test3, numb_sample_test3,
-                        #test4, numb_sample_test4,
-                        test5, numb_sample_test5,
-                        test6, numb_sample_test6,
-                        test7, numb_sample_test7,
-                        test8, numb_sample_test8,
-                        name, soil_test) {
-  # #test1
-  # subset_test1 <-
-  #   select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
-  # 
-  # colnames(subset_test1)[1] <- "test"
-  # colnames(subset_test1)[2] <- "numb_of_test"
-  # 
-  # test1 <-  filter(subset_test1, test == soil_test)
-  
-  #test2
-  subset_test2 <-
-    select(data_df, !! test2, !! numb_sample_test2, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test2)[1] <- "test"
-  colnames(subset_test2)[2] <- "numb_of_test"
-  
-  test2 <-  filter(subset_test2, test == soil_test)
-  
-  #test3
-  subset_test3 <-
-    select(data_df, !! test3, !! numb_sample_test3, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test3)[1] <- "test"
-  colnames(subset_test3)[2] <- "numb_of_test"
-  
-  test3 <-  filter(subset_test3, test == soil_test)
-  
-  
- # #test4
- #  subset_test4 <-
- #    select(data_df, !! test4, !! numb_sample_test4, Resp_Group, `Respondent ID`)
- #  
- #  colnames(subset_test4)[1] <- "test"
- #  colnames(subset_test4)[2] <- "numb_of_test"
- #  
- #  test4 <-  filter(subset_test4, test == soil_test)
-  
-   #test5
-   subset_test5 <-
-     select(data_df, !! test5, !! numb_sample_test5, Resp_Group, `Respondent ID`)
-   
-   colnames(subset_test5)[1] <- "test"
-   colnames(subset_test5)[2] <- "numb_of_test"
-   
-  test5 <-  filter(subset_test5, test == soil_test)
-  
-   #test6
-   subset_test6 <-
-     select(data_df, !! test6, !! numb_sample_test6, Resp_Group, `Respondent ID`)
-   
-   colnames(subset_test6)[1] <- "test"
-   colnames(subset_test6)[2] <- "numb_of_test"
-   
-  test6 <-  filter(subset_test6, test == soil_test)
-   
-   #test7
-   subset_test7 <-
-     select(data_df, !! test7, !! numb_sample_test7, Resp_Group, `Respondent ID`)
 
-   colnames(subset_test7)[1] <- "test"
-   colnames(subset_test7)[2] <- "numb_of_test"
-
-  test7 <-  filter(subset_test7, test == soil_test)
-
-   #test8
-   subset_test8 <-
-     select(data_df, !! test8, !! numb_sample_test8, Resp_Group, `Respondent ID`)
-
-   colnames(subset_test8)[1] <- "test"
-   colnames(subset_test8)[2] <- "numb_of_test"
-
-  test8 <-  filter(subset_test8, test == soil_test)
-   
-  # merge all the test togther
-  test_all_clm <- bind_rows(#test1,
-                            test2,
-                            test3,
-                            #test4,
-                            test5,
-                            test6,
-                            test7,
-                            test8
-                            )
-  
-  #return(test_all_clm)
-  return(assign(name,test_all_clm,envir = .GlobalEnv))
-  
-} 
-
-####slight modification to accomidate  missing data!
-soil_test_use8_pH <- function(data_df, 
-                        test1, numb_sample_test1, 
-                        test2, numb_sample_test2,
-                        test3, numb_sample_test3,
-                        test4, numb_sample_test4,
-                        #test5, numb_sample_test5,
-                        #test6, numb_sample_test6,
-                        #test7, numb_sample_test7,
-                        test8, numb_sample_test8,
-                        name, soil_test) {
-  #test1
-  subset_test1 <-
-    select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
-
-  colnames(subset_test1)[1] <- "test"
-  colnames(subset_test1)[2] <- "numb_of_test"
-
-  test1 <-  filter(subset_test1, test == soil_test)
-  
-  #test2
-  subset_test2 <-
-    select(data_df, !! test2, !! numb_sample_test2, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test2)[1] <- "test"
-  colnames(subset_test2)[2] <- "numb_of_test"
-  
-  test2 <-  filter(subset_test2, test == soil_test)
-  
-  #test3
-  subset_test3 <-
-    select(data_df, !! test3, !! numb_sample_test3, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test3)[1] <- "test"
-  colnames(subset_test3)[2] <- "numb_of_test"
-  
-  test3 <-  filter(subset_test3, test == soil_test)
-  
-  
- #test4
-  subset_test4 <-
-    select(data_df, !! test4, !! numb_sample_test4, Resp_Group, `Respondent ID`)
-
-  colnames(subset_test4)[1] <- "test"
-  colnames(subset_test4)[2] <- "numb_of_test"
-
-  test4 <-  filter(subset_test4, test == soil_test)
-  
-  #  #test5
-  #  subset_test5 <-
-  #    select(data_df, !! test5, !! numb_sample_test5, Resp_Group, `Respondent ID`)
-  #  
-  #  colnames(subset_test5)[1] <- "test"
-  #  colnames(subset_test5)[2] <- "numb_of_test"
-  #  
-  # test5 <-  filter(subset_test5, test == soil_test)
-  # 
-  #  #test6
-  #  subset_test6 <-
-  #    select(data_df, !! test6, !! numb_sample_test6, Resp_Group, `Respondent ID`)
-  #  
-  #  colnames(subset_test6)[1] <- "test"
-  #  colnames(subset_test6)[2] <- "numb_of_test"
-  #  
-  # test6 <-  filter(subset_test6, test == soil_test)
-  #  
-  #  #test7
-  #  subset_test7 <-
-  #    select(data_df, !! test7, !! numb_sample_test7, Resp_Group, `Respondent ID`)
-  # 
-  #  colnames(subset_test7)[1] <- "test"
-  #  colnames(subset_test7)[2] <- "numb_of_test"
-  # 
-  # test7 <-  filter(subset_test7, test == soil_test)
-
-   #test8
-   subset_test8 <-
-     select(data_df, !! test8, !! numb_sample_test8, Resp_Group, `Respondent ID`)
-
-   colnames(subset_test8)[1] <- "test"
-   colnames(subset_test8)[2] <- "numb_of_test"
-
-  test8 <-  filter(subset_test8, test == soil_test)
-   
-  # merge all the test togther
-  test_all_clm <- bind_rows(#test1,
-                            test2,
-                            test3,
-                            test4,
-                            # test5,
-                            # test6,
-                            # test7,
-                            test8
-                            )
-  
-  #return(test_all_clm)
-  return(assign(name,test_all_clm,envir = .GlobalEnv))
-  
-} 
-
-####slight modification to accomidate  missing data!
-soil_test_use8_texture <- function(data_df, 
-                        test1, numb_sample_test1, 
-                        test2, numb_sample_test2,
-                        test3, numb_sample_test3,
-                        test4, numb_sample_test4,
-                        test5, numb_sample_test5,
-                        # test6, numb_sample_test6,
-                        # test7, numb_sample_test7,
-                        # test8, numb_sample_test8,
-                        name, soil_test) {
-  #test1
-  subset_test1 <-
-    select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
-
-  colnames(subset_test1)[1] <- "test"
-  colnames(subset_test1)[2] <- "numb_of_test"
-
-  test1 <-  filter(subset_test1, test == soil_test)
-  
-  #test2
-  subset_test2 <-
-    select(data_df, !! test2, !! numb_sample_test2, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test2)[1] <- "test"
-  colnames(subset_test2)[2] <- "numb_of_test"
-  
-  test2 <-  filter(subset_test2, test == soil_test)
-  
-  #test3
-  subset_test3 <-
-    select(data_df, !! test3, !! numb_sample_test3, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test3)[1] <- "test"
-  colnames(subset_test3)[2] <- "numb_of_test"
-  
-  test3 <-  filter(subset_test3, test == soil_test)
-  
-  
- #test4
-  subset_test4 <-
-    select(data_df, !! test4, !! numb_sample_test4, Resp_Group, `Respondent ID`)
-
-  colnames(subset_test4)[1] <- "test"
-  colnames(subset_test4)[2] <- "numb_of_test"
-
-  test4 <-  filter(subset_test4, test == soil_test)
-  
-  #  #test5
-   subset_test5 <-
-     select(data_df, !! test5, !! numb_sample_test5, Resp_Group, `Respondent ID`)
-
-   colnames(subset_test5)[1] <- "test"
-   colnames(subset_test5)[2] <- "numb_of_test"
-
-  test5 <-  filter(subset_test5, test == soil_test)
-
-  #  #test6
-  #  subset_test6 <-
-  #    select(data_df, !! test6, !! numb_sample_test6, Resp_Group, `Respondent ID`)
-  # 
-  #  colnames(subset_test6)[1] <- "test"
-  #  colnames(subset_test6)[2] <- "numb_of_test"
-  # 
-  # test6 <-  filter(subset_test6, test == soil_test)
-  # 
-  #  #test7
-  #  subset_test7 <-
-  #    select(data_df, !! test7, !! numb_sample_test7, Resp_Group, `Respondent ID`)
-  # 
-  #  colnames(subset_test7)[1] <- "test"
-  #  colnames(subset_test7)[2] <- "numb_of_test"
-  # 
-  # test7 <-  filter(subset_test7, test == soil_test)
-  # 
-  #  #test8
-  #  subset_test8 <-
-  #    select(data_df, !! test8, !! numb_sample_test8, Resp_Group, `Respondent ID`)
-  # 
-  #  colnames(subset_test8)[1] <- "test"
-  #  colnames(subset_test8)[2] <- "numb_of_test"
-  # 
-  # test8 <-  filter(subset_test8, test == soil_test)
-  #  
-  # merge all the test togther
-  test_all_clm <- bind_rows(#test1,
-                            test2,
-                            test3,
-                            test4,
-                            test5,
-                            # test6,
-                            # test7,
-                            # test8
-                            )
-  
-  #return(test_all_clm)
-  return(assign(name,test_all_clm,envir = .GlobalEnv))
-  
-} 
-
-####slight modification to accomidate  missing data!
-soil_test_use8_trace <- function(data_df, 
-                        test1, numb_sample_test1, 
-                        test2, numb_sample_test2,
-                        test3, numb_sample_test3,
-                        test4, numb_sample_test4,
-                        test5, numb_sample_test5,
-                        test6, numb_sample_test6,
-                        test7, numb_sample_test7,
-                        # test8, numb_sample_test8,
-                        name, soil_test) {
-  #test1
-  subset_test1 <-
-    select(data_df, !! test1, !! numb_sample_test1, Resp_Group, `Respondent ID`)
-
-  colnames(subset_test1)[1] <- "test"
-  colnames(subset_test1)[2] <- "numb_of_test"
-
-  test1 <-  filter(subset_test1, test == soil_test)
-  
-  #test2
-  subset_test2 <-
-    select(data_df, !! test2, !! numb_sample_test2, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test2)[1] <- "test"
-  colnames(subset_test2)[2] <- "numb_of_test"
-  
-  test2 <-  filter(subset_test2, test == soil_test)
-  
-  #test3
-  subset_test3 <-
-    select(data_df, !! test3, !! numb_sample_test3, Resp_Group, `Respondent ID`)
-  
-  colnames(subset_test3)[1] <- "test"
-  colnames(subset_test3)[2] <- "numb_of_test"
-  
-  test3 <-  filter(subset_test3, test == soil_test)
-  
-  
- #test4
-  subset_test4 <-
-    select(data_df, !! test4, !! numb_sample_test4, Resp_Group, `Respondent ID`)
-
-  colnames(subset_test4)[1] <- "test"
-  colnames(subset_test4)[2] <- "numb_of_test"
-
-  test4 <-  filter(subset_test4, test == soil_test)
-  
-  #  #test5
-   subset_test5 <-
-     select(data_df, !! test5, !! numb_sample_test5, Resp_Group, `Respondent ID`)
-
-   colnames(subset_test5)[1] <- "test"
-   colnames(subset_test5)[2] <- "numb_of_test"
-
-  test5 <-  filter(subset_test5, test == soil_test)
-
-  #  #test6
-   subset_test6 <-
-     select(data_df, !! test6, !! numb_sample_test6, Resp_Group, `Respondent ID`)
-
-   colnames(subset_test6)[1] <- "test"
-   colnames(subset_test6)[2] <- "numb_of_test"
-
-  test6 <-  filter(subset_test6, test == soil_test)
-
-   #test7
-   subset_test7 <-
-     select(data_df, !! test7, !! numb_sample_test7, Resp_Group, `Respondent ID`)
-
-   colnames(subset_test7)[1] <- "test"
-   colnames(subset_test7)[2] <- "numb_of_test"
-
-  test7 <-  filter(subset_test7, test == soil_test)
-
-  #  #test8
-  #  subset_test8 <-
-  #    select(data_df, !! test8, !! numb_sample_test8, Resp_Group, `Respondent ID`)
-  # 
-  #  colnames(subset_test8)[1] <- "test"
-  #  colnames(subset_test8)[2] <- "numb_of_test"
-  # 
-  # test8 <-  filter(subset_test8, test == soil_test)
-
-  # merge all the test togther
-  test_all_clm <- bind_rows(#test1,
-                            test2,
-                            test3,
-                            test4,
-                            test5,
-                            test6,
-                            test7,
-                            # test8
-                            )
-  
-  #return(test_all_clm)
-  return(assign(name,test_all_clm,envir = .GlobalEnv))
-  
-} 
 
 ```
 
@@ -3972,31 +3377,31 @@ data_chunck[] <- lapply(data_chunck, gsub, pattern = "Sulfur (MCP)",
 
 
 # Soil test Aluminium (CaCl2) not in test1 and test8
-soil_test_use8_Al(data_chunck, 
-                     #quo(Q_17.1.1), quo(Q_17.1.3), 
-                     quo(Q_17.2.1), quo(Q_17.2.3),
-                     quo(Q_17.3.1), quo(Q_17.3.3),
-                     quo(Q_17.4.1), quo(Q_17.4.3),
-                     quo(Q_17.5.1), quo(Q_17.5.3),
-                     quo(Q_17.6.1), quo(Q_17.6.3),
-                     quo(Q_17.7.1), quo(Q_17.7.3),
-                     #quo(Q_17.8.1), quo(Q_17.8.3),
-                    "Al", "Aluminium (CaCl2)")
-
-# Soil test Boron not in test7 
-soil_test_use8_Boron(data_chunck, 
+soil_test_use8_All(data_chunck, 
                      quo(Q_17.1.1), quo(Q_17.1.3), 
                      quo(Q_17.2.1), quo(Q_17.2.3),
                      quo(Q_17.3.1), quo(Q_17.3.3),
                      quo(Q_17.4.1), quo(Q_17.4.3),
                      quo(Q_17.5.1), quo(Q_17.5.3),
                      quo(Q_17.6.1), quo(Q_17.6.3),
-                     #quo(Q_17.7.1), quo(Q_17.7.3),
+                     quo(Q_17.7.1), quo(Q_17.7.3),
+                     quo(Q_17.8.1), quo(Q_17.8.3),
+                    "Al", "Aluminium (CaCl2)")
+
+# Soil test Boron not in test7 
+soil_test_use8_All(data_chunck, 
+                     quo(Q_17.1.1), quo(Q_17.1.3), 
+                     quo(Q_17.2.1), quo(Q_17.2.3),
+                     quo(Q_17.3.1), quo(Q_17.3.3),
+                     quo(Q_17.4.1), quo(Q_17.4.3),
+                     quo(Q_17.5.1), quo(Q_17.5.3),
+                     quo(Q_17.6.1), quo(Q_17.6.3),
+                     quo(Q_17.7.1), quo(Q_17.7.3),
                      quo(Q_17.8.1), quo(Q_17.8.3),
                     "Born", "Boron")
 
 # Soil test  Calcium carbonate %
-soil_test_use8_CalCarb(data_chunck, 
+soil_test_use8_All(data_chunck, 
                      quo(Q_17.1.1), quo(Q_17.1.3), 
                      quo(Q_17.2.1), quo(Q_17.2.3),
                      quo(Q_17.3.1), quo(Q_17.3.3),
@@ -4008,11 +3413,11 @@ soil_test_use8_CalCarb(data_chunck,
                     "CalCarb", "Calcium carbonate %")
 
 # Soil test  Chloride
-soil_test_use8_Chloride(data_chunck, 
-                     #quo(Q_17.1.1), quo(Q_17.1.3), 
+soil_test_use8_All(data_chunck, 
+                     quo(Q_17.1.1), quo(Q_17.1.3), 
                      quo(Q_17.2.1), quo(Q_17.2.3),
                      quo(Q_17.3.1), quo(Q_17.3.3),
-                     #quo(Q_17.4.1), quo(Q_17.4.3),
+                     quo(Q_17.4.1), quo(Q_17.4.3),
                      quo(Q_17.5.1), quo(Q_17.5.3),
                      quo(Q_17.6.1), quo(Q_17.6.3),
                      quo(Q_17.7.1), quo(Q_17.7.3),
@@ -4020,7 +3425,7 @@ soil_test_use8_Chloride(data_chunck,
                     "Chloride", "Chloride")
 
 # Soil test  Exchangable cations - Ca, Mg, Na, K -USE CalCarb has same input forclms
-soil_test_use8_CalCarb(data_chunck, 
+soil_test_use8_All(data_chunck, 
                      quo(Q_17.1.1), quo(Q_17.1.3), 
                      quo(Q_17.2.1), quo(Q_17.2.3),
                      quo(Q_17.3.1), quo(Q_17.3.3),
@@ -4032,19 +3437,19 @@ soil_test_use8_CalCarb(data_chunck,
                     "Excat", "Exchangable cations - Ca, Mg, Na, K")
 
 # Soil test  pH
-soil_test_use8_pH(data_chunck, 
+soil_test_use8_All(data_chunck, 
                      quo(Q_17.1.1), quo(Q_17.1.3), 
                      quo(Q_17.2.1), quo(Q_17.2.3),
                      quo(Q_17.3.1), quo(Q_17.3.3),
                      quo(Q_17.4.1), quo(Q_17.4.3),
-                     # quo(Q_17.5.1), quo(Q_17.5.3),
-                     # quo(Q_17.6.1), quo(Q_17.6.3),
-                     # quo(Q_17.7.1), quo(Q_17.7.3),
+                     quo(Q_17.5.1), quo(Q_17.5.3),
+                     quo(Q_17.6.1), quo(Q_17.6.3),
+                     quo(Q_17.7.1), quo(Q_17.7.3),
                      quo(Q_17.8.1), quo(Q_17.8.3),
                     "pH", "pH")
 
 #Sulfur USE CalCarb has same input forclms
-soil_test_use8_CalCarb(data_chunck, 
+soil_test_use8_All(data_chunck, 
                      quo(Q_17.1.1), quo(Q_17.1.3), 
                      quo(Q_17.2.1), quo(Q_17.2.3),
                      quo(Q_17.3.1), quo(Q_17.3.3),
@@ -4056,18 +3461,18 @@ soil_test_use8_CalCarb(data_chunck,
                     "Sulfur", "Sulfur")
 
 #Texture
-soil_test_use8_texture(data_chunck, 
+soil_test_use8_All(data_chunck, 
                      quo(Q_17.1.1), quo(Q_17.1.3), 
                      quo(Q_17.2.1), quo(Q_17.2.3),
                      quo(Q_17.3.1), quo(Q_17.3.3),
                      quo(Q_17.4.1), quo(Q_17.4.3),
                      quo(Q_17.5.1), quo(Q_17.5.3),
-                     # quo(Q_17.6.1), quo(Q_17.6.3),
-                     # quo(Q_17.7.1), quo(Q_17.7.3),
-                     # quo(Q_17.8.1), quo(Q_17.8.3),
+                      quo(Q_17.6.1), quo(Q_17.6.3),
+                      quo(Q_17.7.1), quo(Q_17.7.3),
+                      quo(Q_17.8.1), quo(Q_17.8.3),
                     "Texture", "Texture")
 #Trace elements
-soil_test_use8_trace(data_chunck, 
+soil_test_use8_All(data_chunck, 
                      quo(Q_17.1.1), quo(Q_17.1.3), 
                      quo(Q_17.2.1), quo(Q_17.2.3),
                      quo(Q_17.3.1), quo(Q_17.3.3),
@@ -4075,35 +3480,44 @@ soil_test_use8_trace(data_chunck,
                      quo(Q_17.5.1), quo(Q_17.5.3),
                      quo(Q_17.6.1), quo(Q_17.6.3),
                      quo(Q_17.7.1), quo(Q_17.7.3),
-                     # quo(Q_17.8.1), quo(Q_17.8.3),
+                      quo(Q_17.8.1), quo(Q_17.8.3),
                     "Trace", "Trace elements")
 
 #count the number of people using this test and join 
 Trace1 <- Trace %>%
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test) 
 Texture1 <- Texture %>%
+   filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Sulfur1 <- Sulfur %>%
+   filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 pH1 <- pH %>%
+   filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Excat1 <- Excat %>%
+   filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Chloride1 <- Chloride %>%
+   filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 CalCarb1 <- CalCarb %>%
+   filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Born1 <- Born %>%
+   filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Al1 <- Al %>%
+   filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 
@@ -4128,30 +3542,39 @@ percent = n/Resp_numb
     )
 
 Trace2 <- Trace %>%
+   filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test) 
 Texture2 <- Texture %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test)
 Sulfur2 <- Sulfur %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test)
 pH2 <- pH %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Excat2 <- Excat %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test)
 Chloride2 <- Chloride %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test)
 CalCarb2 <- CalCarb %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test)
 Born2 <- Born %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test)
 Al2 <- Al %>%
+  filter(!is.na(numb_of_test)) %>% 
   group_by( Resp_Group) %>%
   count(numb_of_test)
 
@@ -4348,108 +3771,72 @@ Please indicate why you don't do more SOIL Phosphorous testing
 * General comments:
 
 
-```{r Q20 agro and grower data work up and graph, echo=FALSE}
+
+
+```{r data prep Q20}
+#use function
+
+Q20_why_not_moreP_cost <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_20.1))
+Q20_why_not_moreP_time <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_20.2))
+Q20_why_not_moreP_lab_cost <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_20.3))
+Q20_why_not_moreP_variability <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_20.4))
+Q20_why_not_moreP_lab_accuracy <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_20.5))
+Q20_why_not_moreP_test_profit_decis <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_20.6))
+Q20_why_not_moreP_too_slow <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_20.7))
 
 
 
-  
-  
-  Q20_why_not_moreP_cost <- data %>%
-    group_by(  Q_20.1 ) %>%
-    summarise(n = n()) %>%
-    mutate(percent =(freq = n / sum(n)),
-           type = "Q20_why_not_moreP_cost") %>% 
-    filter( Q_20.1 != "NA") %>% 
-    select(percent, type)
-  
-  Q20_why_not_moreP_time <- data %>%
-    group_by(  Q_20.2 ) %>%
-    summarise(n = n()) %>%
-    mutate(percent =(freq = n / sum(n)),
-           type = "Q20_why_not_moreP_time") %>% 
-    filter( Q_20.2 != "NA") %>% 
-    select(percent, type)
-  
-  Q20_why_not_moreP_lab_cost <- data %>%
-    group_by(  Q_20.3 ) %>%
-    summarise(n = n()) %>%
-    mutate(percent =(freq = n / sum(n)),
-           type = "Q20_why_not_moreP_lab_cost")%>% 
-    filter( Q_20.3 != "NA") %>% 
-    select(percent, type)
-  
-  Q20_why_not_moreP_variability <- data %>%
-    group_by(  Q_20.4 ) %>%
-    summarise(n = n()) %>%
-    mutate(percent =(freq = n / sum(n)),
-           type = "Q20_why_not_moreP_variability")%>% 
-    filter( Q_20.4 != "NA") %>% 
-    select(percent, type)
-  
-  Q20_why_not_moreP_lab_accuracy <- data %>%
-    group_by(  Q_20.5) %>%
-    summarise(n = n()) %>%
-    mutate(percent =(freq = n / sum(n)),
-           type = "Q20_why_not_moreP_lab_accuracy")%>% 
-    filter( Q_20.5 != "NA") %>% 
-    select(percent, type)
-  
-  Q20_why_not_moreP_test_profit_decis <- data %>%
-    group_by( Q_20.6 ) %>%
-    summarise(n = n()) %>%
-    mutate(percent =(freq = n / sum(n)),
-           type = "Q20_why_not_moreP_test_profit_decis")%>% 
-    filter( Q_20.6 != "NA") %>% 
-    select(percent, type)
-  
-  Q20_why_not_moreP_too_slow <- data %>%
-    group_by(  Q_20.7 ) %>%
-    summarise(n = n()) %>%
-    mutate(percent =(freq = n / sum(n)),
-           type = "Q20_why_not_moreP_too_slow") %>% 
-    filter( Q_20.7 != "NA") %>% 
-    select(percent, type)
-  
-  
-  
-  Q20_why_not_moreP <- rbind(Q20_why_not_moreP_cost,
-                             Q20_why_not_moreP_time,
-                             Q20_why_not_moreP_lab_cost,
-                             Q20_why_not_moreP_variability,
-                             Q20_why_not_moreP_lab_accuracy,
-                             Q20_why_not_moreP_test_profit_decis,
-                             Q20_why_not_moreP_too_slow)
-Q20_why_not_moreP <- mutate(Q20_why_not_moreP,
-                              percent1 = round(percent*100,2),
-                              label_name = case_when(
-                                type == "Q20_why_not_moreP_cost" ~ "cost",
-                                type == "Q20_why_not_moreP_time" ~ "time",
-                                type == "Q20_why_not_moreP_lab_cost" ~ "cost of lab analysis",
-                                type == "Q20_why_not_moreP_variability" ~ "variability",
-                                type == "Q20_why_not_moreP_lab_accuracy" ~ "accuracy",
-                                type == "Q20_why_not_moreP_test_profit_decis" ~ "translate profitable decision",
-                                type == "Q20_why_not_moreP_too_slow" ~ "get results at right time") ) 
-  
-  
-  
-  
-  #head(Q17_why_not_moreP)
-  ggplot(Q20_why_not_moreP, aes(x = reorder(label_name, -percent), y = percent))+
-    geom_col()+
-    geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
-    theme_classic()+
-    labs(x= "reasons",
-         y = "",
-         title = "Please indicate why you don't do more SOIL P testing:",
-         subtitle = "Agronomist and growers",
-         caption = "Please indicate why you don't do more SOIL Phosphorous testing")+
-    theme(axis.text.x=element_text(angle=45,hjust=1),
-          plot.caption = element_text(size = 8, hjust = 0))+
-    scale_y_continuous(labels = scales::percent, limits=c(0, 0.5))
-  
+#join the reasons together
+
+reason_soil_P<- rbind(
+  Q20_why_not_moreP_cost,
+  Q20_why_not_moreP_time,
+  Q20_why_not_moreP_lab_cost,
+  Q20_why_not_moreP_variability,
+  Q20_why_not_moreP_lab_accuracy,
+  Q20_why_not_moreP_test_profit_decis,
+  Q20_why_not_moreP_too_slow
+)
+
+
 ```
-  
-  
+
+
+```{r graphs Q20}
+reason_soil_P
+
+#text is too long
+reason_soil_P 
+
+reason_soil_P <- mutate(
+  reason_soil_P,
+  names_display = case_when(
+    reason == "The cost of soil sampling" ~ "cost",
+    reason == "The time required for soil sampling" ~ "time",
+    reason == "The cost of soil testing lab analysis" ~ "cost of lab analysis",
+    reason == "The difficulty in being able to represent the variability in a paddock" ~ "variability",
+    reason == "The level of accuracy of soil testing lab analysis" ~ "accuracy",
+    reason == "The ability to translate soil test results into a profitable fertiliser decision for my paddock" ~ "translate profitable decision",
+    reason == "Not being able to get soil test results at the right time for decision making" ~ "get results at right time"
+  )
+)
+
+ggplot(reason_soil_P, aes (x =  reorder(names_display, -percent), y = percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "",
+       title = "",
+       subtitle = "",
+       caption = "Q)  Please indicate why you don't do more soil P testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+
+```
+
 
 #### **Question 21** 
 
