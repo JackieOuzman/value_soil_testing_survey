@@ -3630,9 +3630,19 @@ ggplot(mirco_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
 
 
 # df needs ording for display
-mirco_test_numb_counts$numb_of_test <- factor(mirco_test_numb_counts$numb_of_test,levels = c("0-5",  "5-10", "10-15", 
-                                                                                             "15-20", "20-25",  "25-30", 
-                                                                                             "greater than 30"))
+mirco_test_numb_counts$numb_of_test <-
+  factor(
+    mirco_test_numb_counts$numb_of_test,
+    levels = c(
+      "0-5",
+      "5-10",
+      "10-15",
+      "15-20",
+      "20-25",
+      "25-30",
+      "greater than 30"
+    )
+  )
 
 #percent of people in survey using sampling at certain density - number of samples per paddock
 ggplot(mirco_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_Group))+
@@ -3774,7 +3784,6 @@ Please indicate why you don't do more SOIL Phosphorous testing
 
 
 
-
 ```{r data prep Q20}
 #use function
 
@@ -3844,10 +3853,161 @@ ggplot(reason_soil_P, aes (x =  reorder(names_display, -percent), y = percent, f
 
 Please indicate if you agree/disagree with the following statements in relation to SOIL testing.
 
-* My clients businesses would be more profitable if they did more soil testing than they do now
-* Uncertainty about how the season will turn out makes it hard to get value from soil testing results
-* My clients recommend the use of regular soil testing to other local farmers
-* Feel free to comment on this response
+
+	The use of soil testing on my farm increases my profitability (Grower only Q)	Feel free to comment on this response
+
+* 21.1 My clients businesses would be more profitable if they did more soil testing than they do now 
+* 21.2 Uncertainty about how the season will turn out makes it hard to get value from soil testing results 
+* 21.3 My clients recommend the use of regular soil testing to other local farmers
+* 21.4 The use of soil testing on my farm increases my profitability (Grower only Q)
+* 21.5 Feel free to comment on this response
+
+
+```{r q21 data prep, include=FALSE}
+
+data$Q_21.1
+#group the Q21 data together
+subsetQ21 <- select(data, Q_21.1, Q_21.2, Q_21.3, Q_21.4, Q_21.5, Resp_Group) 
+#how many people ans the questions
+
+
+grower_na <- subsetQ21 %>% 
+  filter(Resp_Group == "Grower" ) %>% 
+  select_if(function(Q_21.1) any(is.na(Q_21.1))) %>% 
+  summarise_each(funs(sum(is.na(.)))) -> extra_NA
+
+agronomist_na <- subsetQ21 %>% 
+  filter(Resp_Group == "Agronomist" ) %>% 
+  select_if(function(Q_21.1) any(is.na(Q_21.1))) %>% 
+  summarise_each(funs(sum(is.na(.)))) -> extra_NA
+
+Q21_ans_g <-as.vector(99 - grower_na[1,1], mode = 'numeric') 
+Q21_ans_a <- 71 - as.vector(agronomist_na[1,1], mode = 'numeric') 
+grower_na
+
+##Q_21.1
+
+subsetQ21.1_summary <- subsetQ21 %>%
+  filter(!is.na(Q_21.1)) %>% 
+  group_by( Resp_Group, Q_21.1) %>%
+  count(Q_21.1) 
+
+subsetQ21.1_summary <- subsetQ21.1_summary %>% 
+  mutate(Resp_numb_for_question = case_when(
+    Resp_Group == "Agronomist" ~ (71 - as.vector(agronomist_na[1,1], mode = 'numeric')),
+    Resp_Group == "Grower"  ~  (99- as.vector(grower_na[1,1], mode = 'numeric')) ),
+    percent_of_numb_resp = n/Resp_numb_for_question,
+    question = "more profitable",
+    scale = Q_21.1
+  )
+
+subsetQ21.1_summary
+
+##Q_21.2
+
+subsetQ21.2_summary <- subsetQ21 %>%
+  filter(!is.na(Q_21.2)) %>% 
+  group_by( Resp_Group, Q_21.2) %>%
+  count(Q_21.2) 
+
+subsetQ21.2_summary <- subsetQ21.2_summary %>% 
+  mutate(Resp_numb_for_question = case_when(
+    Resp_Group == "Agronomist" ~ (71 - as.vector(agronomist_na[1,2], mode = 'numeric')),
+    Resp_Group == "Grower"  ~  (99- as.vector(grower_na[1,2], mode = 'numeric')) ),
+    percent_of_numb_resp = n/Resp_numb_for_question,
+    question = "Uncertainty",
+    scale = Q_21.2
+  )
+
+subsetQ21.2_summary
+
+##Q_21.3
+
+subsetQ21.3_summary <- subsetQ21 %>%
+  filter(!is.na(Q_21.3)) %>% 
+  group_by( Resp_Group, Q_21.3) %>%
+  count(Q_21.3) 
+
+subsetQ21.3_summary <- subsetQ21.3_summary %>% 
+  mutate(Resp_numb_for_question = case_when(
+    Resp_Group == "Agronomist" ~ (71 - as.vector(agronomist_na[1,3], mode = 'numeric')),
+    Resp_Group == "Grower"  ~  (99- as.vector(grower_na[1,3], mode = 'numeric')) ),
+    percent_of_numb_resp = n/Resp_numb_for_question,
+    question = "recommend",
+    scale = Q_21.3
+  )
+
+subsetQ21.3_summary
+
+
+##Q_21.4
+
+subsetQ21.4_summary <- subsetQ21 %>%
+  filter(!is.na(Q_21.4)) %>% 
+  group_by( Resp_Group, Q_21.4) %>%
+  count(Q_21.4) 
+
+subsetQ21.4_summary <- subsetQ21.4_summary %>% 
+  mutate(Resp_numb_for_question = case_when(
+    Resp_Group == "Agronomist" ~ (71 - as.vector(agronomist_na[1,3], mode = 'numeric')),
+    Resp_Group == "Grower"  ~  (99- as.vector(grower_na[1,3], mode = 'numeric')) ),
+    percent_of_numb_resp = n/Resp_numb_for_question,
+    question = "my profitability ",
+    scale = Q_21.4
+  ) 
+
+
+
+subsetQ21_summary <- rbind(subsetQ21.1_summary,
+                           subsetQ21.2_summary,
+                           subsetQ21.3_summary,
+                           subsetQ21.4_summary)
+
+subsetQ21_summary <- select(subsetQ21_summary,
+                            Resp_Group,
+                            n,
+                            Resp_numb_for_question,
+                            percent_of_numb_resp,
+                            question,scale)
+subsetQ21_summary
+
+
+```
+
+
+```{r Q21 graph, echo=FALSE}
+# df needs ording for display
+subsetQ21_summary$scale <-
+  factor(
+    subsetQ21_summary$scale ,
+    levels = c(
+      "Strongly agree",
+      "Agree",
+      "Neutral",
+      "Disagree",
+      "Strongly disagree"
+    )
+  )
+
+unique(subsetQ21_summary$scale)
+
+ggplot(subsetQ21_summary, aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_resp, 
+                               fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(question~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "",
+       title = "",
+       subtitle = "",
+       caption = "Q)  Please indicate why you don't do more soil P testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+
+```
+
 
 
 #### **Question 22** 
