@@ -162,7 +162,9 @@ Q1_resp_percent <- data %>%
   mutate(percent = 
            (freq = n / sum(n)))
 #table
-datatable(Q1_resp_percent, colnames = c('Respondent' = 'Resp_Group')) %>%
+datatable(Q1_resp_percent, 
+          options = list(pageLength = 35, dom = 't'),
+  colnames = c('Respondent' = 'Resp_Group')) %>%
   formatPercentage('percent', 1) 
 
 
@@ -518,7 +520,11 @@ Q2_agro_grower <- group_by(data, Resp_Group) %>%
 
 
 #head(Q2_agro_grower)
-datatable(Q2_agro_grower, colnames = c( "Respondents", "count", "Average cropped area"))
+datatable(Q2_agro_grower, 
+          options = list(pageLength = 35, dom = 't'),
+          colnames = c( "Respondents", "count", "Average cropped area"))
+
+
 
 ggplot(Q2_agro_grower, aes(Resp_Group, Ave_Cropped_Area, fill = Resp_Group))+
   geom_col()+
@@ -571,7 +577,7 @@ Which of the following crops do you grow - percentage by area?
 
 3.6 Fallow
 
-```{r Q3 working, include=FALSE, regions agro only, echo=FALSE}
+```{r Q3 workingregions agro only, include=FALSE}
 
 
 
@@ -608,7 +614,7 @@ head(Q3_regions_grower_narrow, 40)
 
 ```
 
-```{r Q3 graph regions agro only, echo=FALSE}
+```{r Q3 graph regions agro only, include=FALSE,  echo=FALSE}
 ggplot(Q3_regions_grower_narrow, aes(x = crop, y = ave_area, fill = Resp_Group ))+
   geom_col()+
   scale_fill_manual(values=c( "grey40"))+
@@ -635,7 +641,7 @@ ggplot(Q3_regions_grower_narrow, aes(x = crop, y = ave_area, fill = Resp_Group )
 * We have converted the percentage of crop type to area based on Q2 average total area cropped over the last 3 seasons.
 * All agronomist and growers grow mainly cereal crops and the smallest portion of there land is used for fallow.
 * Canola and pulses are popular with both groups.
-* If the cropped area is wrong for question 2, cropped area by crop will be wrong too! I have removed the agronmist data.
+* If the cropped area is wrong for question 2, cropped area by crop will be wrong too! I have removed the agronomist data.
 
 ```{r aletrative for Q3, include=FALSE}
 #Q3_percent <- data %>% 
@@ -706,16 +712,28 @@ Q4_resp_percent$Q_4 <- factor(Q4_resp_percent$Q_4,
 
 ```{r Q4 table regions agro only, echo=FALSE}
 
-filter(Q4_resp_percent, Resp_Group == 	"Agronomist" ) %>% 
-datatable(Q4_resp_percent, colnames = c('Respondent' = 'Resp_Group', 
-                                        'Total annual variable costs' = 'Q_4', 
-                                        'Number of respondents' = 'n')) %>%
+filter(Q4_resp_percent, Resp_Group == 	"Agronomist") %>%
+  datatable(
+    options = list(pageLength = 35, dom = 't'),
+    colnames = c(
+      'Respondent' = 'Resp_Group',
+      'Total annual variable costs' = 'Q_4',
+      'Number of respondents' = 'n'
+    )
+  ) %>%
   formatPercentage('percent', 0) 
 
-filter(Q4_resp_percent, Resp_Group == 	"Grower" ) %>% 
-datatable(Q4_resp_percent, colnames = c('Respondent' = 'Resp_Group', 
-                                        'Total annual variable costs' = 'Q_4', 
-                                        'Number of respondents' = 'n')) %>%
+
+
+filter(Q4_resp_percent, Resp_Group == 	"Grower") %>%
+  datatable(
+    options = list(pageLength = 35, dom = 't'),
+    colnames = c(
+      'Respondent' = 'Resp_Group',
+      'Total annual variable costs' = 'Q_4',
+      'Number of respondents' = 'n'
+    )
+  ) %>%
   formatPercentage('percent', 0) 
 ```
 
@@ -795,7 +813,7 @@ ggplot(Q4group_resp_percent, aes(Q_4_group, percent, fill = Resp_Group ))+
 **Question 4 with bins grouped and by regions merged**
 
 
-```{r Q4 regions working, echo=FALSE, warning=FALSE}
+```{r Q4 regions working1, echo=FALSE, warning=FALSE}
 
 
 
@@ -883,21 +901,15 @@ Q4group_resp__rainfall_percent$Q_4_group <- factor(Q4group_resp__rainfall_percen
 
 ```{r Q4 regions table and graph, echo=FALSE}
 
-
-
+### Table agro
 filter(Q4group_resp__rainfall_percent, Resp_Group == 	"Agronomist" ) %>% 
-datatable(Q4_resp_percent, 
-          options = list(
-        lengthMenu = list(c(1, 13, -1), c('1', '13', 'All')),
-        pageLength = 13))
-#,
-                         
-          colnames = c('Respondent' = 'Resp_Group', 
-                                        'Total annual variable costs' = 'Q_4_group', 
-                                        'Number of respondents' = 'n'))  %>%
-  formatPercentage('percent', 0) 
-  
+  datatable(options = list(pageLength = 35, dom = 't'),
+    colnames = c('Respondent' = 'Resp_Group', 
+                         'Total annual variable costs' = 'Q_4_group', 
+                         'Number of respondents' = 'n')) %>% 
+  formatPercentage('percent', 0)
 
+### graph agro
 filter(Q4group_resp__rainfall_percent, Resp_Group == "Agronomist") %>% 
 ggplot( aes(Q_4_group, percent))+
   geom_col(fill = "grey70", color = "black")+
@@ -912,14 +924,15 @@ ggplot( aes(Q_4_group, percent))+
         plot.caption = element_text(size = 8)) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits = c(0,1))
 
+
+### table grower
 filter(Q4group_resp__rainfall_percent, Resp_Group == 	"Grower" ) %>% 
-datatable(Q4_resp_percent, colnames = c('Respondent' = 'Resp_Group', 
-                                        'Total annual variable costs' = 'Q_4_group', 
-                                        'Number of respondents' = 'n')) %>%
-  formatPercentage('percent', 0) 
-
-
-
+  datatable(options = list(pageLength = 35, dom = 't'),
+    colnames = c('Respondent' = 'Resp_Group', 
+                         'Total annual variable costs' = 'Q_4_group', 
+                         'Number of respondents' = 'n')) %>% 
+  formatPercentage('percent', 0)
+### graph grower
 filter(Q4group_resp__rainfall_percent, Resp_Group == "Grower") %>% 
 ggplot( aes(Q_4_group, percent))+
   geom_col(fill = "grey40", color = "black")+
@@ -940,11 +953,13 @@ ggplot( aes(Q_4_group, percent))+
 
 Note that percentages is calculated for each rainfall grouping (by agronomist or grower)
 
+
+
 #### **Comments notes on Question 4** 
 
 
-* Question and answer results in a percent of percent - convert to a table?
-* I have grouped the bins
+* Question and answer results in a percent of percent, which is very confusing.
+* I have done additional grouping of the bins
 * Note that in the original survey there is a problem with the coding of >35%, it is fixed here. This means that prelim report is wrong, the report says 5% but is more like 9% of growers estimate the fertiliser expenditure was more than 30%.
 * Agronomist estimate that over 20% of there clients spend more than 35% of there variable cost on fertiliser, while less than 10% of growers spend this amount.
 * Generally growers spend less on fertilisers than what agronomist suggest. Almost 40% of growers spend less than 20% of there variable costs on fertilisers.
@@ -953,7 +968,10 @@ Note that percentages is calculated for each rainfall grouping (by agronomist or
 
 
 
+
+
 #### **Question 5**
+
 Agro) 
 
 What are the main nutrient deficiencies your clients encounter?
@@ -1082,15 +1100,25 @@ nutr_def_all <- mutate(nutr_def_all, nutrient = fct_relevel(nutrient, c("N", "P"
 
 
 ```{r Q5 new nutrient def clms graph, echo=FALSE}
+## tables
+select(nutr_def_all, Resp_Group, nutrient, percent) %>% 
+filter(Resp_Group == "Agronomist" ) %>% 
+  datatable(options = list(pageLength = 35, dom = 't'),
+    colnames = c('Respondent' = 'Resp_Group', 
+                         'Nutrient Deficiency' = 'nutrient' )) %>% 
+  formatPercentage('percent', 0)
 
 
-filter(nutr_def_all, Resp_Group == "Agronomist") %>%
-datatable(nutr_def_all) %>% 
-  formatPercentage('percent', 0) 
+select(nutr_def_all, Resp_Group, nutrient, percent) %>% 
+filter(Resp_Group == "Grower" ) %>% 
+  datatable(options = list(pageLength = 35, dom = 't'),
+    colnames = c('Respondent' = 'Resp_Group', 
+                         'Nutrient Deficiency' = 'nutrient' )) %>% 
+  formatPercentage('percent', 0)
 
-filter(nutr_def_all, Resp_Group == "Grower") %>%
-datatable(nutr_def_all) %>% 
-  formatPercentage('percent', 0) 
+
+
+## graphs
 
 ggplot( nutr_def_all, aes(nutrient, percent, fill = Resp_Group ))+
   geom_col()+
@@ -1098,7 +1126,7 @@ ggplot( nutr_def_all, aes(nutrient, percent, fill = Resp_Group ))+
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
   labs(x= "",
-       y = "Percent",
+       y = "Percent of all agronomist / grower with deficiency",
        title = "Percent of clients / growers with type of nutrient deficiencies",
        subtitle = "",
        caption = "Q)  What are the main nutrient deficiencies")+
@@ -1109,12 +1137,17 @@ ggplot( nutr_def_all, aes(nutrient, percent, fill = Resp_Group ))+
 
 ```
 
-This might be a bit confusing, here we have pulled out all the responses that had a certain deficiency and then calculated the percentage of growers / or agronomist that have this deficiency.
+This might be a bit confusing, here we have pulled out all the responses that had a certain deficiency and then calculated the percentage of growers / or agronomist that have this deficiency, displaying the results above.
 For example for nitrogen; of the 71 agronomist 60 said they have client n deficiency - so this is 85%
+
+Belinda Cay has reported similar values although her % are slightly different she is only using 70 agronomist rather than 71, not sure why?
+
 
 
 
 #### **Question 6** 
+
+
 Agro) 
 
 Do you recommend soil and or plant testing?
@@ -1122,6 +1155,9 @@ Do you recommend soil and or plant testing?
 Grower)
 
 Do you do soil and/or plant testing on your farm?
+
+
+
 
 
 ```{r Q6 agro summary agro and grower, echo=FALSE}
@@ -1142,15 +1178,18 @@ Q6_all_agro <- group_by(data, Resp_Group) %>%
         (freq = n / sum(n)))
 
 #head(Q6_all_agro)
+```
+
+```{r Q6 agro summary agro and grower graph, echo=FALSE}
 
 ggplot(Q6_all_agro, aes(Q_6, percent, fill = Resp_Group))+
   geom_col()+
-  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   scale_fill_manual(values=c("grey70", "grey40"))+
   theme_classic()+
   facet_wrap(~ Resp_Group)+
   labs(x= "All regions",
-       y = "",
+       y = "percentage of respondents",
        title = "Recommend soil and or plant testing",
        subtitle = "",
        caption = "Q) Do you recommend soil and or plant testing?")+
@@ -1160,7 +1199,7 @@ ggplot(Q6_all_agro, aes(Q_6, percent, fill = Resp_Group))+
 ```
 
 
-```{r Q6 regions merged summary , echo=FALSE}
+```{r Q6 regions merged summary, include=FALSE}
 #agronomist by region
 
 #check out if we have any missing data for this question
@@ -1174,21 +1213,23 @@ Q6_by_Region_merge <-
            (freq = n / sum(n)))
 
 #head(Q6_by_Region_merge)
+```
 
+```{r Q6 regions merged summary graph , echo=FALSE}
 ggplot(Q6_by_Region_merge, aes(region_merge, percent, fill=Q_6 ))+
   geom_col()+
   facet_wrap(. ~ Resp_Group)+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "Regions",
-       y = "",
+       y = "percentage of respondents",
        fill = "",
        title = "Recommend soil and or plant testing",
        subtitle = "",
        caption = "Q) Do you recommend soil and or plant testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent)
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 1.1))
 
 ```
 
@@ -1202,17 +1243,18 @@ ggplot(aes(region_merge, percent, fill = Resp_Group))+
   geom_col()+
   scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(~ Resp_Group)+
-  geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
-  labs(x= "Regions",
-       y = "",
+  labs(x= "",
+       y = "percentage of respondents not testing",
        title = "Not recommending soil and or plant testing",
        subtitle = "",
        caption = "Q) Do you recommend soil and or plant testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
-        plot.caption = element_text(size = 8), legend.position = "none" ) +
-        scale_y_continuous("Percentage not testing", limits=c(0, 0.7),breaks=seq(0, 1.0, 0.1)
-                           , labels=c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"))
+        plot.caption = element_text(size = 8), legend.position = "none" )+
+       scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.6))
+        #scale_y_continuous("Percentage not testing", limits=c(0, 0.7),breaks=seq(0, 1.0, 0.1)
+        #                   , labels=c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"))
 
 
 ```
@@ -1224,7 +1266,7 @@ ggplot(aes(region_merge, percent, fill = Resp_Group))+
 
 #### **Question 7**
 
-Grower
+Grower)
 
 Who makes the nutrient decisions on your farm?
 
@@ -1234,6 +1276,10 @@ Who makes the nutrient decisions on your farm?
 * Other
 * Other (please specify)
 
+
+
+
+
 ```{r Q7 awho makes decision, echo=FALSE}
 
 Q7 <- filter (data, Resp_Group == "Grower" &  Q_7 !=  "NA")%>%
@@ -1242,9 +1288,22 @@ Q7 <- filter (data, Resp_Group == "Grower" &  Q_7 !=  "NA")%>%
   mutate(percent = 
            (freq = n / sum(n)))
 
-Q7 <- mutate(Q7, Q_7 = fct_relevel(Q_7, c("Agronomist", "Self", 
-                                                                "Combination of agronomist and self" , 
-                                                                "Other")))
+Q7 <- mutate(Q7,
+             Q_7 =case_when(
+               Q_7 == "Combination of agronomist and self" ~  "Combination",
+               TRUE ~ Q_7
+             ))
+
+
+Q7 <- mutate(Q7, Q_7 = fct_relevel(
+  Q_7,
+  c(
+    "Agronomist",
+    "Self",
+    "Combination" ,
+    "Other"
+  )
+))
 
 ggplot(Q7, aes(Q_7 , percent ))+
   geom_col(fill = "grey40", color = "black")+
@@ -1252,22 +1311,25 @@ ggplot(Q7, aes(Q_7 , percent ))+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "percentage of growers who responded",
        fill = "",
        title = "Decisions on your farm?",
-       subtitle = "Growers only",
+       subtitle = "",
        caption = "Q) Who makes the nutrient decisions on your farm?")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
 ```
 
+#### **Comments notes on Question 7** 
 
+
+* 57 of the 99 growers responded to this question.
 
 
 #### **Question 8**
 
-Agronomist
+Agronomist)
 
 
 * Q8.1 Of your clients, how many of them rely **entirely** on you to make the nutrient decisions?
@@ -1276,51 +1338,99 @@ Agronomist
 
 * Q8.3 Of your clients, how many of them make their **own** nutrient decisions?
 
-```{r Q8.1 who makes decision, echo=FALSE}
+
+
+```{r Q8.1_8.2 working who makes decision, include=FALSE}
+### Q8
+
 Q8_1 <- filter (data, Resp_Group == "Agronomist" &  Q_8.1 !=  "NA")%>%
   group_by( Resp_Group) %>%
   count(Q_8.1) %>% 
   mutate(percent = 
-           (freq = n / sum(n)))
+           (freq = n / sum(n)),
+         who_makes_desision = "entirely",
+         "bin" = Q_8.1) %>% 
+  select(-Q_8.1)
 
-
-Q8_1 <- mutate(Q8_1, Q_8.1 = fct_relevel(Q_8.1, c("less than 10%", "10-30%", "30-50%", "50-70%",
-                                                  "70-90%","90-100%"
-                                          )))
-
-ggplot(Q8_1, aes(Q_8.1 , percent ))+
-  geom_col(fill = "grey70", color = "black")+
-  theme_classic()+
-  labs(x= "",
-       y = "",
-       fill = "",
-       title = "Rely entirely on agronomist to make nutrient decisions?",
-       subtitle = "Agronomist only",
-       caption = "Q) Of your clients, how many of them rely entirely on you to make the nutrient decisions?")+
-  theme(axis.text.x=element_text(angle=45,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
-
-```
-
-
-```{r Q8.2 who makes decision, echo=FALSE}
+Q8_1
 Q8_2 <- filter (data, Resp_Group == "Agronomist" &  Q_8.2 !=  "NA")%>%
   group_by( Resp_Group) %>%
   count(Q_8.2) %>% 
   mutate(percent = 
-           (freq = n / sum(n)))
-#Q8_2
+           (freq = n / sum(n)),
+         who_makes_desision = "somewhat " ,
+         "bin" = Q_8.2)%>% 
+  select(-Q_8.2)
+Q8_2
+Q8_3 <- filter (data, Resp_Group == "Agronomist" &  Q_8.3 !=  "NA")%>%
+  group_by( Resp_Group) %>%
+  count(Q_8.3) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)),
+         who_makes_desision = "own" ,
+         "bin" = Q_8.3)%>% 
+  select(-Q_8.3)
+         
+Q8_1$percent
+Q8_2$percent
+Q8_3$percent
 
-Q8_2 <- mutate(Q8_2, Q_8.2 = fct_relevel(Q_8.2, c("less than 10%", "10-30%", "30-50%", "50-70%",
+Q8_1_3 <- rbind(Q8_1, Q8_2, Q8_3)
+Q8_1_3$percent
+str(Q8_1_3)
+Q8_1_3_table <- Q8_1_3
+
+
+
+# Create a extra line - wow that was hard!
+append <- data.frame("Agronomist", "0.0", "1.2", "own", "90-100%" )
+names(append)<-c(" Resp_Group", "n", "percent", "who_makes_desision", "bin")
+str(append)
+append$percent <- as.numeric(as.character(append$percent))
+append$n <- as.numeric(as.character(append$n))
+str(append)
+
+Q8_1_3 <- data.frame(rbind(as.matrix(Q8_1_3), as.matrix(append)))
+str(Q8_1_3)
+Q8_1_3$percent <- as.numeric(as.character(Q8_1_3$percent))
+Q8_1_3$n <- as.numeric(as.character(Q8_1_3$n))
+
+#unique(Q8_1_3$who_makes_desision)
+
+Q8_1_3 <- mutate(Q8_1_3, bin = fct_relevel(bin, c("less than 10%", "10-30%", "30-50%",  "50-70%",
                                                   "70-90%", "90-100%"
 )))
 
-ggplot(Q8_2, aes(Q_8.2 , percent ))+
+
+
+
+```
+
+```{r Q8.1_8.2 tabel graph who makes decision, echo=FALSE, warning=FALSE}
+
+
+### table
+
+select(Q8_1_3_table, Resp_Group, who_makes_desision, bin, n, percent  ) %>% 
+  datatable(options = list(pageLength = 35, dom = 't'),
+            colnames = c('Respondent' = 'Resp_Group', 
+                         'Who makes the decision' = 'who_makes_desision',
+                         "Ans" = "bin",
+                         "Percent" = "percent")) %>% 
+  formatPercentage('Percent', 0)
+
+
+
+### graph
+
+ggplot(Q8_1_3, aes(bin , percent))+
   geom_col(fill = "grey70", color = "black")+
+  facet_wrap(.~ who_makes_desision)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  #geom_text(aes(label = n, vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "percentage",
        fill = "",
        title = "Rely somewhat on agronomist to make nutrient decisions?",
        subtitle = "Agronomist only",
@@ -1329,49 +1439,30 @@ ggplot(Q8_2, aes(Q_8.2 , percent ))+
         plot.caption = element_text(size = 8), legend.position = "none") + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
 
-```
-
-```{r Q8.3 who makes decision, echo=FALSE, warning=FALSE}
-
-Q8_3 <- filter (data, Resp_Group == "Agronomist" &  Q_8.3 !=  "NA")%>%
-  group_by( Resp_Group) %>%
-  count(Q_8.3) %>% 
-  mutate(percent = 
-           (freq = n / sum(n)))
-
-
-Q8_3 <- mutate(Q8_3, Q_8.3 = fct_relevel(Q_8.3, c("less than 10%", "10-30%", "30-50%",  "50-70%",
-                                                  "70-90%", "90-100%"
-)))
-
-ggplot(Q8_3, aes(Q_8.3 , percent ))+
-  geom_col(fill = "grey70", color = "black")+
-  theme_classic()+
-  labs(x= "",
-       y = "",
-       fill = "",
-       title = "Make their own nutrient decisions?",
-       subtitle = "Agronomist only",
-       caption = "Q) Of your clients, how many of them make their own nutrient decisions??")+
-  theme(axis.text.x=element_text(angle=45,hjust=1),
-        plot.caption = element_text(size = 8), legend.position = "none") + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
 
 ```
+
+* The percentage of agronomist who answered the question 64 out of possible 71
+
+
+
 
 #### **Question 9**
 
-Agronomist
+Agronomist)
 
 Q9.1 To what extent are you responsible for determining how much testing is done on your clients' farms?
 
-Grower
+Grower)
 
 Q 9.1 To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
 
-```{r Q9.1 how much testing, message=FALSE, warning=TRUE, include=FALSE}
+```{r Q9.1 how much testing working, message=FALSE, warning=TRUE, include=FALSE}
 
-#sum(is.na(data$Q_9.1)) #number of NA in this Question
+data %>% group_by(Resp_Group) %>% summarise(non_na_count = sum(!is.na(Q_9.1)))
+# agro had 63 respondants out of 71
+# grower had 56 respondants out of 99
+
 
 data <- mutate(data,
                Q_9.1 =case_when(
@@ -1425,16 +1516,33 @@ ggplot(Q9_1, aes(Q_9.1 , percent, fill =  Resp_Group))+
 
 ```{r Q9.2 how much testing, echo=FALSE, message=FALSE, warning=TRUE}
 
-otherQ9.2 <- filter(data, Q_9.2 !=  "NA") %>% select(Q_9.2, Resp_Group)
-datatable(otherQ9.2, colnames = c( "other reasons" = "Q_9.2"), options = list(pageLength = 11))
+
+filter(data, Q_9.2 !=  "NA") %>% 
+  select( Resp_Group, Q_9.2) %>% 
+datatable(options = list(pageLength = 35, dom = 't'),
+   colnames = c( "other reasons" = "Q_9.2"))   
+          
+      
 
 ```
 
 
 
-#### **Comments notes on Question 9.1 and 9.2** 
-Combined results for 90-100 and 100% to read >90%. Included None (responses) for Agronomist
-Q9.2 other comments listed
+
+
+#### **Comments notes on Question 9.1 and 9.2**
+
+Combined results for 90-100 and 100% to read >90%. 
+Agronomist had 63 respondents out of 71
+Grower had 56 respondents out of 99.
+Note that 'none' was included in the response to the question so it was included in the analysis (when calculating the percentage)
+All agronomist who answered this question (63/71) recommended testing - 'None' = 0
+While 6 growers answered none recommending testing (note that 56 growers out of a possible 99 answered this question
+
+
+Q9.2 other comments listed (above)
+
+
 
 #### **Question 10** 
 
@@ -1459,13 +1567,13 @@ This is text answer nominated by 6 agronomists.
 * Lime more than P
 
 
-```{r Q10.1 how much testing, echo=FALSE, message=FALSE, warning=TRUE}
+```{r Q10.1 how much testing, message=FALSE, warning=TRUE, include=FALSE}
 #suss out how many ans questions
 
-#temp_agro <- filter(data,Resp_Group == "Agronomist" ) 
-#sum(is.na(temp_agro$Q_10.1)) #number of NA in this Question
-#temp_grower <- filter(data,Resp_Group == "Grower" ) 
-#sum(is.na(temp_grower$Q_10.1)) #number of NA in this Question
+
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_10.1 = sum(!is.na(Q_10.1)))
+
+
 
 data <- mutate(data,
                Q_10.1 =case_when(
@@ -1490,7 +1598,15 @@ Q10_1 <- mutate(Q10_1, Q_10.1 = fct_relevel(Q_10.1, c("10-30%", "30-50%", "50-70
 
 ```
 
-```{r Q10.1 graph - how much testing, echo=FALSE, message=FALSE, warning=TRUE}
+```{r Q10.1 table and graph - how much testing, echo=FALSE, message=FALSE, warning=TRUE}
+
+
+
+datatable(Q10_1, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "bins" = "Q_10.1", "Respondent" = "Resp_Group")) %>% 
+    formatPercentage('percent', 0)  
+
+
 
 ggplot(Q10_1, aes(Q_10.1 , percent, fill = Resp_Group))+
   geom_col()+
@@ -1513,7 +1629,15 @@ ggplot(Q10_1, aes(Q_10.1 , percent, fill = Resp_Group))+
 
 ```
 
-This question can be a bit confusing each respondent was asked: to what extent do test results influence recommendations, the respondents were asked to nominate a certain percentage category e.g. between 10-30% of test results influence the recommendation this is what is displayed on the x axis.
+#### **Comments notes on Question 10** 
+
+* This question can be a bit confusing, each respondent was asked: 
+* to what extent do test results influence recommendations, the respondents were asked to nominate a certain percentage category e.g. between 10-30% of test results influence the recommendation this is what is displayed on the x axis.
+
+* Not all participants in the survey answered this question, 63 agronomist answered and 56 growers.
+* The perecnatge on the graph indicate the percenatge of agronomist or growers who answered the question.
+* Belinda Cay grower values are a bit different to mine - could the a problem with the last grouping for the question. I have coded 90-100 and 100% as > 90% while I don't think Belinda has done this.
+
 
 ```{r Q10.1 how much testing more bins, echo=FALSE, message=FALSE, warning=TRUE}
 data <- mutate(data,
@@ -3204,7 +3328,7 @@ soil_test_use2_all(data, quo(Q_16.1.1), quo(Q_16.1.3),
                      "test_Col_K", "Colwell K")
 soil_test_use2_all(data, quo(Q_16.1.1), quo(Q_16.1.3), 
                      quo(Q_16.2.1), quo(Q_16.2.3),
-                     "test_EXC", "Exchangable Cations (Ca, Mg, K, Na)")
+                     "test_EXC", "Exchangeable Cations (Ca, Mg, K, Na)")
 
 
 #count the number of people using this test and join 
@@ -3533,7 +3657,7 @@ soil_test_use8_All(data_chunck,
                      quo(Q_17.6.1), quo(Q_17.6.3),
                      quo(Q_17.7.1), quo(Q_17.7.3),
                      quo(Q_17.8.1), quo(Q_17.8.3),
-                    "Excat", "Exchangable cations - Ca, Mg, Na, K")
+                    "Excat", "Exchangeable cations - Ca, Mg, Na, K")
 
 # Soil test  pH
 soil_test_use8_All(data_chunck, 
