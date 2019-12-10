@@ -1629,34 +1629,43 @@ ggplot(Q10_1, aes(Q_10.1 , percent, fill = Resp_Group))+
 
 ```
 
-#### **Comments notes on Question 10** 
-
-* This question can be a bit confusing, each respondent was asked: 
-* to what extent do test results influence recommendations, the respondents were asked to nominate a certain percentage category e.g. between 10-30% of test results influence the recommendation this is what is displayed on the x axis.
-
-* Not all participants in the survey answered this question, 63 agronomist answered and 56 growers.
-* The perecnatge on the graph indicate the percenatge of agronomist or growers who answered the question.
-* Belinda Cay grower values are a bit different to mine - could the a problem with the last grouping for the question. I have coded 90-100 and 100% as > 90% while I don't think Belinda has done this.
 
 
-```{r Q10.1 how much testing more bins, echo=FALSE, message=FALSE, warning=TRUE}
+```{r Q10.1 how much testing more bins working, message=FALSE, warning=TRUE, include=FALSE}
 data <- mutate(data,
-               Q_10_1group =case_when(
-                 Q_10.1 == "None" ~  "not much of the time",
-                 Q_10.1 == "10-30%" ~  "not much of the time",
-                 Q_10.1 == "30-50%" ~  "not much of the time",
-                 Q_10.1 == "50-70%" ~  "most of the time",
-                 Q_10.1 == ">90%" ~  "most of the time"
-                 # Q_10.1 == "100%" ~  "most of the time"
-               ))
+                 Q_10_1group =case_when(
+                   Q_10.1 == "None" ~  "not much of the time",
+                   Q_10.1 == "10-30%" ~  "not much of the time",
+                   Q_10.1 == "30-50%" ~  "not much of the time",
+                   Q_10.1 == "50-70%" ~  "most of the time",
+                   Q_10.1 == "70-90%" ~  "most of the time",
+                   Q_10.1 == ">90%" ~  "most of the time"
+                   # Q_10.1 == "100%" ~  "most of the time"
+                 ))
+  
+  Q10_1_group_df <- filter (data,   Q_10_1group !=  "NA")%>%
+    group_by( Resp_Group) %>%
+    count(Q_10_1group) %>% 
+    mutate(percent = 
+             (freq = n / sum(n)))
+  
+  Q10_1_group_df
 
-Q10_1_group_df <- filter (data,   Q_10_1group !=  "NA")%>%
-  group_by( Resp_Group) %>%
-  count(Q_10_1group) %>% 
-  mutate(percent = 
-           (freq = n / sum(n)))
+```
 
-#Q10_1_group_df
+
+
+
+```{r Q10.1 how much testing more bins graph and table , echo=FALSE, message=FALSE, warning=TRUE}
+
+#table
+  
+  datatable(Q10_1_group_df, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "grouping of bins" = "Q_10_1group", 
+                          "Respondent" = "Resp_Group")) %>% 
+    formatPercentage('percent', 0)  
+  
+
 
 ggplot(Q10_1_group_df, aes(Q_10_1group , percent, fill = Resp_Group ))+
   geom_col()+
@@ -1678,28 +1687,41 @@ ggplot(Q10_1_group_df, aes(Q_10_1group , percent, fill = Resp_Group ))+
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
 ```
 
-
 ```{r Q10.2 how much testing, echo=FALSE, message=FALSE, warning=TRUE}
 
-otherQ10.2 <- filter(data, Q_10.2 !=  "NA") %>% select(Q_10.2, Resp_Group)
-otherQ10.2
-datatable(otherQ10.2, colnames = c( "other reasons" = "Q_10.2"), options = list(pageLength = 11))
+
+
+#table
+  otherQ10.2 <- filter(data, Q_10.2 !=  "NA") %>% select(Resp_Group, Q_10.2 )
+  
+  datatable(otherQ10.2, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_10.2", 
+                          "Respondent" = "Resp_Group")) 
+
 ```
 
 
-#### **Comments notes on Question 10.1 and 10.2** 
 
-* Combined results for 90-100 and 100% to read >90%. Included None (responses) for Agronomist
-Q10.2 
+#### **Comments notes on Question 10** 
 
-* 51 people didn't respond to this question: 43 growers and 8 agronomists
-* the question was asked as a percentage - this make the graph / analysis a percentage of a percentage, which is hard to interpreter
-* note that it seems agronomist had a bin 90-100% and growers had a bin 100%
-* more grouping and analysis?? for example most of the time > 50%  and not much of the time <50%
+* This question can be a bit confusing.
+* The question was asked as a percentage - this make the graph / analysis a percentage of a percentage, which is hard to interpreter.
+* Each respondent was asked: 
+* to what extent do test results influence recommendations, the respondents were asked to nominate a certain percentage category e.g. between 10-30% of test results influence the recommendation this is what is displayed on the x axis.
+
+* Not all participants in the survey answered this question, 63 agronomist answered and 56 growers.
+* The perecnatge on the graph indicate the percenatge of agronomist or growers who answered the question.
+* Belinda Cay grower values are a bit different to mine - could the a problem with the last grouping for the question. I have coded 90-100 and 100% as > 90% while I don't think Belinda has done this.
+
+* I have done some grouping of the bins, so we have two bins; most of the time example most of the time > 50%  and not much of the time <50%
+
+
+
+
 
 
 #### **Question 11**
-Agronomist
+Agronomist)
 
 What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? 
 
@@ -1709,7 +1731,7 @@ Indicate if this is different for N, P and other nutrients
 * Source 2
 * Source 3
 
-Grower
+Grower)
 
 What are your 3 main sources of information or advice for what nutrients you apply and at what rate? 
 
@@ -1735,9 +1757,9 @@ data$Q_11.2
 subsetQ_11_coded_agro <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>% 
   filter(Resp_Group == "Agronomist" )
 
-#sum(is.na(subsetQ_11_coded_agro$Q_11.2)) #number of NA in this Question 11
-#sum(is.na(subsetQ_11_coded_agro$Q_11.4)) #number of NA in this Question 14
-#sum(is.na(subsetQ_11_coded_agro$Q_11.6)) #number of NA in this Question 24
+sum(is.na(subsetQ_11_coded_agro$Q_11.2)) #number of NA in this Question 11
+sum(is.na(subsetQ_11_coded_agro$Q_11.4)) #number of NA in this Question 14
+sum(is.na(subsetQ_11_coded_agro$Q_11.6)) #number of NA in this Question 24
 
 subsetQ_11_coded_grower <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>% 
   filter(Resp_Group == "Grower" )
@@ -1797,8 +1819,18 @@ subsetQ_11_coded_agro <- mutate(subsetQ_11_coded_agro,
                                                                )))
 ```
 
+```{r table and graph Q11.2 source of advice agro, echo=FALSE, message=FALSE, warning=TRUE}
 
-```{r graph Q11.2 source of advice, echo=FALSE, message=FALSE, warning=TRUE}
+select(subsetQ_11_coded_agro, source, Q_11.2_count, percent_source1, sum_count_sources, percent_all_sources) %>% 
+datatable( options = list(pageLength = 35, dom = 't'),
+           caption = "Agronomist",
+            colnames = c( "source" = "source",
+                          "source 1 count" = "Q_11.2_count",
+                          "source 1 percent" = "percent_source1",
+                          "three sources count " = "sum_count_sources",
+                          "three sources percent" = "percent_all_sources")) %>%
+  formatPercentage(c("source 1 percent", "three sources percent"), 0)
+     
 ggplot(subsetQ_11_coded_agro, aes( source , percent_source1 ))+
   geom_col(fill = "grey70", color = "black")+
   #facet_wrap(. ~ Resp_Group)+
@@ -1837,7 +1869,9 @@ ggplot(subsetQ_11_coded_agro, aes( source , percent_all_sources ))+
 ```
 
 
-```{r Q11.2 source of advice grower, message=FALSE, warning=TRUE, include=FALSE}
+
+
+```{r Q11.2 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}
 
 
 ### use this this to count the how many we have in each class
@@ -1846,7 +1880,7 @@ subsetQ_11_coded_grower <- select(data, Q_11.2, Q_11.4, Q_11.6, Resp_Group) %>%
   filter(Resp_Group == "Grower" )
 
 
-#sum(is.na(subsetQ_11_coded_grower$Q_11.2)) #number of NA in this Question 44
+sum(is.na(subsetQ_11_coded_grower$Q_11.2)) #number of NA in this Question 44
 #sum(is.na(subsetQ_11_coded_grower$Q_11.4)) #number of NA in this Question 47
 #sum(is.na(subsetQ_11_coded_grower$Q_11.6)) #number of NA in this Question 57
 
@@ -1910,7 +1944,18 @@ subsetQ_11_coded_grower <- mutate(subsetQ_11_coded_grower,
 ```
 
 
-```{r graph Q11.2 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}
+```{r graph and table Q11.2 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}
+
+select(subsetQ_11_coded_grower, source, Q_11.2_count, percent_source1, sum_count_sources, percent_all_sources) %>% 
+datatable( options = list(pageLength = 35, dom = 't'),
+           caption = "Grower",
+            colnames = c( "source" = "source",
+                          "source 1 count" = "Q_11.2_count",
+                          "source 1 percent" = "percent_source1",
+                          "three sources count " = "sum_count_sources",
+                          "three sources percent" = "percent_all_sources")) %>%
+  formatPercentage(c("source 1 percent", "three sources percent"), 0)
+
 ggplot(subsetQ_11_coded_grower, aes( source , percent_source1 ))+
   geom_col(fill = "grey40", color = "black")+
   #facet_wrap(. ~ Resp_Group)+
@@ -1951,30 +1996,39 @@ ggplot(subsetQ_11_coded_grower, aes( source , percent_all_sources ))+
 
 ```
 
-Respondents were asked what the 3 main sources of information or advice for what nutrients and nutrient rate. 
-The results were graphed in two ways sources 1 only and also a combination source 1,2 & 3.
+#### **Comments notes on Question 11**
 
-Questioned asked to indicate if difference between N P and other nutrients, we have not considered this.
-Low response rate most didn't indicate a difference between nutrients.
+* Respondents were asked what the 3 main sources of information or advice for what nutrients and nutrient rate. 
+* The results were graphed in two ways sources 1 only and also a combination source 1,2 & 3.
+* The percentage of source 1 is expressed using the total number answering this question Agro (60)
+* The percentage of source 1 is expressed using the total number answering this question Grower (53 - I had a few strange responses that could be coded)
 
-For Agro response rate was:
-source 1 = 11 NA , source 2 = 14 NA and source 3 = 24
-For growers response rate was:
-source 1 = 44 NA , source 2 = 47 NA and source 3 = 57
+* For Agro response rate was:
+* source 1 = 11 NA , source 2 = 14 NA and source 3 = 24
+* For growers response rate was:
+* source 1 = 44 NA , source 2 = 47 NA and source 3 = 57
+
+* Questioned asked to indicate if difference between N P and other nutrients, we have not considered this.
+* Low response rate most didn't indicate a difference between nutrients.
+
+* The percentage of source 1, 2 and 3 is expressed using the total number answers for this question (not people) Agro is 162 and Grower is 142. **Check if this is the best approach**
 
 
 # **Soil testing** 
-This section explores how you use soil testing. If you have NOT done soil testing, please go to page  8.
+* This section explores how you use soil testing. If you have NOT done soil testing, please go to page  8.
+* the above commnet is from the survey script but some of the answeres to the below question don't indicate this split.
 
 #### **Question 12**
 
-Grower
+Grower)
 
 Explain your approach to soil testing P, N and other micronutrients ...
 
 * P
 * N
 * Micronutrients
+
+
 
 
 
