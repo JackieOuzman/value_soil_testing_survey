@@ -498,7 +498,7 @@ ggplot(Q2_regions_merged_agro_grower, aes(region_merge, Ave_Cropped_Area ))+
   theme(legend.position = "none")+
   labs(x= "Regions",
        y = "ha",
-       title = "Total area cropped - Grower",
+       title = "Total area cropped - Grower (merged EP)",
        subtitle = "",
        caption = "Q)  What is your average total area cropped (hectares, including lease etc) over the last 3 seasons?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
@@ -810,7 +810,16 @@ ggplot(Q4group_resp_percent, aes(Q_4_group, percent, fill = Resp_Group ))+
 
 
 
+
+
+
 **Question 4 with bins grouped and by regions merged**
+
+
+
+
+
+
 
 
 ```{r Q4 regions working1, echo=FALSE, warning=FALSE}
@@ -1126,7 +1135,7 @@ ggplot( nutr_def_all, aes(nutrient, percent, fill = Resp_Group ))+
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
   labs(x= "",
-       y = "Percent of all agronomist / grower with deficiency",
+       y = "Percent of all agronomist / grower",
        title = "Percent of clients / growers with type of nutrient deficiencies",
        subtitle = "",
        caption = "Q)  What are the main nutrient deficiencies")+
@@ -1137,8 +1146,8 @@ ggplot( nutr_def_all, aes(nutrient, percent, fill = Resp_Group ))+
 
 ```
 
-This might be a bit confusing, here we have pulled out all the responses that had a certain deficiency and then calculated the percentage of growers / or agronomist that have this deficiency, displaying the results above.
-For example for nitrogen; of the 71 agronomist 60 said they have client n deficiency - so this is 85%
+This might be a bit confusing, here we have counted the number of individual stating they have a certain deficiency and then expressed this as a percentage of all the growers / or agronomist in the survey, displaying the results above.
+For example, for nitrogen deficiencies; of the 71 agronomist in the survey, 60 said they have a client with n deficiency - so this is 85%
 
 Belinda Cay has reported similar values although her % are slightly different she is only using 70 agronomist rather than 71, not sure why?
 
@@ -1280,7 +1289,7 @@ Who makes the nutrient decisions on your farm?
 
 
 
-```{r Q7 awho makes decision, echo=FALSE}
+```{r Q7 who makes decision, echo=FALSE}
 
 Q7 <- filter (data, Resp_Group == "Grower" &  Q_7 !=  "NA")%>%
   group_by( Resp_Group) %>%
@@ -1305,6 +1314,15 @@ Q7 <- mutate(Q7, Q_7 = fct_relevel(
   )
 ))
 
+### table
+
+  datatable(Q7,options = list(pageLength = 35, dom = 't'),
+            colnames = c('Respondent' = 'Resp_Group', 
+                         'Who makes the decision' = 'Q_7',
+                         "Counts" = "n",
+                         "Percent" = "percent")) %>% 
+  formatPercentage('Percent', 0)
+
 ggplot(Q7, aes(Q_7 , percent ))+
   geom_col(fill = "grey40", color = "black")+
   #facet_wrap(. ~ Resp_Group)+
@@ -1321,10 +1339,17 @@ ggplot(Q7, aes(Q_7 , percent ))+
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
 ```
 
+
+
+
 #### **Comments notes on Question 7** 
 
 
 * 57 of the 99 growers responded to this question.
+
+
+
+
 
 
 #### **Question 8**
@@ -1442,8 +1467,8 @@ ggplot(Q8_1_3, aes(bin , percent))+
 
 ```
 
-* The percentage of agronomist who answered the question 64 out of possible 71
-
+* 64 agronomist answered this out of possible 71
+* The percentage is expressed by using a total of 64 agronomist (rather than 71).
 
 
 
@@ -1451,11 +1476,13 @@ ggplot(Q8_1_3, aes(bin , percent))+
 
 Agronomist)
 
-Q9.1 To what extent are you responsible for determining how much testing is done on your clients' farms?
+To what extent are you responsible for determining how much testing is done on your clients' farms? - Q9.1
 
 Grower)
 
-Q 9.1 To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist)
+To what extent does your agronomist determine how much testing is done on your farm? (i.e. % of decision made by your agronomist) - Q 9.1 
+
+
 
 ```{r Q9.1 how much testing working, message=FALSE, warning=TRUE, include=FALSE}
 
@@ -1520,8 +1547,8 @@ ggplot(Q9_1, aes(Q_9.1 , percent, fill =  Resp_Group))+
 filter(data, Q_9.2 !=  "NA") %>% 
   select( Resp_Group, Q_9.2) %>% 
 datatable(options = list(pageLength = 35, dom = 't'),
-   colnames = c( "other reasons" = "Q_9.2"))   
-          
+   colnames = c( "Other reasons" = "Q_9.2", 'Respondent' = 'Resp_Group'))   
+        
       
 
 ```
@@ -1532,12 +1559,13 @@ datatable(options = list(pageLength = 35, dom = 't'),
 
 #### **Comments notes on Question 9.1 and 9.2**
 
-Combined results for 90-100 and 100% to read >90%. 
-Agronomist had 63 respondents out of 71
-Grower had 56 respondents out of 99.
-Note that 'none' was included in the response to the question so it was included in the analysis (when calculating the percentage)
-All agronomist who answered this question (63/71) recommended testing - 'None' = 0
-While 6 growers answered none recommending testing (note that 56 growers out of a possible 99 answered this question
+* Combined results for 90-100 and 100% to read >90%. 
+* 63 agronomist responded to question, out of a possible 71
+* 56 grower responded to question, out of a possible 99.
+* Note that 'none' was included as a response to the question, so therefore it was included in the analysis (when calculating the percentage)
+* All agronomist who answered this question (63/71) recommended testing - 'None' = 0
+* While 6 growers answered none to recommending testing (note that 56 growers out of a possible 99 answered this question)
+* Just to be clear there are a group of survey participants that did not answer this question and there were a group that answered none to this question.
 
 
 Q9.2 other comments listed (above)
@@ -1547,24 +1575,18 @@ Q9.2 other comments listed (above)
 #### **Question 10** 
 
 
-Agronomist (Q_10.1)
+Agronomist)
 
-To what extent do the test results influence your recommendations?
+To what extent do the test results influence your recommendations?  (Q_10.1)
 
-Grower (Q_10.1)
+Grower)
 
-To what extent does your agronomist make recommendations based on the test results from your farm?
+To what extent does your agronomist make recommendations based on the test results from your farm?  (Q_10.1)
 
 
-Agronomist other (Q_10.2)
-This is text answer nominated by 6 agronomists.
+Agronomist other
+This is text answer nominated by 6 agronomists  (Q_10.2)
 
-* dependent upon nutrient
-* I do my own moisture test and own gut feel from visual and in season responses.
-* Historical decision making. 1 year once off can't guide too accurately.
-* basal amounts, peak and flow even around basal amounts 
-* rainfall 
-* Lime more than P
 
 
 ```{r Q10.1 how much testing, message=FALSE, warning=TRUE, include=FALSE}
@@ -1702,15 +1724,18 @@ ggplot(Q10_1_group_df, aes(Q_10_1group , percent, fill = Resp_Group ))+
 
 
 
+
+
+
 #### **Comments notes on Question 10** 
 
 * This question can be a bit confusing.
-* The question was asked as a percentage - this make the graph / analysis a percentage of a percentage, which is hard to interpreter.
+* The question was asked as a percentage - this make the graph / analysis a percentage of a percentage, which is hard to interpret
 * Each respondent was asked: 
 * to what extent do test results influence recommendations, the respondents were asked to nominate a certain percentage category e.g. between 10-30% of test results influence the recommendation this is what is displayed on the x axis.
 
 * Not all participants in the survey answered this question, 63 agronomist answered and 56 growers.
-* The perecnatge on the graph indicate the percenatge of agronomist or growers who answered the question.
+* The percentage on the graph indicate the percentage of agronomist or growers who answered the question.
 * Belinda Cay grower values are a bit different to mine - could the a problem with the last grouping for the question. I have coded 90-100 and 100% as > 90% while I don't think Belinda has done this.
 
 * I have done some grouping of the bins, so we have two bins; most of the time example most of the time > 50%  and not much of the time <50%
@@ -1747,8 +1772,6 @@ Q_11.2 is source 1 coded dropping the indication if different
 
 
 ```{r Q11.2 source of advice, message=FALSE, warning=TRUE, include=FALSE}
-
-######################          THIS IS BETTER              #####################
 
 
 data$Q_11.2
@@ -1871,7 +1894,7 @@ ggplot(subsetQ_11_coded_agro, aes( source , percent_all_sources ))+
 
 
 
-```{r Q11.2 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}
+```{r Q11.2 source of advice grower, message=FALSE, warning=TRUE, include=FALSE}
 
 
 ### use this this to count the how many we have in each class
@@ -2006,17 +2029,23 @@ ggplot(subsetQ_11_coded_grower, aes( source , percent_all_sources ))+
 * For Agro response rate was:
 * source 1 = 11 NA , source 2 = 14 NA and source 3 = 24
 * For growers response rate was:
-* source 1 = 44 NA , source 2 = 47 NA and source 3 = 57
+* source 1 = 44 NA , source 2 = 47 NA and source 3 = 57 (not were had a few responses that could not be coded)
 
 * Questioned asked to indicate if difference between N P and other nutrients, we have not considered this.
-* Low response rate most didn't indicate a difference between nutrients.
 
-* The percentage of source 1, 2 and 3 is expressed using the total number answers for this question (not people) Agro is 162 and Grower is 142. **Check if this is the best approach**
+
+* The percentage of source 1, 2 and 3 is expressed using the total number answers for this question (not people) Agro is 162 and Grower is 142. * **Check if this is the best approach**
+
+
+
 
 
 # **Soil testing** 
 * This section explores how you use soil testing. If you have NOT done soil testing, please go to page  8.
-* the above commnet is from the survey script but some of the answeres to the below question don't indicate this split.
+* The above comment is from the survey script but some of the answers to the below question don't indicate this split.
+
+
+
 
 #### **Question 12**
 
@@ -2059,84 +2088,91 @@ data_q12_1 <- mutate(data_q12_1,
                      Q_12.1_ID  == "9" ~  "Unspecified/random",
                      Q_12.1_ID  == "0" ~  "NA"))
 
-
-
 data_q12_1summary_agro <- filter (data_q12_1, Resp_Group == "Agronomist" & names_display !=  "NA")%>%
+  group_by(Resp_Group) %>%
   count(names_display) %>% 
   mutate(percent = 
            (freq = n / sum(n))) %>% 
   arrange(desc(percent))
 
+add_lines <- tibble (Resp_Group = c("Agronomist"),
+                     names_display = c("Deep"),
+                     n = c(0),
+                     percent = c(0))
 
 
-data_q12_1summary_agro 
-data_q12_1summary_agro<- mutate(data_q12_1summary_agro, names_display = fct_relevel(names_display, 
-                                                                      c("Programs",
-                                                                        "Shallow", 
-                                                                        "Unspecified/random",
-                                                                        "All depths",
-                                                                        "Combo",
-                                                                        "Yield maps",
-                                                                        "Cowell P",
-                                                                        "Don't test")))
-```
+data_q12_1summary_agro1 <- full_join(data_q12_1summary_agro, add_lines)
+data_q12_1summary_agro1
 
-```{r graph - Q12.1 source of advice agro, echo=FALSE, message=FALSE, warning=TRUE}
-ggplot(data_q12_1summary_agro, aes(names_display , percent ))+
-  geom_col(fill = "grey40", color = "black")+
-  #facet_wrap(. ~ Resp_Group)+
-  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
-  theme_classic()+
-  labs(x= "",
-       y = "",
-       fill = "",
-       title = "Explain your approach to soil testing P?",
-       subtitle = "Agronomist only",
-       caption = "Q) Explain your approach to soil testing P?")+
-  theme(axis.text.x=element_text(angle=45,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
 
-```
-
-```{r Q12.1 source of advice grower, message=FALSE, warning=TRUE, include=FALSE}
 data_q12_1summary_grower <- filter (data_q12_1, Resp_Group == "Grower" & names_display !=  "NA")%>%
+  group_by(Resp_Group) %>% 
   count(names_display) %>% 
   mutate(percent = 
            (freq = n / sum(n))) %>% 
   arrange(desc(percent))
 
 
-data_q12_1summary_grower<- mutate(data_q12_1summary_grower, names_display = fct_relevel(names_display, 
-                                                                      c("Programs",
-                                                                        "Shallow", 
-                                                                        "Unspecified/random",
-                                                                        "All depths",
-                                                                        "Combo",
-                                                                        "Yield maps",
-                                                                        "Cowell P",
-                                                                        "Don't test",
-                                                                        "Deep")))
+
+data_q12_1summary_agro_grower <- rbind(data_q12_1summary_agro1,data_q12_1summary_grower )
+data_q12_1summary_agro_grower
+unique(data_q12_1summary_agro_grower$names_display)
+
+data_q12_1summary_agro_grower<- mutate(data_q12_1summary_agro_grower, names_display = fct_relevel(names_display, 
+                                                                                        c("Programs",
+                                                                                          "Shallow", 
+                                                                                          "Unspecified/random",
+                                                                                          "All depths",
+                                                                                          "Combo",
+                                                                                          "Yield maps",
+                                                                                          "Cowell P",
+                                                                                          "Don't test",
+                                                                                          "Deep")))
+
+
+
 ```
 
 
-```{r graph - Q12.1 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}
-ggplot(data_q12_1summary_grower, aes(names_display , percent ))+
-  geom_col(fill = "grey70", color = "black")+
-  #facet_wrap(. ~ Resp_Group)+
+
+
+
+
+```{r graph and table- Q12.1 source of advice agro, echo=FALSE, message=FALSE, warning=TRUE}
+
+datatable(data_q12_1summary_agro_grower,
+            options = list(pageLength = 35, dom = 't'),
+            # caption = "Grower",
+             colnames = c( "Respondent" = "Resp_Group",
+                           "Approach" = "names_display",
+                           "count" = "n",
+                           "percent" = "percent")) %>%
+  formatPercentage(c("percent"), 0)
+
+ggplot(data_q12_1summary_agro_grower, aes(names_display , percent, fill = Resp_Group  )) +
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  geom_col()+
+  facet_wrap(. ~ Resp_Group)+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
        y = "",
        fill = "",
        title = "Explain your approach to soil testing P?",
-       subtitle = "Grower only",
+       subtitle = "",
        caption = "Q) Explain your approach to soil testing P?")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
-        plot.caption = element_text(size = 8)) + 
+        plot.caption = element_text(size = 8),
+        legend.position =  "") + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
 
+
 ```
+
+
+
+
+
 
 
 ```{r Q12.2 source of advice agro, message=FALSE, warning=TRUE, include=FALSE}
@@ -2169,52 +2205,24 @@ data_q12_2 <- mutate(data_q12_2,
 
 
 data_q12_2summary_agro <- filter (data_q12_2, Resp_Group == "Agronomist" & names_display !=  "NA")%>%
+  group_by(Resp_Group) %>%
   count(names_display) %>% 
   mutate(percent = 
            (freq = n / sum(n))) %>% 
   arrange(desc(percent))
 
-
-
-
-data_q12_2summary_agro<- mutate(data_q12_2summary_agro, names_display = fct_relevel(names_display, 
-                                                                      c("Deep",
-                                                                        "All depths",
-                                                                        "Programs",
-                                                                        "Unspecified/random",
-                                                                        "Don't test",
-                                                                        "Yield maps",
-                                                                        "Combo",
-                                                                        "Shallow")))
-                                                                        #"Cowell P"
-```
-
-```{r graph - Q12.2 source of advice agro, echo=FALSE, message=FALSE, warning=TRUE}
-
-ggplot(data_q12_2summary_agro, aes(names_display , percent ))+
-  geom_col(fill = "grey70", color = "black")+
-  theme_classic()+
-  labs(x= "",
-       y = "",
-       fill = "",
-       title = "Explain your approach to soil testing N?",
-       subtitle = "Agronomist only",
-       caption = "Q) Explain your approach to soil testing N?")+
-  theme(axis.text.x=element_text(angle=45,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
-
-```
-
-```{r Q12.2 source of advice grower, message=FALSE, warning=TRUE, include=FALSE}
 data_q12_2summary <- filter (data_q12_2, Resp_Group == "Grower" & names_display !=  "NA")%>%
+  group_by(Resp_Group) %>%
   count(names_display) %>% 
   mutate(percent = 
            (freq = n / sum(n))) %>% 
   arrange(desc(percent))
 
-data_q12_2summary 
-data_q12_2summary<- mutate(data_q12_2summary, names_display = fct_relevel(names_display, 
+data_q12_2summary
+data_q12_2summary_agro
+data_q12_2summary_agro_grower <- rbind(data_q12_2summary, data_q12_2summary_agro)
+
+data_q12_2summary_agro_grower<- mutate(data_q12_2summary_agro_grower, names_display = fct_relevel(names_display, 
                                                                           c("Deep",
                                                                             "All depths",
                                                                             "Programs",
@@ -2223,28 +2231,49 @@ data_q12_2summary<- mutate(data_q12_2summary, names_display = fct_relevel(names_
                                                                             "Yield maps",
                                                                             "Combo",
                                                                             "Shallow")))
-#"Cowell P"
 
 ```
 
-```{r graph - Q12.2 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}
-ggplot(data_q12_2summary, aes(names_display , percent ))+
-  geom_col(fill = "grey40", color = "black")+
+```{r graph and Table- Q12.2 source of advice agro, echo=FALSE, message=FALSE, warning=TRUE}
+
+datatable(data_q12_3summary_agro_grower,
+          options = list(pageLength = 35, dom = 't'),
+          # caption = "Grower",
+          colnames = c( "Respondent" = "Resp_Group",
+                        "Approach" = "names_display",
+                        "count" = "n",
+                        "percent" = "percent")) %>%
+  formatPercentage(c("percent"), 0)
+
+# data_q12_3summary_agro_grower %>% 
+#   group_by(Resp_Group) %>% 
+# summarise(sum = sum(n))
+
+
+
+ggplot(data_q12_2summary_agro_grower, aes(names_display , percent, fill = Resp_Group ))+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  geom_col()+
+  facet_wrap(. ~ Resp_Group)+
   theme_classic()+
   labs(x= "",
        y = "",
        fill = "",
        title = "Explain your approach to soil testing N?",
-       subtitle = "Grower only",
+       subtitle = "",
        caption = "Q) Explain your approach to soil testing N?")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
-        plot.caption = element_text(size = 8)) + 
+        plot.caption = element_text(size = 8),
+        legend.position =  "") + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
-
 
 ```
 
-```{r Q12.3 source of advice ago, message=FALSE, warning=TRUE, include=FALSE}
+
+
+
+
+```{r Q12.3 source of advice both, message=FALSE, warning=TRUE, include=FALSE}
 
 
 headers12_3 <- read_excel("Q12_ Assigning_Category ID_22.10.19.xlsx", 
@@ -2276,29 +2305,73 @@ data_q12_3 <- mutate(data_q12_3,
                      Q_12.3_ID  == "11" ~  "Soil & Plant"))
 
 
+
+
+
+
 data_q12_3summary_agro <- filter (data_q12_3, Resp_Group == "Agronomist" & names_display !=  "NA")%>%
+  group_by(Resp_Group) %>%
   count(names_display) %>% 
   mutate(percent = 
            (freq = n / sum(n))) %>% 
   arrange(desc(percent))
 
- 
-data_q12_3summary_agro<- mutate(data_q12_3summary_agro, names_display = fct_relevel(names_display, 
-                                                                          c("Plant",
-                                                                            "Soil & Plant",
-                                                                            "Unspecified/random",
-                                                                            "Programs",
-                                                                            "All depths",
-                                                                            "Don't test",
-                                                                            "Shallow", 
-                                                                            "Combo")))
-                                                                            #"Yield maps"
+data_q12_3summary_agro
+
+
+add_lines <- tibble (Resp_Group = c("Agronomist"),
+                     names_display = c("Yield maps"),
+                     n = c(0),
+                     percent = c(0))
+
+data_q12_1summary_agro1 <- full_join(data_q12_3summary_agro, add_lines)
+
+
+data_q12_3summary_grower <- filter (data_q12_3, Resp_Group == "Grower" & names_display !=  "NA")%>%
+  group_by(Resp_Group) %>%
+  count(names_display) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+
+add_lines_g <- tibble (Resp_Group = c("Grower", "Grower"),
+                     names_display = c("All depths","Shallow" ),
+                     n = c(0, 0),
+                     percent = c(0, 0))
+data_q12_3summary_grower1 <- full_join(data_q12_3summary_grower, add_lines_g)
+unique(data_q12_1summary_agro1$names_display)
+unique(data_q12_3summary_grower1$names_display)
+dim(data_q12_1summary_agro1)
+dim(data_q12_3summary_grower1)
+
+data_q12_3summary_agro_grower <- rbind(data_q12_1summary_agro1, data_q12_3summary_grower1)
+
+unique(data_q12_3summary_agro_grower$names_display)
+data_q12_3summary_agro_grower<- mutate(data_q12_3summary_agro_grower, names_display = fct_relevel(names_display, 
+                                                                                        c("Plant",
+                                                                                          "Soil & Plant",
+                                                                                          "Unspecified/random",
+                                                                                          "Programs",
+                                                                                          "All depths",
+                                                                                          "Don't test",
+                                                                                          "Shallow", 
+                                                                                          "Combo",
+                                                                                          "Yield maps")))
 
 ```
 
-```{r graph - Q12.3 source of advice agro, echo=FALSE, message=FALSE, warning=TRUE}
-ggplot(data_q12_3summary_agro, aes(names_display , percent ))+
-  geom_col(fill = "grey70", color = "black")+
+```{r graph and table - Q12.3 source of advice both, echo=FALSE, message=FALSE, warning=TRUE}
+
+
+
+
+
+
+
+ggplot(data_q12_3summary_agro_grower, aes(names_display , percent, fill= Resp_Group ))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group)+
   theme_classic()+
   labs(x= "",
        y = "",
@@ -2307,7 +2380,8 @@ ggplot(data_q12_3summary_agro, aes(names_display , percent ))+
        subtitle = "Agronomist only",
        caption = "Q) Explain your approach to soil testing micronutrients?")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
-        plot.caption = element_text(size = 8)) + 
+        plot.caption = element_text(size = 8),
+        legend.position =  "") + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
 
 ```
@@ -2352,11 +2426,17 @@ ggplot(data_q12_3summary_grower, aes(names_display , percent ))+
 ```
 
 ##### Comments on question 12
-Need to check this is best way to present!
+
+* The response from survey participants changes with the 3 questions.
+* For P testing - 56 agronomists responded and 42 growers
+* For N testing - 52 agronomists responded and 45 growers
+* For Micro nutrients testing - 41 agronomists responded and 25 growers
+The percentages are expressed using the above total (i.e. for the participants that answered the question)
+
+#### **Question 13** 
 
 
-#### **Question 13** Check over output
-Agronomist
+Agronomist)
 
 Can you please provide some specific information on ..
 
@@ -2373,7 +2453,7 @@ Note for this question agronomist were asked to nominate a bin.
 * 5-10%
 * 50 -100%
 
-Grower
+Grower)
 
 Can you please provide some specific information on ..
 
@@ -2392,6 +2472,8 @@ Note for this question agronomist were asked to nominate a bin.
 
 Note the data set has NA these are not displayed in the graphs
 But they have been included in the analysis for the counts.
+
+
 
 ```{r Q13 data work up and DT summary, include=FALSE}
 
