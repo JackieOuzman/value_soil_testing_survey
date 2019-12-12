@@ -3796,7 +3796,7 @@ ggplot(K_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
 
 
 
-```{r graph and table test _Q16 K}
+```{r graph and table test _Q16 K a}
 # table
  ##Table for frquency
 filter(K_test_numb_counts, Resp_Group == "Agronomist") %>% 
@@ -4420,8 +4420,21 @@ Please indicate why you don't do more SOIL Nitrogen testing:
 * Not being able to get soil test results at the right time for decision making
 * General comments:
 
-```{r function for to cal the % of respnondents, echo=FALSE}
+```{r function for to cal the % of respnondents, include=FALSE}
 ##function for to cal the % of respnondents
+# summary_stats_all_resp <- function(df, group_by, clm_in_df){  
+#   df <- filter( df, !! clm_in_df != "NA") %>% 
+#     group_by(!! group_by) %>% 
+#     count(!! clm_in_df) %>% 
+#     mutate(
+#       Resp_numb = case_when(Resp_Group == "Agronomist" ~ 71,
+#                             Resp_Group == "Grower" ~ 99),
+#       percent_all = n / Resp_numb)
+#   
+#   colnames(df)[2] <- "reason"
+#   return(df)
+# }
+
 summary_stats_all_resp <- function(df, group_by, clm_in_df){  
   df <- filter( df, !! clm_in_df != "NA") %>% 
     group_by(!! group_by) %>% 
@@ -4438,7 +4451,7 @@ summary_stats_all_resp <- function(df, group_by, clm_in_df){
 
 ```
 
-```{r data prep Q19}
+```{r data prep Q19, include=FALSE}
 #use function
 
 Ncost <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_19.1))
@@ -4458,15 +4471,45 @@ reason_soil_N <- rbind(Ncost,
               accurancy,
               decsision,
               timing)
+## add this 12/12
+
+reason_soil_N <- reason_soil_N %>%
+  group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n)))
 
 
 ```
 
-```{r graphs Q19}
+```{r graphs and table Q19}
 reason_soil_N
+filter(reason_soil_N, Resp_Group == "Agronomist") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Agronomist")%>%
+  formatPercentage(c("percent"))
+
+filter(reason_soil_N, Resp_Group == "Grower") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Grower")%>%
+  formatPercentage(c("percent"))
+
 
 #text is too long
-reason_soil_N 
+
 
 reason_soil_N <- mutate(
   reason_soil_N,
@@ -4544,16 +4587,21 @@ reason_soil_P<- rbind(
   Q20_why_not_moreP_test_profit_decis,
   Q20_why_not_moreP_too_slow
 )
+## add this 12/12
 
+reason_soil_P <- reason_soil_P %>%
+  group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n)))
 
 ```
 
 
 ```{r graphs Q20}
-reason_soil_P
+
 
 #text is too long
-reason_soil_P 
+ 
 
 reason_soil_P <- mutate(
   reason_soil_P,
@@ -4567,8 +4615,33 @@ reason_soil_P <- mutate(
     reason == "Not being able to get soil test results at the right time for decision making" ~ "get results at right time"
   )
 )
+### table
+filter(reason_soil_P, Resp_Group == "Agronomist") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Agronomist")%>%
+  formatPercentage(c("percent"))
 
-ggplot(reason_soil_P, aes (x =  reorder(names_display, -percent), y = percent, fill = Resp_Group))+
+filter(reason_soil_P, Resp_Group == "Grower") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Grower")%>%
+  formatPercentage(c("percent"))
+
+### graph
+ggplot(reason_soil_N, aes (x =  reorder(names_display, -percent), y = percent, fill = Resp_Group))+
   geom_col()+
   scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(.~ Resp_Group )+
@@ -4600,7 +4673,6 @@ Please indicate if you agree/disagree with the following statements in relation 
 
 
 ```{r q21 data prep, include=FALSE}
-
 data$Q_21.1
 #group the Q21 data together
 subsetQ21 <- select(data, Q_21.1, Q_21.2, Q_21.3, Q_21.4, Q_21.5, Resp_Group) 
@@ -4691,21 +4763,34 @@ subsetQ21.4_summary <- subsetQ21.4_summary %>%
     question = "my profitability ",
     scale = Q_21.4
   ) 
-
-
+subsetQ21.1_summary <- ungroup(subsetQ21.1_summary)
+subsetQ21.1_summary <- select(subsetQ21.1_summary , -"Q_21.1")
+subsetQ21.2_summary <- ungroup(subsetQ21.2_summary)
+subsetQ21.2_summary <- select(subsetQ21.2_summary , -"Q_21.2")
+subsetQ21.3_summary <- ungroup(subsetQ21.3_summary)
+subsetQ21.3_summary <- select(subsetQ21.3_summary , -"Q_21.3")
+subsetQ21.4_summary <- ungroup(subsetQ21.4_summary)
+subsetQ21.4_summary <- select(subsetQ21.4_summary , -"Q_21.4")
 
 subsetQ21_summary <- rbind(subsetQ21.1_summary,
                            subsetQ21.2_summary,
                            subsetQ21.3_summary,
                            subsetQ21.4_summary)
-
-subsetQ21_summary <- select(subsetQ21_summary,
-                            Resp_Group,
-                            n,
-                            Resp_numb_for_question,
-                            percent_of_numb_resp,
-                            question,scale)
 subsetQ21_summary
+# subsetQ21_summary <- select(subsetQ21_summary,
+#                             Resp_Group,
+#                             n,
+#                             Resp_numb_for_question,
+#                             percent_of_numb_resp,
+#                             question,scale)
+ subsetQ21_summary$question
+unique(subsetQ21_summary$question)
+
+
+
+
+
+
 
 
 ```
@@ -4724,23 +4809,221 @@ subsetQ21_summary$scale <-
       "Strongly disagree"
     )
   )
+####################################################################################################
+#  more profitable table 1
+filter(subsetQ21_summary,
+       Resp_Group == "Agronomist" &
+         question == "more profitable") %>%
+  select(Resp_Group, scale, n, percent_of_numb_resp, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent_of_numb_resp",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "more profitable - Agronomist")%>%
+  formatPercentage(c("percent"))
 
-unique(subsetQ21_summary$scale)
+#  more profitable table 2
+filter(subsetQ21_summary,
+       Resp_Group == "Grower" &
+         question == "more profitable") %>%
+  select(Resp_Group, scale, n, percent_of_numb_resp, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent_of_numb_resp",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "more profitable - Grower")%>%
+  formatPercentage(c("percent"))
 
-ggplot(subsetQ21_summary, aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_resp, 
+#  more profitable graph
+filter(subsetQ21_summary, question == "more profitable" ) %>% 
+ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_resp, 
                                fill = Resp_Group))+
-  geom_col()+
+  geom_col() +
   scale_fill_manual(values=c("grey70", "grey40"))+
-  facet_wrap(question~ Resp_Group )+
+  facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
        y = "",
        title = "",
        subtitle = "",
-       caption = "Q)  Please indicate why you don't do more soil P testing?")+
+       caption = "Q)My clients businesses would be more profitable if they did more soil testing than they do now")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+
+###################################################################################################
+
+## Uncertainty table 1
+filter(subsetQ21_summary,
+       Resp_Group == "Agronomist" &
+         question == "Uncertainty") %>%
+  select(Resp_Group, scale, n, percent_of_numb_resp, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent_of_numb_resp",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Uncertainty - Agronomist")%>%
+  formatPercentage(c("percent"))
+
+
+
+#   Uncertainty table 2
+filter(subsetQ21_summary,
+       Resp_Group == "Grower" &
+         question == "Uncertainty") %>%
+  select(Resp_Group, scale, n, percent_of_numb_resp, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent_of_numb_resp",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Uncertainty - Grower")%>%
+  formatPercentage(c("percent"))
+
+#  more profitable graph
+filter(subsetQ21_summary, question == "Uncertainty" ) %>% 
+ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_resp, 
+                               fill = Resp_Group))+
+  geom_col() +
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "",
+       title = "",
+       subtitle = "",
+       caption = "Q)Uncertainty about how the season will turn out makes it hard to get value from soil testing results")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+######################################################################################
+
+#recommend table 1
+filter(subsetQ21_summary,
+       Resp_Group == "Agronomist" &
+         question == "recommend") %>%
+  select(Resp_Group, scale, n, percent_of_numb_resp, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent_of_numb_resp",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "recommend - Agronomist")%>%
+  formatPercentage(c("percent"))
+
+#recommend table 2
+filter(subsetQ21_summary,
+       Resp_Group == "Grower" &
+         question == "recommend") %>%
+  select(Resp_Group, scale, n, percent_of_numb_resp, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent_of_numb_resp",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "recommend - Grower")%>%
+  formatPercentage(c("percent"))
+# graph recommend
+filter(subsetQ21_summary, question == "recommend" ) %>% 
+ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_resp, 
+                               fill = Resp_Group))+
+  geom_col() +
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "",
+       title = "",
+       subtitle = "",
+       caption = "Q)My clients recommend the use of regular soil testing to other local farmers")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+
+#############################################################################################################
+
+
+
+#my profitability table 1
+filter(subsetQ21_summary,
+       Resp_Group == "Agronomist" &
+         question == "my profitability ") %>%
+  select(Resp_Group, scale, n, percent_of_numb_resp, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent_of_numb_resp",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "my profitability - Agronomist")%>%
+  formatPercentage(c("percent"))
+
+#my profitability table 2
+filter(subsetQ21_summary,
+       Resp_Group == "Grower" &
+         question == "my profitability ") %>%
+  select(Resp_Group, scale, n, percent_of_numb_resp, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent_of_numb_resp",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "my profitability - Grower")%>%
+  formatPercentage(c("percent"))
+
+
+
+# graph my profitability
+filter(subsetQ21_summary, question == "my profitability " ) %>% 
+ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_resp, 
+                               fill = Resp_Group))+
+  geom_col() +
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "",
+       title = "",
+       subtitle = "",
+       caption = "Q)The use of soil testing on my farm increases my profitability (Grower only Q)")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+
 
 ```
 
