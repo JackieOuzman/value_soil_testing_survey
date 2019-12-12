@@ -1457,7 +1457,7 @@ ggplot(Q8_1_3, aes(bin , percent))+
   labs(x= "",
        y = "percentage",
        fill = "",
-       title = "Rely somewhat on agronomist to make nutrient decisions?",
+       title = "Rely on agronomist to make nutrient decisions?",
        subtitle = "Agronomist only",
        caption = "Q) Of your clients, how many of them rely somewhat on you to make the nutrient decisions?")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
@@ -1881,7 +1881,7 @@ ggplot(subsetQ_11_coded_agro, aes( source , percent_all_sources ))+
        y = "",
        fill = "",
        title = "Main three sources of information or advice for what nutrients",
-       subtitle = "Agronomist only",
+       subtitle = "",
        caption = "What are your 3 main sources of information or advice for what nutrients you recommend and at what rate? 
                      To what extent does your agronomist make recommendations based on the test results from your farm?  ")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
@@ -2378,7 +2378,7 @@ ggplot(data_q12_3summary_agro_grower, aes(names_display , percent, fill= Resp_Gr
        y = "",
        fill = "",
        title = "Explain your approach to soil testing micronutrients?",
-       subtitle = "Agronomist only",
+       subtitle = "",
        caption = "Q) Explain your approach to soil testing micronutrients?")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
         plot.caption = element_text(size = 8),
@@ -2388,47 +2388,13 @@ ggplot(data_q12_3summary_agro_grower, aes(names_display , percent, fill= Resp_Gr
 ```
 
 
-```{r Q12.3 source of advice grower, message=FALSE, warning=TRUE, include=FALSE}
-
-data_q12_3summary_grower <- filter (data_q12_3, Resp_Group == "Grower" & names_display !=  "NA")%>%
-  count(names_display) %>% 
-  mutate(percent = 
-           (freq = n / sum(n))) %>% 
-  arrange(desc(percent))
 
 
-data_q12_3summary_grower<- mutate(data_q12_3summary_grower, names_display = fct_relevel(names_display, 
-                                                                          c("Plant",
-                                                                            "Soil & Plant",
-                                                                            "Unspecified/random",
-                                                                            "Programs",
-                                                                            #"All depths",
-                                                                            "Don't test",
-                                                                            #"Shallow", 
-                                                                            "Combo",
-                                                                            "Yield maps")))
-#
-```
 
-```{r graph - Q12.3 source of advice grower, echo=FALSE, message=FALSE, warning=TRUE}
-ggplot(data_q12_3summary_grower, aes(names_display , percent ))+
-  geom_col(fill = "grey40", color = "black")+
-  theme_classic()+
-  labs(x= "",
-       y = "",
-       fill = "",
-       title = "Explain your approach to soil testing micronutrients?",
-       subtitle = "Grower only",
-       caption = "Q) Explain your approach to soil testing micronutrients?")+
-  theme(axis.text.x=element_text(angle=45,hjust=1),
-        plot.caption = element_text(size = 8)) + 
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
-
-```
 
 ##### Comments on question 12
 
-* The response from survey participants changes with the 3 questions.
+* The response to the question from the survey participants changes with the 3 questions asked.
 * For P testing - 56 agronomists responded and 42 growers
 * For N testing - 52 agronomists responded and 45 growers
 * For Micro nutrients testing - 41 agronomists responded and 25 growers
@@ -2630,7 +2596,7 @@ Q13_percent_testing_for_table <- mutate(Q13_percent_testing,
 
 ```
 
-```{r Q13 graphs and table, echo=FALSE, warning=TRUE}
+```{r Q13 graphs and table, echo=FALSE, warning=FALSE}
 ##Table
 #Q13_percent_testing_for_table
 
@@ -2721,6 +2687,8 @@ Q) What % of your cropped land was tested for P in 2018?")
     scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.4))
 ```
 
+
+Additional grouping to make the answer easier to interpenetrate.
 
 ```{r Q13 grouping other options, include=FALSE}
 
@@ -2979,7 +2947,7 @@ filter(subset_soil_testQ_13_narrow, bins != "other" &
 
 ##### Comments on question 12
 
-* I have tried to take out the percentage of percentage graph
+* I have tried to take out the percentage of percentage graph, by grouping the data.
 
 
 * Agronomists with more than half of clients soil testing in 2018 
@@ -2992,7 +2960,7 @@ filter(subset_soil_testQ_13_narrow, bins != "other" &
 
 Note that for this analysis I have removed the NA values before re classing the bins
 I have another bin called 'other' which is used to get the percentage, this includes 5-10% grouping.
-This just mean that I am calculating the percentage based on all the respondents (but not the NA)
+This just mean that I am calculating the percentage based on all the people that respondend to the question (but not the NA)
 In the table you can see the bin called other, but I have not displayed it in the graphs.
 
 Hope this is clear - not sure if this is what you were after?
@@ -3075,17 +3043,17 @@ soil_test_use <- function(data_df, test1, numb_sample_test1,
 #inputs are the 6clms that contain the data and the test used 
 #"Organic Carbon", "Total N", "Mineral N (Nitrate/Ammonium)"
 soil_test_use(data, quo(Q_14.1.1), quo(Q_14.1.3), 
-                    quo(Q_14.2.1), quo(Q_14.2.3),
-                    quo(Q_14.3.1), quo(Q_14.3.3),
-                    "test_OC", "Organic Carbon")
+              quo(Q_14.2.1), quo(Q_14.2.3),
+              quo(Q_14.3.1), quo(Q_14.3.3),
+              "test_OC", "Organic Carbon")
 soil_test_use(data, quo(Q_14.1.1), quo(Q_14.1.3), 
-                    quo(Q_14.2.1), quo(Q_14.2.3),
-                    quo(Q_14.3.1), quo(Q_14.3.3),
-                    "test_MN", "Mineral N (Nitrate/Ammonium)")
+              quo(Q_14.2.1), quo(Q_14.2.3),
+              quo(Q_14.3.1), quo(Q_14.3.3),
+              "test_MN", "Mineral N (Nitrate/Ammonium)")
 soil_test_use(data, quo(Q_14.1.1), quo(Q_14.1.3), 
-                    quo(Q_14.2.1), quo(Q_14.2.3),
-                    quo(Q_14.3.1), quo(Q_14.3.3),
-                    "test_TN", "Total N")
+              quo(Q_14.2.1), quo(Q_14.2.3),
+              quo(Q_14.3.1), quo(Q_14.3.3),
+              "test_TN", "Total N")
 #count the number of people using this test and join 
 OC <- test_OC %>%
   filter(!is.na(test)) %>%
@@ -3099,52 +3067,113 @@ TN <- test_TN %>%
   filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
   count(test)
+
+
 N_test_counts <- rbind(OC, MN, TN)
-#Add in how many people in each group to cal the %
+N_test_counts
+
+### add this 12/12
+
+N_test_counts <- N_test_counts %>%
+group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n))) 
+
+N_test_counts
+
+
+#Add in how many people in each group to cal the % for all survey partipants
 N_test_counts <- N_test_counts %>% 
   mutate(Resp_numb = case_when(
     Resp_Group == "Agronomist" ~ 71,
     Resp_Group == "Grower"  ~ 99
   ),
-percent = n/Resp_numb
-    )
-N_test_counts
+  percent_all = n/Resp_numb
+  )
+N_test_counts #This is one data set to plot......
+
+
 ### number of people sampling at certain density number of samples per paddock
+test_OC
 OC_numb <- test_OC %>%
   filter(!is.na(numb_of_test)) %>%
-  group_by( Resp_Group) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
   count(numb_of_test) 
 MN_numb <- test_MN %>%
   filter(!is.na(numb_of_test)) %>%
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 TN_numb <- test_TN %>%
   filter(!is.na(numb_of_test)) %>%
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
+
+ OC_numb
+ MN_numb
+ TN_numb
+
+
 N_test_numb_counts <- rbind(OC_numb, MN_numb, TN_numb)
+N_test_numb_counts
+N_test_numb_counts <- group_by(N_test_numb_counts, Resp_Group, numb_of_test) %>%
+  summarise(number_test_all = sum(n))
+  
+N_test_numb_counts
+
+
+#add this 12/12
+N_test_numb_counts <- N_test_numb_counts %>%
+  group_by(Resp_Group) %>% 
+ mutate(count_all_test_all_depth = sum(number_test_all),
+        perecnt = number_test_all / count_all_test_all_depth)
+N_test_numb_counts
+
 N_test_numb_counts <- N_test_numb_counts %>% 
   mutate(Resp_numb = case_when(
     Resp_Group == "Agronomist" ~ 71,
     Resp_Group == "Grower"  ~ 99
-  ),
-percent = n/Resp_numb
-    )
-N_test_numb_counts
+   ),
+   percent_all = number_test_all/(Resp_numb)
+   )
+
+
+N_test_numb_counts #This is one data set to plot......
+
 
 ```
 
 
-```{r Q14 data graphs N, echo=FALSE}
-#Table
-select(N_test_counts,Resp_Group, test , n,   percent) %>%
-datatable( colnames = c("Respondent" = "Resp_Group",
-                        "count" = "n",
-                         "test" = "test" ,
-                         "percent" = "percent" ),
-           options = list(pageLength = 35,  dom = 't'))%>%
-     formatPercentage(c("percent"
-                        ))
+```{r Q14 data table type graphs N, echo=FALSE}
+### Tables for type of test used...
+
+filter(N_test_counts, Resp_Group == "Agronomist") %>% 
+select(Resp_Group, test , n,   percent, percent_all) %>%
+  datatable( colnames = c("Respondent" = "Resp_Group",
+                          "count" = "n",
+                          "test" = "test" ,
+                          "percent" = "percent",
+                          "percent of all participants" = "percent_all"
+                          ),
+             options = list(pageLength = 35,  dom = 't'),
+             caption = "Type of test used - Agronomist")%>%
+  formatPercentage(c("percent", "percent of all participants"
+  ))
+
+filter(N_test_counts, Resp_Group == "Grower") %>% 
+  select(Resp_Group, test , n,   percent, percent_all) %>%
+  datatable( colnames = c("Respondent" = "Resp_Group",
+                          "count" = "n",
+                          "test" = "test" ,
+                          "percent" = "percent",
+                          "percent of all participants" = "percent_all"
+  ),
+  options = list(pageLength = 35,  dom = 't'),
+  caption = "Type of test used - Grower")%>%
+  formatPercentage(c("percent", "percent of all participants"
+  ))
 
 #percent of people in survey using certain test
 ggplot(N_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
@@ -3160,6 +3189,37 @@ ggplot(N_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+```
+
+```{r Q14 data graphs freq N, echo=FALSE}
+##Table for frquency
+filter(N_test_numb_counts, Resp_Group == "Agronomist") %>% 
+select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                          "number of sample (all types of tests)" = "number_test_all",
+                          "numb of test" = "numb_of_test" ,
+                          "percent" = "perecnt",
+                          "percent of all participants" = "percent_all"
+                          ),
+             options = list(pageLength = 35,  dom = 't'),
+             caption = "number of sample taken for all N tests - Agronomist")%>%
+  formatPercentage(c("percent", "percent of all participants"))
+
+
+filter(N_test_numb_counts, Resp_Group == "Grower") %>% 
+  select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "number of sample (all types of tests)" = "number_test_all",
+                 "numb of test" = "numb_of_test" ,
+                 "percent" = "perecnt",
+                 "percent of all participants" = "percent_all"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "number of sample taken for all N tests - Grower")%>%
+  formatPercentage(c("percent", "percent of all participants"))
+
 
 
 # df needs ording for display
@@ -3168,7 +3228,7 @@ N_test_numb_counts$numb_of_test <- factor(N_test_numb_counts$numb_of_test,levels
                                                                                              "greater than 30"))
 
 #percent of people in survey using sampling at certain density - number of samples per paddock
-ggplot(N_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_Group))+
+ggplot(N_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
   geom_col()+
   scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(.~ Resp_Group )+
@@ -3180,7 +3240,7 @@ ggplot(N_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_Group
        caption = "Q)  Which tests do you currently use for your soil N testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
 
 
 
@@ -3299,35 +3359,35 @@ soil_test_use5_all <- function(data_df, test1, numb_sample_test1,
 #"DGT"
 #"Total P"
 soil_test_use5_all(data, quo(Q_15.1.1), quo(Q_15.1.3), 
-                     quo(Q_15.2.1), quo(Q_15.2.3),
-                     quo(Q_15.3.1), quo(Q_15.3.3),
-                     quo(Q_15.4.1), quo(Q_15.4.3),
-                     quo(Q_15.5.1), quo(Q_15.5.3),
-                    "test_PBI", "PBI (Phosphorus Buffering Index)")
+                   quo(Q_15.2.1), quo(Q_15.2.3),
+                   quo(Q_15.3.1), quo(Q_15.3.3),
+                   quo(Q_15.4.1), quo(Q_15.4.3),
+                   quo(Q_15.5.1), quo(Q_15.5.3),
+                   "test_PBI", "PBI (Phosphorus Buffering Index)")
 soil_test_use5_all(data, quo(Q_15.1.1), quo(Q_15.1.3), 
-                     quo(Q_15.2.1), quo(Q_15.2.3),
-                     quo(Q_15.3.1), quo(Q_15.3.3),
-                     quo(Q_15.4.1), quo(Q_15.4.3),
-                     quo(Q_15.5.1), quo(Q_15.5.3),
-                    "test_OB", "Olsen-Bray P")
+                   quo(Q_15.2.1), quo(Q_15.2.3),
+                   quo(Q_15.3.1), quo(Q_15.3.3),
+                   quo(Q_15.4.1), quo(Q_15.4.3),
+                   quo(Q_15.5.1), quo(Q_15.5.3),
+                   "test_OB", "Olsen-Bray P")
 soil_test_use5_all(data, quo(Q_15.1.1), quo(Q_15.1.3), 
-                     quo(Q_15.2.1), quo(Q_15.2.3),
-                     quo(Q_15.3.1), quo(Q_15.3.3),
-                     quo(Q_15.4.1), quo(Q_15.4.3),
-                     quo(Q_15.5.1), quo(Q_15.5.3),
-                    "test_Col", "Colwell P")
+                   quo(Q_15.2.1), quo(Q_15.2.3),
+                   quo(Q_15.3.1), quo(Q_15.3.3),
+                   quo(Q_15.4.1), quo(Q_15.4.3),
+                   quo(Q_15.5.1), quo(Q_15.5.3),
+                   "test_Col", "Colwell P")
 soil_test_use5_all(data, quo(Q_15.1.1), quo(Q_15.1.3), 
-                     quo(Q_15.2.1), quo(Q_15.2.3),
-                     quo(Q_15.3.1), quo(Q_15.3.3),
-                     quo(Q_15.4.1), quo(Q_15.4.3),
-                     quo(Q_15.5.1), quo(Q_15.5.3),
-                    "test_DGT", "DGT")
+                   quo(Q_15.2.1), quo(Q_15.2.3),
+                   quo(Q_15.3.1), quo(Q_15.3.3),
+                   quo(Q_15.4.1), quo(Q_15.4.3),
+                   quo(Q_15.5.1), quo(Q_15.5.3),
+                   "test_DGT", "DGT")
 soil_test_use5_all(data, quo(Q_15.1.1), quo(Q_15.1.3), 
-                     quo(Q_15.2.1), quo(Q_15.2.3),
-                     quo(Q_15.3.1), quo(Q_15.3.3),
-                     quo(Q_15.4.1), quo(Q_15.4.3),
-                     quo(Q_15.5.1), quo(Q_15.5.3),
-                    "test_TP", "Total P")
+                   quo(Q_15.2.1), quo(Q_15.2.3),
+                   quo(Q_15.3.1), quo(Q_15.3.3),
+                   quo(Q_15.4.1), quo(Q_15.4.3),
+                   quo(Q_15.5.1), quo(Q_15.5.3),
+                   "test_TP", "Total P")
 
 #count the number of people using this test and join 
 PBI <- test_PBI %>%
@@ -3337,65 +3397,88 @@ PBI <- test_PBI %>%
 OB <- test_OB %>%
   filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
-  count(test)
+  count(test) 
 Col <- test_Col %>%
   filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
-  count(test)
+  count(test) 
 DGT <- test_DGT %>%
   filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
-  count(test)
+  count(test) 
 TP <- test_TP %>%
   filter(!is.na(test)) %>%
   group_by( Resp_Group) %>%
-  count(test)
+  count(test) 
 
 
 P_test_counts <- rbind(PBI, OB, Col, DGT, TP)
+### add this 12/12
+
+P_test_counts <- P_test_counts %>%
+  group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n))) 
+
+
 #Add in how many people in each group to cal the %
 P_test_counts <- P_test_counts %>% 
   mutate(Resp_numb = case_when(
     Resp_Group == "Agronomist" ~ 71,
     Resp_Group == "Grower"  ~ 99
   ),
-percent = n/Resp_numb
-    )
+  percent_all = n/Resp_numb
+  )
 
-
+P_test_counts #good !
 
 ### number of people sampling at certain density number of samples per paddock
 
 PBI_numb <- test_PBI %>%
   filter(!is.na(numb_of_test)) %>%
-  group_by( Resp_Group) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
   count(numb_of_test) 
 OB_numb <- test_OB %>%
-   filter(!is.na(numb_of_test)) %>%
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 Col_numb <- test_Col %>%
-   filter(!is.na(numb_of_test)) %>%
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 DGT_numb <- test_DGT %>%
-   filter(!is.na(numb_of_test)) %>%
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 TP_numb <- test_TP %>%
-   filter(!is.na(numb_of_test)) %>%
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 
 P_test_numb_counts <- rbind(PBI_numb, OB_numb, Col_numb, DGT_numb, TP_numb)
+P_test_numb_counts <- group_by(P_test_numb_counts, Resp_Group, numb_of_test) %>%
+  summarise(number_test_all = sum(n))
+P_test_numb_counts
+
+#add this 12/12
+P_test_numb_counts <- P_test_numb_counts %>%
+  group_by(Resp_Group) %>% 
+  mutate(count_all_test_all_depth = sum(number_test_all),
+         perecnt = number_test_all / count_all_test_all_depth)
+P_test_numb_counts
 
 P_test_numb_counts <- P_test_numb_counts %>% 
   mutate(Resp_numb = case_when(
-   Resp_Group == "Agronomist" ~ 71,
+    Resp_Group == "Agronomist" ~ 71,
     Resp_Group == "Grower"  ~ 99
   ),
-percent = n/Resp_numb
-    )
+  percent_all = number_test_all/(Resp_numb)
+  )
 
 P_test_counts
 P_test_numb_counts
@@ -3408,18 +3491,33 @@ P_test_numb_counts
 
 ```{r graph _Q15 P}
 
-#table
-select(P_test_counts,Resp_Group, test , n,   percent) %>%
-datatable( colnames = c("Respondent" = "Resp_Group",
-                        "count" = "n",
-                         "test" = "test" ,
-                         "percent" = "percent" ),
-           options = list(pageLength = 35,  dom = 't'))%>%
-     formatPercentage(c("percent"
-                        ))
+### Tables for type of test used...
 
+filter(P_test_counts, Resp_Group == "Agronomist") %>% 
+select(Resp_Group, test , n,   percent, percent_all) %>%
+  datatable( colnames = c("Respondent" = "Resp_Group",
+                          "count" = "n",
+                          "test" = "test" ,
+                          "percent" = "percent",
+                          "percent of all participants" = "percent_all"
+                          ),
+             options = list(pageLength = 35,  dom = 't'),
+             caption = "Type of test used - Agronomist")%>%
+  formatPercentage(c("percent", "percent of all participants"
+  ))
 
-#N_test_counts
+filter(P_test_counts, Resp_Group == "Grower") %>% 
+  select(Resp_Group, test , n,   percent, percent_all) %>%
+  datatable( colnames = c("Respondent" = "Resp_Group",
+                          "count" = "n",
+                          "test" = "test" ,
+                          "percent" = "percent",
+                          "percent of all participants" = "percent_all"
+  ),
+  options = list(pageLength = 35,  dom = 't'),
+  caption = "Type of test used - Grower")%>%
+  formatPercentage(c("percent", "percent of all participants"
+  ))
 
 #percent of people in survey using certain test
 ggplot(P_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
@@ -3436,6 +3534,38 @@ ggplot(P_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
+```
+
+```{r Q14 data graphs freq P, echo=FALSE}
+##Table for frquency
+filter(P_test_numb_counts, Resp_Group == "Agronomist") %>% 
+select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                          "number of sample (all types of tests)" = "number_test_all",
+                          "numb of test" = "numb_of_test" ,
+                          "percent" = "perecnt",
+                          "percent of all participants" = "percent_all"
+                          ),
+             options = list(pageLength = 35,  dom = 't'),
+             caption = "number of sample taken for all P tests - Agronomist")%>%
+  formatPercentage(c("percent", "percent of all participants"))
+
+
+filter(P_test_numb_counts, Resp_Group == "Grower") %>% 
+  select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "number of sample (all types of tests)" = "number_test_all",
+                 "numb of test" = "numb_of_test" ,
+                 "percent" = "perecnt",
+                 "percent of all participants" = "percent_all"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "number of sample taken for all P tests - Grower")%>%
+  formatPercentage(c("percent", "percent of all participants"))
+
+
 
 # df needs ording for display
 P_test_numb_counts$numb_of_test <- factor(P_test_numb_counts$numb_of_test,levels = c("0-5",  "5-10", "10-15", 
@@ -3443,7 +3573,7 @@ P_test_numb_counts$numb_of_test <- factor(P_test_numb_counts$numb_of_test,levels
                                                                                              "greater than 30"))
 
 #percent of people in survey using sampling at certain density - number of samples per paddock
-ggplot(P_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_Group))+
+ggplot(P_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
   geom_col()+
   scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(.~ Resp_Group )+
@@ -3455,7 +3585,9 @@ ggplot(P_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_Group
        caption = "Q)  Which tests do you currently use for your soil P testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+
+
 
 ```
 
@@ -3527,11 +3659,11 @@ soil_test_use2_all <- function(data_df, test1, numb_sample_test1,
 #"Colwell K"  "Exchangable Cations (Ca, Mg, K, Na)"
 
 soil_test_use2_all(data, quo(Q_16.1.1), quo(Q_16.1.3), 
-                     quo(Q_16.2.1), quo(Q_16.2.3),
-                     "test_Col_K", "Colwell K")
+                   quo(Q_16.2.1), quo(Q_16.2.3),
+                   "test_Col_K", "Colwell K")
 soil_test_use2_all(data, quo(Q_16.1.1), quo(Q_16.1.3), 
-                     quo(Q_16.2.1), quo(Q_16.2.3),
-                     "test_EXC", "Exchangeable Cations (Ca, Mg, K, Na)")
+                   quo(Q_16.2.1), quo(Q_16.2.3),
+                   "test_EXC", "Exchangable Cations (Ca, Mg, K, Na)")
 
 
 #count the number of people using this test and join 
@@ -3546,54 +3678,103 @@ EXC <- test_EXC %>%
 
 
 K_test_counts <- rbind(Col_K, EXC)
+### add this 12/12
+
+K_test_counts <- K_test_counts %>%
+  group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n))) 
+
 #Add in how many people in each group to cal the %
 K_test_counts <- K_test_counts %>% 
   mutate(Resp_numb = case_when(
-   Resp_Group == "Agronomist" ~ 71,
+    Resp_Group == "Agronomist" ~ 71,
     Resp_Group == "Grower"  ~ 99
   ),
-percent = n/Resp_numb
-    )
+  percent_all = n/Resp_numb
+  )
 
-
+K_test_counts
 
 ### number of people sampling at certain density number of samples per paddock
 
 Col_K_numb <- test_Col_K %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test) 
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test)  
+
+
 EXC_numb <- test_EXC %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 
 K_test_numb_counts <- rbind(Col_K_numb, EXC_numb)
+K_test_numb_counts
+###ADD this in 12/12
+K_test_numb_counts <- group_by(K_test_numb_counts, Resp_Group, numb_of_test) %>%
+  summarise(number_test_all = sum(n))
+K_test_numb_counts
+
+#add this 12/12
+K_test_numb_counts <- K_test_numb_counts %>%
+  group_by(Resp_Group) %>% 
+  mutate(count_all_test_all_depth = sum(number_test_all),
+         perecnt = number_test_all / count_all_test_all_depth)
+K_test_numb_counts
+
 
 K_test_numb_counts <- K_test_numb_counts %>% 
   mutate(Resp_numb = case_when(
     Resp_Group == "Agronomist" ~ 71,
     Resp_Group == "Grower"  ~ 99
   ),
-percent = n/Resp_numb
-    )
+  percent_all = number_test_all/(Resp_numb)
+  )
 K_test_counts
 K_test_numb_counts
 
 ```
 
-```{r graph _Q16 K}
+```{r graph and table test _Q16 K}
 # table
-select(K_test_counts,Resp_Group, test , n,   percent) %>%
-datatable( colnames = c("Respondent" = "Resp_Group",
-                        "count" = "n",
-                         "test" = "test" ,
-                         "percent" = "percent" ),
-           options = list(pageLength = 35,  dom = 't'))%>%
-     formatPercentage(c("percent"
-                        ))
+### Tables for type of test used...
 
-#N_test_counts
+filter(K_test_counts, Resp_Group == "Agronomist") %>% 
+select(Resp_Group, test , n,   percent, percent_all) %>%
+  datatable( colnames = c("Respondent" = "Resp_Group",
+                          "count" = "n",
+                          "test" = "test" ,
+                          "percent" = "percent",
+                          "percent of all participants" = "percent_all"
+                          ),
+             options = list(pageLength = 35,  dom = 't'),
+             caption = "Type of test used - Agronomist")%>%
+  formatPercentage(c("percent", "percent of all participants"
+  ))
+
+filter(K_test_counts, Resp_Group == "Grower") %>% 
+  select(Resp_Group, test , n,   percent, percent_all) %>%
+  datatable( colnames = c("Respondent" = "Resp_Group",
+                          "count" = "n",
+                          "test" = "test" ,
+                          "percent" = "percent",
+                          "percent of all participants" = "percent_all"
+  ),
+  options = list(pageLength = 35,  dom = 't'),
+  caption = "Type of test used - Grower")%>%
+  formatPercentage(c("percent", "percent of all participants"
+  ))
+
+
+
+# # df needs ording for display
+# K_test_numb_counts$numb_of_test <- factor(K_test_numb_counts$numb_of_test,levels = c("0-5",  "5-10", "10-15", 
+#                                                                                              "15-20", "20-25",  "25-30", 
+#                                                                                              "greater than 30"))
+K_test_counts
 
 #percent of people in survey using certain test
 ggplot(K_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
@@ -3611,13 +3792,49 @@ ggplot(K_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
 
+```
+
+
+
+```{r graph and table test _Q16 K}
+# table
+ ##Table for frquency
+filter(K_test_numb_counts, Resp_Group == "Agronomist") %>% 
+select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                          "number of sample (all types of tests)" = "number_test_all",
+                          "numb of test" = "numb_of_test" ,
+                          "percent" = "perecnt",
+                          "percent of all participants" = "percent_all"
+                          ),
+             options = list(pageLength = 35,  dom = 't'),
+             caption = "number of sample taken for all K tests - Agronomist")%>%
+  formatPercentage(c("percent", "percent of all participants"))
+
+
+filter(K_test_numb_counts, Resp_Group == "Grower") %>% 
+  select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "number of sample (all types of tests)" = "number_test_all",
+                 "numb of test" = "numb_of_test" ,
+                 "percent" = "perecnt",
+                 "percent of all participants" = "percent_all"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "number of sample taken for all K tests - Grower")%>%
+  formatPercentage(c("percent", "percent of all participants"))
+
+
+
 # df needs ording for display
 K_test_numb_counts$numb_of_test <- factor(K_test_numb_counts$numb_of_test,levels = c("0-5",  "5-10", "10-15", 
                                                                                              "15-20", "20-25",  "25-30", 
                                                                                              "greater than 30"))
 
 #percent of people in survey using sampling at certain density - number of samples per paddock
-ggplot(K_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_Group))+
+ggplot(K_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
   geom_col()+
   scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(.~ Resp_Group )+
@@ -3629,13 +3846,10 @@ ggplot(K_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_Group
        caption = "Q)  Which tests do you currently use for your soil K testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+
 
 ```
-
-
-
-
 
 
 #### **Question 17 micronutrients**
@@ -3923,35 +4137,35 @@ Trace1 <- Trace %>%
   group_by( Resp_Group) %>%
   count(test) 
 Texture1 <- Texture %>%
-   filter(!is.na(test)) %>% 
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Sulfur1 <- Sulfur %>%
-   filter(!is.na(test)) %>% 
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 pH1 <- pH %>%
-   filter(!is.na(test)) %>% 
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Excat1 <- Excat %>%
-   filter(!is.na(test)) %>% 
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Chloride1 <- Chloride %>%
-   filter(!is.na(test)) %>% 
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 CalCarb1 <- CalCarb %>%
-   filter(!is.na(test)) %>% 
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Born1 <- Born %>%
-   filter(!is.na(test)) %>% 
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 Al1 <- Al %>%
-   filter(!is.na(test)) %>% 
+  filter(!is.na(test)) %>% 
   group_by( Resp_Group) %>%
   count(test)
 
@@ -3966,61 +4180,96 @@ mirco_test_counts <- rbind(Trace1,
                            Born1,
                            Al1)
 
+### add this 12/12
+
+mirco_test_counts <- mirco_test_counts %>%
+  group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n))) 
+
+mirco_test_counts
+
 #Add in how many people in each group to cal the %
 mirco_test_counts <- mirco_test_counts %>% 
   mutate(Resp_numb = case_when(
     Resp_Group == "Agronomist" ~ 71,
     Resp_Group == "Grower"  ~ 99
   ),
-percent = n/Resp_numb
-    )
+  percent_all = n/Resp_numb
+  )
 
 Trace2 <- Trace %>%
-   filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test) 
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test)  
 Texture2 <- Texture %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 Sulfur2 <- Sulfur %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 pH2 <- pH %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 Excat2 <- Excat %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 Chloride2 <- Chloride %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 CalCarb2 <- CalCarb %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 Born2 <- Born %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 Al2 <- Al %>%
-  filter(!is.na(numb_of_test)) %>% 
-  group_by( Resp_Group) %>%
-  count(numb_of_test)
+  filter(!is.na(numb_of_test)) %>%
+  filter(!is.na(test)) %>%
+  group_by(Resp_Group, numb_of_test) %>%
+  count(numb_of_test) 
 
 mirco_test_numb_counts <- rbind(Trace2,
-                           Texture2,
-                           Sulfur2,
-                           pH2,
-                           Excat2,
-                           Chloride2,
-                           CalCarb2,
-                           Born2,
-                           Al2)
+                                Texture2,
+                                Sulfur2,
+                                pH2,
+                                Excat2,
+                                Chloride2,
+                                CalCarb2,
+                                Born2,
+                                Al2)
+
+###ADD this in 12/12
+mirco_test_numb_counts <- group_by(mirco_test_numb_counts, Resp_Group, numb_of_test) %>%
+  summarise(number_test_all = sum(n))
+
+mirco_test_numb_counts
+
+
+#add this 12/12
+mirco_test_numb_counts <- mirco_test_numb_counts %>%
+  group_by(Resp_Group) %>% 
+  mutate(count_all_test_all_depth = sum(number_test_all),
+         perecnt = number_test_all / count_all_test_all_depth)
+mirco_test_numb_counts
+
+
+
 
 mirco_test_numb_counts <- mirco_test_numb_counts %>% 
   mutate(Resp_numb = case_when(
@@ -4028,22 +4277,54 @@ mirco_test_numb_counts <- mirco_test_numb_counts %>%
     Resp_Group == "Grower"  ~ 99
   ),
   
-percent = n/Resp_numb
-    )
+  percent_all = number_test_all/Resp_numb
+  )
 
 
 
 
 mirco_test_counts
 mirco_test_numb_counts
+
 ```
 
 
-```{r graph _Q1 mirco}
+```{r graph type _Q1 mirco}
+### Tables for type of test used...
+
+filter(mirco_test_counts, Resp_Group == "Agronomist") %>% 
+select(Resp_Group, test , n,   percent, percent_all) %>%
+  datatable( colnames = c("Respondent" = "Resp_Group",
+                          "count" = "n",
+                          "test" = "test" ,
+                          "percent" = "percent",
+                          "percent of all participants" = "percent_all"
+                          ),
+             options = list(pageLength = 35,  dom = 't'),
+             caption = "Type of test used - Agronomist")%>%
+  formatPercentage(c("percent", "percent of all participants"
+  ))
+
+filter(mirco_test_counts, Resp_Group == "Grower") %>% 
+  select(Resp_Group, test , n,   percent, percent_all) %>%
+  datatable( colnames = c("Respondent" = "Resp_Group",
+                          "count" = "n",
+                          "test" = "test" ,
+                          "percent" = "percent",
+                          "percent of all participants" = "percent_all"
+  ),
+  options = list(pageLength = 35,  dom = 't'),
+  caption = "Type of test used - Grower")%>%
+  formatPercentage(c("percent", "percent of all participants"
+  ))
 
 
-mirco_test_counts
-#mirco_test_numb_counts
+
+# # df needs ording for display
+# K_test_numb_counts$numb_of_test <- factor(K_test_numb_counts$numb_of_test,levels = c("0-5",  "5-10", "10-15", 
+#                                                                                              "15-20", "20-25",  "25-30", 
+#                                                                                              "greater than 30"))
+
 
 #percent of people in survey using certain test
 ggplot(mirco_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
@@ -4053,31 +4334,57 @@ ggplot(mirco_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
   theme_classic()+
   labs(x= "",
        y = "",
-       title = "micronutrients test used",
+       title = "mirco nutrients test used",
        subtitle = "",
-       caption = "Q)  Which tests do you currently use for your soil micronutrients testing?")+
+       caption = "Q)  Which tests do you currently use for your soil micro nutrient testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
 
+
+
+```
+```{r graph freq _Q1 mirco}
+
+
+ ##Table for frquency
+filter(mirco_test_numb_counts, Resp_Group == "Agronomist") %>% 
+select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                          "number of sample (all types of tests)" = "number_test_all",
+                          "numb of test" = "numb_of_test" ,
+                          "percent" = "perecnt",
+                          "percent of all participants" = "percent_all"
+                          ),
+             options = list(pageLength = 35,  dom = 't'),
+             caption = "number of sample taken for all mirco tests - Agronomist")%>%
+  formatPercentage(c("percent", "percent of all participants"))
+
+
+filter(mirco_test_numb_counts, Resp_Group == "Grower") %>% 
+  select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "number of sample (all types of tests)" = "number_test_all",
+                 "numb of test" = "numb_of_test" ,
+                 "percent" = "perecnt",
+                 "percent of all participants" = "percent_all"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "number of sample taken for all micro tests - Grower")%>%
+  formatPercentage(c("percent", "percent of all participants"))
+
+
+
 # df needs ording for display
-mirco_test_numb_counts$numb_of_test <-
-  factor(
-    mirco_test_numb_counts$numb_of_test,
-    levels = c(
-      "0-5",
-      "5-10",
-      "10-15",
-      "15-20",
-      "20-25",
-      "25-30",
-      "greater than 30"
-    )
-  )
+mirco_test_numb_counts$numb_of_test <- factor(mirco_test_numb_counts$numb_of_test,levels = c("0-5",  "5-10", "10-15", 
+                                                                                             "15-20", "20-25",  "25-30", 
+                                                                                             "greater than 30"))
 
 #percent of people in survey using sampling at certain density - number of samples per paddock
-ggplot(mirco_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_Group))+
+ggplot(mirco_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
   geom_col()+
   scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(.~ Resp_Group )+
@@ -4086,16 +4393,13 @@ ggplot(mirco_test_numb_counts, aes (x = numb_of_test, y = percent, fill = Resp_G
        y = "",
        title = "",
        subtitle = "",
-       caption = "Q)  Which tests do you currently use for your soil micronutrients testing?")+
+       caption = "Q)  Which tests do you currently use for your soil micro nutrient testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+
 
 ```
-
-
-
-
 
 #### **Question 18**
 What are the top 3 reasons for soil testing on your clients farms ...
