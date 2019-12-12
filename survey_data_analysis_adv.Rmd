@@ -4422,31 +4422,31 @@ Please indicate why you don't do more SOIL Nitrogen testing:
 
 ```{r function for to cal the % of respnondents, include=FALSE}
 ##function for to cal the % of respnondents
+summary_stats_all_resp <- function(df, group_by, clm_in_df){
+  df <- filter( df, !! clm_in_df != "NA") %>%
+    group_by(!! group_by) %>%
+    count(!! clm_in_df) %>%
+    mutate(
+      Resp_numb = case_when(Resp_Group == "Agronomist" ~ 71,
+                            Resp_Group == "Grower" ~ 99),
+      percent_all = n / Resp_numb)
+
+  colnames(df)[2] <- "reason"
+  return(df)
+}
+
 # summary_stats_all_resp <- function(df, group_by, clm_in_df){  
-#   df <- filter( df, !! clm_in_df != "NA") %>% 
+#   df <- dplyr::filter( df, !! clm_in_df != "NA") %>% 
 #     group_by(!! group_by) %>% 
 #     count(!! clm_in_df) %>% 
 #     mutate(
 #       Resp_numb = case_when(Resp_Group == "Agronomist" ~ 71,
 #                             Resp_Group == "Grower" ~ 99),
-#       percent_all = n / Resp_numb)
+#       percent = n / Resp_numb)
 #   
 #   colnames(df)[2] <- "reason"
 #   return(df)
 # }
-
-summary_stats_all_resp <- function(df, group_by, clm_in_df){  
-  df <- filter( df, !! clm_in_df != "NA") %>% 
-    group_by(!! group_by) %>% 
-    count(!! clm_in_df) %>% 
-    mutate(
-      Resp_numb = case_when(Resp_Group == "Agronomist" ~ 71,
-                            Resp_Group == "Grower" ~ 99),
-      percent = n / Resp_numb)
-  
-  colnames(df)[2] <- "reason"
-  return(df)
-}
 
 
 ```
@@ -4482,7 +4482,20 @@ reason_soil_N <- reason_soil_N %>%
 ```
 
 ```{r graphs and table Q19}
-reason_soil_N
+#text is too long
+reason_soil_N <- mutate(
+  reason_soil_N,
+  names_display = case_when(
+    reason == "The cost of soil sampling" ~ "cost",
+    reason == "The time required for soil sampling" ~ "time",
+    reason == "The cost of soil testing lab analysis" ~ "cost of lab analysis",
+    reason == "The difficulty in being able to represent the variability in a paddock" ~ "variability",
+    reason == "The level of accuracy of soil testing lab analysis" ~ "accuracy",
+    reason == "The ability to translate soil test results into a profitable fertiliser decision for my paddock" ~ "translate profitable decision",
+    reason == "Not being able to get soil test results at the right time for decision making" ~ "get results at right time"
+  )
+)
+
 filter(reason_soil_N, Resp_Group == "Agronomist") %>% 
   select(Resp_Group , names_display, n , percent ) %>%
   datatable( 
@@ -4508,21 +4521,10 @@ filter(reason_soil_N, Resp_Group == "Grower") %>%
   formatPercentage(c("percent"))
 
 
-#text is too long
 
 
-reason_soil_N <- mutate(
-  reason_soil_N,
-  names_display = case_when(
-    reason == "The cost of soil sampling" ~ "cost",
-    reason == "The time required for soil sampling" ~ "time",
-    reason == "The cost of soil testing lab analysis" ~ "cost of lab analysis",
-    reason == "The difficulty in being able to represent the variability in a paddock" ~ "variability",
-    reason == "The level of accuracy of soil testing lab analysis" ~ "accuracy",
-    reason == "The ability to translate soil test results into a profitable fertiliser decision for my paddock" ~ "translate profitable decision",
-    reason == "Not being able to get soil test results at the right time for decision making" ~ "get results at right time"
-  )
-)
+
+
 
 ggplot(reason_soil_N, aes (x =  reorder(names_display, -percent), y = percent, fill = Resp_Group))+
   geom_col()+
@@ -4796,7 +4798,7 @@ unique(subsetQ21_summary$question)
 ```
 
 
-```{r Q21 graph, echo=FALSE}
+```{r Q21 graph profitable, echo=FALSE}
 # df needs ording for display
 subsetQ21_summary$scale <-
   factor(
@@ -4854,13 +4856,17 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
   theme_classic()+
   labs(x= "",
        y = "",
-       title = "",
+       title = "More profitable with more soil testing",
        subtitle = "",
        caption = "Q)My clients businesses would be more profitable if they did more soil testing than they do now")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 
+```
+
+
+```{r Q21 graph Uncertainty, echo=FALSE}
 ###################################################################################################
 
 ## Uncertainty table 1
@@ -4909,12 +4915,16 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
   theme_classic()+
   labs(x= "",
        y = "",
-       title = "",
+       title = "Uncertainty about the season will reduces value of soil testing ",
        subtitle = "",
        caption = "Q)Uncertainty about how the season will turn out makes it hard to get value from soil testing results")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+
+```
+
+```{r Q21 graph recommend, echo=FALSE}
 ######################################################################################
 
 #recommend table 1
@@ -4960,13 +4970,16 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
   theme_classic()+
   labs(x= "",
        y = "",
-       title = "",
+       title = "Recommend regular soil testing to others",
        subtitle = "",
        caption = "Q)My clients recommend the use of regular soil testing to other local farmers")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+```
 
+
+```{r Q21 graph profitability, echo=FALSE}
 #############################################################################################################
 
 
@@ -5017,7 +5030,7 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
   theme_classic()+
   labs(x= "",
        y = "",
-       title = "",
+       title = "Soil testing increases my profitability",
        subtitle = "",
        caption = "Q)The use of soil testing on my farm increases my profitability (Grower only Q)")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
