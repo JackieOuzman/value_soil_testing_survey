@@ -5040,16 +5040,220 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
 
 ```
 
+```{r Q21 graph comments, echo=FALSE}
+
+
+
+#table
+  otherQ21.5 <- filter(data, Q_21.5 !=  "NA") %>% select(Resp_Group, Q_21.5 )
+  
+  datatable(otherQ21.5, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_21.5", 
+                          "Respondent" = "Resp_Group")) 
+
+
+```
+
+
 
 
 #### **Question 22** 
 On average, how much would your clients spend each year on soil testing (including sampling)?
+```{r Q22 working, warning=FALSE, include=FALSE}
+
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_Q_22.1 = sum(!is.na(Q_22.1)))
+
+test_Q22 <- select(data, Resp_Group, Q_22.1)
+test_Q22
+test_Q221 <-  filter (test_Q22,   Q_22.1 !=  "NA") %>%
+  mutate(
+    Q_22.1_recode = case_when(
+      Q_22.1 ==   "0" ~  "< $2500",
+      Q_22.1 == 	'$1 - $2,500'  ~  "< $2500",
+      Q_22.1 == 	'$2,500 - $5,000'  ~  "> $2500",
+      Q_22.1 == 	'$15,000 - $17,500'  ~  "> $2500",
+      Q_22.1 == 	'$5,000 - $7,500'  ~  "> $2500",
+      Q_22.1 == 	'$10,000 - $12,500'  ~  "> $2500",
+      Q_22.1 == 	'$17,500 - $20,000'  ~  "> $2500",
+      Q_22.1 == 	'$7,500 - $10,000'  ~  "> $2500",
+      TRUE ~ "****"
+    )
+  )
+#no idea why I can't get it to recode what I want???
+test_Q22 <-  test_Q221 %>%
+  mutate(
+    Q_22.1_recode = case_when(
+      Q_22.1_recode ==   "****" ~  "< $2500",
+      Q_22.1 ==   "0" ~  "< $2500",
+      TRUE ~ "> $2500"
+    )
+  )
+
+
+test_Q22_summary <- 
+    group_by(test_Q22, Resp_Group) %>%
+  count(Q_22.1_recode) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+test_Q22_summary
+
+```
+
+```{r Q22 table and graph, echo=FALSE}
+datatable(test_Q22_summary, options = list(pageLength = 35, dom = 't'),
+          colnames = c( "spend" = "Q_22.1_recode", "Respondent" = "Resp_Group", "count" = "n")) %>% 
+  formatPercentage('percent', 0)  
+
+
+
+ggplot(test_Q22_summary, aes(Q_22.1_recode , percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(. ~ Resp_Group)+
+  theme_classic()+
+  labs(x= "Average spend each year",
+       y = "Percent responded to question",
+       fill = "",
+       title = "Spend per year",
+       subtitle = "",
+       caption = "Q)On average, how much would your clients spend each year on soil testing (including sampling)?")+
+  
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(hjust = 0), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+  #scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+
+
+```
+
+
+```{r Q22.2 graph comments, echo=FALSE}
+
+
+
+#table
+  otherQ22.2 <- filter(data, Q_22.2 !=  "NA") %>% select(Resp_Group, Q_22.2 )
+  
+  datatable(otherQ22.2, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_22.2", 
+                          "Respondent" = "Resp_Group")) 
+
+
+```
+
 
 #### **Question 23** 
 Compared to five years' ago, has the amount of soil testing you do / recommend changed?
 
+
+```{r Q23 working, warning=FALSE, include=FALSE}
+data$Q_23.1
+unique(data$Q_23.1)
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_Q_23.1 = sum(!is.na(Q_23.1)))
+
+test_Q23 <- select(data, Resp_Group, Q_23.1)
+test_Q23
+test_Q23_summary <- 
+  filter(test_Q23, Q_23.1 != "NA") %>% 
+  group_by( Resp_Group) %>%
+  count(Q_23.1) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+test_Q23_summary
+
+```
+
+
+```{r Q23 table and graph, echo=FALSE}
+
+datatable(test_Q23_summary, options = list(pageLength = 35, dom = 't'),
+          colnames = c( "compared to 5 years ago" = "Q_23.1", "Respondent" = "Resp_Group", "count" = "n")) %>% 
+  formatPercentage('percent', 0)  
+
+
+
+ggplot(test_Q23_summary, aes(Q_23.1 , percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(. ~ Resp_Group)+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent responded to question",
+       fill = "",
+       title = "Change in soil testing",
+       subtitle = "",
+       caption = "Q)Compared to five years' ago, has the amount of soil testing you do / recommend changed?")+
+  
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(hjust = 0), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+  #scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+```
+
+
+```{r Q23.2 graph comments, echo=FALSE}
+
+
+
+#table
+  otherQ23.2 <- filter(data, Q_23.2 !=  "NA") %>% select(Resp_Group, Q_23.2 )
+  
+  datatable(otherQ23.2, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_23.2", 
+                          "Respondent" = "Resp_Group")) 
+
+
+```
+
+
 #### **Question 24** 
 In five years' time, how much soil sampling do you expect to be doing / recommending?
+
+```{r Q24 working, warning=FALSE, include=FALSE}
+
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_Q_24.1 = sum(!is.na(Q_24.1)))
+
+test_Q24 <- select(data, Resp_Group, Q_24.1)
+test_Q24
+test_Q24_summary <- 
+  filter(test_Q24, Q_24.1 != "NA") %>% 
+  group_by( Resp_Group) %>%
+  count(Q_24.1) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+test_Q24_summary
+
+```
+
+```{r Q24 table and graph, echo=FALSE}
+
+datatable(test_Q24_summary, options = list(pageLength = 35, dom = 't'),
+          colnames = c( "In to 5 years" = "Q_24.1", "Respondent" = "Resp_Group", "count" = "n")) %>% 
+  formatPercentage('percent', 0)  
+
+ggplot(test_Q24_summary, aes(Q_24.1 , percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(. ~ Resp_Group)+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent responded to question",
+       fill = "",
+       title = "Future soil testing",
+       subtitle = "",
+       caption = "Q)In five years' time, how much soil sampling do you expect to be doing / recommending?")+
+  
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(hjust = 0), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+  #scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+```
+
 
 # PLANT TESTING 
 
