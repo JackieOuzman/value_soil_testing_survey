@@ -3489,7 +3489,7 @@ P_test_numb_counts
 
 
 
-```{r graph _Q15 P}
+```{r graph _Q15 P, echo=FALSE}
 
 ### Tables for type of test used...
 
@@ -3536,7 +3536,7 @@ ggplot(P_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
 
 ```
 
-```{r Q14 data graphs freq P, echo=FALSE}
+```{r Q14 data graphs freq P, echo=FALSE, warning=FALSE}
 ##Table for frquency
 filter(P_test_numb_counts, Resp_Group == "Agronomist") %>% 
 select(Resp_Group , numb_of_test, number_test_all , perecnt , percent_all) %>%
@@ -3738,7 +3738,7 @@ K_test_numb_counts
 
 ```
 
-```{r graph and table test _Q16 K}
+```{r graph and table test _Q16 K, echo=FALSE}
 # table
 ### Tables for type of test used...
 
@@ -3796,7 +3796,7 @@ ggplot(K_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
 
 
 
-```{r graph and table test _Q16 K a}
+```{r graph and table test _Q16 K a, echo=FALSE}
 # table
  ##Table for frquency
 filter(K_test_numb_counts, Resp_Group == "Agronomist") %>% 
@@ -4289,7 +4289,7 @@ mirco_test_numb_counts
 ```
 
 
-```{r graph type _Q1 mirco}
+```{r graph type _Q1 mirco, echo=FALSE}
 ### Tables for type of test used...
 
 filter(mirco_test_counts, Resp_Group == "Agronomist") %>% 
@@ -4345,7 +4345,7 @@ ggplot(mirco_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
 
 
 ```
-```{r graph freq _Q1 mirco}
+```{r graph freq _Q1 mirco, echo=FALSE}
 
 
  ##Table for frquency
@@ -4435,18 +4435,6 @@ summary_stats_all_resp <- function(df, group_by, clm_in_df){
   return(df)
 }
 
-# summary_stats_all_resp <- function(df, group_by, clm_in_df){  
-#   df <- dplyr::filter( df, !! clm_in_df != "NA") %>% 
-#     group_by(!! group_by) %>% 
-#     count(!! clm_in_df) %>% 
-#     mutate(
-#       Resp_numb = case_when(Resp_Group == "Agronomist" ~ 71,
-#                             Resp_Group == "Grower" ~ 99),
-#       percent = n / Resp_numb)
-#   
-#   colnames(df)[2] <- "reason"
-#   return(df)
-# }
 
 
 ```
@@ -4481,7 +4469,7 @@ reason_soil_N <- reason_soil_N %>%
 
 ```
 
-```{r graphs and table Q19}
+```{r graphs and table Q19, echo=FALSE}
 #text is too long
 reason_soil_N <- mutate(
   reason_soil_N,
@@ -4565,7 +4553,7 @@ Please indicate why you don't do more SOIL Phosphorous testing
 
 
 
-```{r data prep Q20}
+```{r data prep Q20, include=FALSE}
 #use function
 
 Q20_why_not_moreP_cost <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_20.1))
@@ -4599,7 +4587,7 @@ reason_soil_P <- reason_soil_P %>%
 ```
 
 
-```{r graphs Q20}
+```{r graphs Q20, echo=FALSE}
 
 
 #text is too long
@@ -5260,8 +5248,26 @@ ggplot(test_Q24_summary, aes(Q_24.1 , percent, fill = Resp_Group))+
 #### **Question 25**
 How do you currently use plant testing?
 
+```{r Q25.0 graph comments, echo=FALSE}
+
+
+
+#table
+  Q25 <- filter(data, Q_25 !=  "NA") %>% select(Resp_Group, Q_25 )
+  
+  datatable(Q25, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_25", 
+                          "Respondent" = "Resp_Group")) 
+
+
+```
+
+
 #### **Question 26**
 Please list the main 3 reasons you use plant testing data?
+
+TEXT QUESTION
+
 
 #### **Question 27**
 Please indicate why you don't do more PLANT testing
@@ -5274,6 +5280,131 @@ Please indicate why you don't do more PLANT testing
 * The ability to translate test results into a profitable decision
 * Not being able to get test results at the right time for decision making
 * General comments
+
+
+```{r Q27.0 working comments, include=FALSE}
+
+##function for to cal the % of respnondents This was defined above
+# summary_stats_all_resp <- function(df, group_by, clm_in_df){
+#   df <- filter( df, !! clm_in_df != "NA") %>%
+#     group_by(!! group_by) %>%
+#     count(!! clm_in_df) %>%
+#     mutate(
+#       Resp_numb = case_when(Resp_Group == "Agronomist" ~ 71,
+#                             Resp_Group == "Grower" ~ 99),
+#       percent_all = n / Resp_numb)
+#   
+#   colnames(df)[2] <- "reason"
+#   return(df)
+# }
+
+
+
+Plant_cost <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_27.1))
+Plant_time <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_27.2))
+Plant_lab_cost <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_27.3))
+Plant_variability <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_27.4))
+Plant_accuracy_lab <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_27.5))
+Plant_accuracy_decision <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_27.6))
+Plant_accuracy_timing <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_27.7))
+
+#join the reasons together
+
+reason_plant_testing <- rbind(Plant_cost, 
+                              Plant_time,
+                              Plant_lab_cost,
+                              Plant_variability,
+                              Plant_accuracy_lab,
+                              Plant_accuracy_decision,
+                              Plant_accuracy_timing)
+
+reason_plant_testing
+## add this 12/12
+
+reason_plant_testing <- reason_plant_testing %>%
+  group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+head(reason_plant_testing)
+
+#text is too long
+reason_plant_testing <- mutate(
+  reason_plant_testing,
+  names_display = case_when(
+    reason == "The cost of sampling" ~ "cost",
+    reason == "The time required for sampling" ~ "time",
+    reason == "The cost of lab analysis" ~ "cost of lab analysis",
+    reason == "The difficulty in being able to represent the variability in a paddock" ~ "variability",
+    reason == "The level of accuracy of lab analysis" ~ "accuracy",
+    reason == "The ability to translate test results into a profitable decision" ~ "translate profitable decision",
+    reason == "Not being able to get test results at the right time for decision making" ~ "get results at right time"
+  )
+)
+
+
+
+
+```
+
+
+```{r Q27.0 graph and table comments, echo=FALSE}
+filter(reason_plant_testing, Resp_Group == "Agronomist") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Agronomist")%>%
+  formatPercentage(c("percent"))
+
+filter(reason_plant_testing, Resp_Group == "Grower") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Grower")%>%
+  formatPercentage(c("percent"))
+
+ggplot(reason_plant_testing, aes (x =  reorder(names_display, -percent), y = percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "Percentage of respondents to question",
+       title = "Plant testing",
+       subtitle = "",
+       caption = "Q)Please indicate why you don't do more PLANT testing?")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+
+
+```
+
+
+```{r Q27.0 graph comments, echo=FALSE}
+
+
+
+#table
+  Q27 <- filter(data, Q_27.8 !=  "NA") %>% select(Resp_Group, Q_27.8 )
+  
+  datatable(Q27, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_27.8", 
+                          "Respondent" = "Resp_Group")) 
+
+
+```
+
 
 
 #### **Question 28** 
