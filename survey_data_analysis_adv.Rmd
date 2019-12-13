@@ -4408,6 +4408,61 @@ What are the top 3 reasons for soil testing on your clients farms ...
 * 2
 * 3
 
+```{r Q18 working, warning=FALSE, include=FALSE}
+headers18_1 <- read_excel("Q18_Top_3_Categories _ 12.12.19.xlsx", 
+                          sheet = "Q18_categories", col_names=FALSE, range = "B4:E4")
+
+head(headers12_2)
+
+data_q18_1 <- read_excel("Q18_Top_3_Categories _ 12.12.19.xlsx", 
+                         sheet = "Q18_categories", col_names=FALSE, range = "B5:E174")
+names(data_q18_1) <- headers18_1
+
+head(data_q18_1)
+
+
+data_q18_1
+colnames(data_q18_1)[4] <- "Categories"
+data_q18_1 <- select(data_q18_1, Resp_Group, Categories)
+data_q18_1summary_agro <- filter (data_q18_1, Resp_Group == "Agronomist" & Categories !=  "NA")%>%
+  group_by(Resp_Group) %>%
+  count(Categories) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+data_q18_1summary_agro
+
+
+
+data_q18_1summary_grower <- filter (data_q18_1, Resp_Group == "Grower" & Categories !=  "NA")%>%
+  group_by(Resp_Group) %>%
+  count(Categories) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+data_q18_1summary_grower
+
+
+
+data_q18_1summary_agro_grower <- rbind(data_q18_1summary_grower, data_q18_1summary_agro)
+
+
+```
+
+```{r Q18 table reason 1, echo=FALSE, warning=FALSE}
+
+datatable(data_q18_1summary_agro_grower,
+          options = list(pageLength = 35, dom = 't'),
+           caption = "Top reason for soil testing",
+          colnames = c( "Respondent" = "Resp_Group",
+                        "Reason" = "Categories",
+                        "count" = "n",
+                        "percent" = "percent")) %>%
+  formatPercentage(c("percent"), 0)
+
+
+```
+
 #### **Question 19**
 Please indicate why you don't do more SOIL Nitrogen testing:
 
@@ -5632,7 +5687,7 @@ filter(subsetQ28_summary, question == "Uncertainty" ) %>%
 ```
 
 
-```{r Q28 table and graph recommend, echo=FALSE, warning=FALSE}
+```{r Q28 table and graph recommend1, echo=FALSE, warning=FALSE}
 #  more Uncertainty table 1
 
 # * My clients businesses would be more profitable if they did more plant testing than they do now
@@ -6754,6 +6809,24 @@ filter(subsetQ37_summary, question == "Uncertainty" ) %>%
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
 ```
 
+* No comments in excel sheet
+
+```{r Q37 text comments, echo=FALSE}
+
+
+
+# #table
+#   Q37_comments <- filter(data, Q_37.3 !=  "NA") %>% select(Resp_Group, Q_37.3 )
+#   
+#   datatable(Q37_comments, options = list(pageLength = 35, dom = 't'),
+#             #caption = "Comments asked twice for the is question",
+#             
+#             colnames = c( "Comments" = "Q_37.3", 
+#                           "Respondent" = "Resp_Group")) 
+# 
+
+```
+
 
 #### **Question 38** 
 What are the barriers to you undertaking...?
@@ -6774,25 +6847,281 @@ What are the barriers to you undertaking...?
 
 
 
+```{r Q38 soil working, warning=FALSE, include=FALSE}
+unique(data$Q_38)
+unique(data$Q_38.1)
+unique(data$Q_38.2)
+unique(data$Q_38.3)
+unique(data$Q_38.4)
+unique(data$Q_38.5)
+unique(data$Q_38.6)
+
+##function for to cal the % of respnondents
+summary_stats_all_resp <- function(df, group_by, clm_in_df){
+  df <- filter( df, !! clm_in_df != "NA") %>%
+    group_by(!! group_by) %>%
+    count(!! clm_in_df) %>%
+    mutate(
+      Resp_numb = case_when(Resp_Group == "Agronomist" ~ 71,
+                            Resp_Group == "Grower" ~ 99),
+      percent_all = n / Resp_numb)
+  
+  colnames(df)[2] <- "reason"
+  return(df)
+}
+
+#use function
+
+Sampling_cost_soil <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_38.1))
+Analysis_cost_soil <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_38.2))
+Sampling_time_soil <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_38.3))
+Analysis_time_soil <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_38.4))
+Understanding_soil <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_38.5)) #Understanding / interpreting results
+Sampling_method_soil <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_38.6))
 
 
+#join the reasons together
+
+barriers_soil_test <- rbind(Sampling_cost_soil, 
+                            Analysis_cost_soil,
+                            Sampling_time_soil,
+                            Analysis_time_soil,
+                            Understanding_soil,
+                            Sampling_method_soil)
+unique(barriers_soil_test$reason)
+## add this 12/12
+
+barriers_soil_test <- barriers_soil_test %>%
+  group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+barriers_soil_test
+
+#text is too long
+barriers_soil_test <- mutate(
+  barriers_soil_test,
+  names_display = case_when(
+    reason == "Sampling cost" ~ "Sampling cost",
+    reason == "Analysis cost" ~ "Analysis cost",
+    reason == "Sampling time" ~ "Sampling time",
+    reason == "Analysis time" ~ "	Analysis time",
+    reason == "Understanding / interpreting results" ~ "Understanding results	",
+    reason == "Sampling method" ~ "Sampling method"))
+```
+
+
+```{r Q38 table and grap3 soil, echo=FALSE, warning=FALSE}
+filter(barriers_soil_test, Resp_Group == "Agronomist") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Agronomist")%>%
+  formatPercentage(c("percent"))
+
+filter(barriers_soil_test, Resp_Group == "Grower") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Grower")%>%
+  formatPercentage(c("percent"))
+
+
+
+
+
+
+
+ggplot(barriers_soil_test, aes (x =  reorder(names_display, -percent), y = percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "Percentage of respondents to question",
+       title = "Barriers to soil testing",
+       subtitle = "",
+       caption = "Q) What are the barriers to you undertaking soil testing")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+```
  
  
  
  
  
+```{r Q39 plant working, include=FALSE}
+unique(data$Q_39)
+unique(data$Q_39.1)
+unique(data$Q_39.2)
+unique(data$Q_39.3)
+unique(data$Q_39.4)
+unique(data$Q_39.5)
+unique(data$Q_39.6)
+
+##function for to cal the % of respnondents
+summary_stats_all_resp <- function(df, group_by, clm_in_df){
+  df <- filter( df, !! clm_in_df != "NA") %>%
+    group_by(!! group_by) %>%
+    count(!! clm_in_df) %>%
+    mutate(
+      Resp_numb = case_when(Resp_Group == "Agronomist" ~ 71,
+                            Resp_Group == "Grower" ~ 99),
+      percent_all = n / Resp_numb)
+  
+  colnames(df)[2] <- "reason"
+  return(df)
+}
+
+#use function
+
+Sampling_cost_plant <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_39.1))
+Analysis_cost_plant <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_39.2))
+Sampling_time_plant <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_39.3))
+Analysis_time_plant <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_39.4))
+Understanding_plant <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_39.5)) #Understanding / interpreting results
+Sampling_method_plant <- summary_stats_all_resp(data, quo(Resp_Group), quo(Q_39.6))
+
+
+#join the reasons together
+
+barriers_plant_test <- rbind(Sampling_cost_plant, 
+                            Analysis_cost_plant,
+                            Sampling_time_plant,
+                            Analysis_time_plant,
+                            Understanding_plant,
+                            Sampling_method_plant)
+unique(barriers_plant_test$reason)
+## add this 12/12
+
+barriers_plant_test <- barriers_plant_test %>%
+  group_by(Resp_Group) %>%
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+barriers_plant_test
+
+#text is too long
+barriers_plant_test <- mutate(
+  barriers_plant_test,
+  names_display = case_when(
+    reason == "Sampling cost" ~ "Sampling cost",
+    reason == "Analysis cost" ~ "Analysis cost",
+    reason == "Sampling time" ~ "Sampling time",
+    reason == "Analysis time" ~ "	Analysis time",
+    reason == "Understanding / interpreting results" ~ "Understanding results	",
+    reason == "Sampling method" ~ "Sampling method"))
+    
+
+```
+
+
+```{r Q39 plant table and graph, echo=FALSE}
+filter(barriers_plant_test, Resp_Group == "Agronomist") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Agronomist")%>%
+  formatPercentage(c("percent"))
+
+filter(barriers_plant_test, Resp_Group == "Grower") %>% 
+  select(Resp_Group , names_display, n , percent ) %>%
+  datatable( 
+    colnames = c("Respondent" = "Resp_Group",
+                 "reason" = "names_display",
+                 "count" = "n" ,
+                 "percent" = "percent"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Grower")%>%
+  formatPercentage(c("percent"))
 
 
 
+
+
+
+
+ggplot(barriers_plant_test, aes (x =  reorder(names_display, -percent), y = percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "Percentage of respondents to question",
+       title = "",
+       subtitle = "",
+       caption = "Q) What are the barriers to you undertaking plant testing")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+
+```
 
 
 
 #### **Question 40**
 Please feel free to add any other comments or suggestions
 
+
+```{r Q40 text comments, echo=FALSE}
+
+
+
+# #table
+   Q40_comments1 <- filter(data, Q_40.1 !=  "NA") %>% select(Resp_Group, Q_40.1 )
+
+  datatable(Q40_comments1, options = list(pageLength = 35, dom = 't'),
+            caption = "Comments asked twice for the is question",
+
+            colnames = c( "Comments" = "Q_40.1",
+                          "Respondent" = "Resp_Group"))
+  
+     Q40_comments2 <- filter(data, Q_40.1 !=  "NA") %>% select(Resp_Group, Q_40.2 )
+    Q40_comments2 <- Q40_comments2[c(3,8),c(1:2)]
+  datatable(Q40_comments2, options = list(pageLength = 35, dom = 't'),
+            caption = "Comments asked twice for the is question",
+
+            colnames = c( "Comments" = "Q_40.2",
+                          "Respondent" = "Resp_Group"))
+
+
+```
+
 #### **Question 41**
 Grower
 What information do you require to make better informed decisions regarding nutrient management?
+
+```{r Q41 text comments, echo=FALSE}
+
+# #table
+   Q41_comments <- filter(data, Q_41 !=  "NA") %>% select(Resp_Group, Q_41 )
+
+  datatable(Q41_comments, options = list(pageLength = 35, dom = 't'),
+            caption = "Comments asked twice for the is question",
+
+            colnames = c( "Comments" = "Q_41",
+                          "Respondent" = "Resp_Group"))
+  
+   
+```
+
 
 #### **Question 42**
 Grower
@@ -6814,12 +7143,39 @@ Where and how would you like to receive information regarding crop nutrition?
 * Other (please specify)
 
 
+* Therese suggested not doing
+
 #### **Question 44**
 How do you think researchers or the GRDC could assist you to get a better return on investment for your fertiliser decisions?
 
+```{r Q44 text comments, echo=FALSE}
+
+# #table
+   Q44_comments <- filter(data, Q_44 !=  "NA") %>% select(Resp_Group, Q_44 )
+   #Q44_comments <- Q44_comments[-c(2,4,5),c(1:2)]
+  datatable(Q44_comments, options = list(pageLength = 35, dom = 't'),
+            caption = "Comments asked twice for the is question",
+
+            colnames = c( "Comments" = "Q_44",
+                          "Respondent" = "Resp_Group"))
+  
+   
+```
 
 #### **Question 45**
 Please feel free to add any other comments or suggestions
 
+```{r Q45 text comments, echo=FALSE}
 
+# #table
+   Q45_comments <- filter(data, Q_45 !=  "NA") %>% select(Resp_Group, Q_45 )
+   #Q45_comments <- Q44_comments[-c(2,4,5),c(1:2)]
+  datatable(Q45_comments, options = list(pageLength = 35, dom = 't'),
+            caption = "Comments asked twice for the is question",
+
+            colnames = c( "Comments" = "Q_45",
+                          "Respondent" = "Resp_Group"))
+  
+   
+```
 
