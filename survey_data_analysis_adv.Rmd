@@ -4463,6 +4463,115 @@ datatable(data_q18_1summary_agro_grower,
 
 ```
 
+
+
+```{r Q18 working reason 2, warning=FALSE, include=FALSE}
+
+headers18_2 <- read_excel("Q18_Top_3_Categories _ 12.12.19.xlsx", 
+                          sheet = "Q18_categories", col_names=FALSE, range = "B4:G4")
+
+data_q18_2 <- read_excel("Q18_Top_3_Categories _ 12.12.19.xlsx", 
+                         sheet = "Q18_categories", col_names=FALSE, range = "B5:G174")
+names(data_q18_2) <- headers18_2
+
+names(data_q18_2)
+data_q18_2 <- select(data_q18_2, "Resp_Group", 'Q_18.2_ Categories')
+data_q18_2
+
+colnames(data_q18_2)[2] <- "Categories"
+data_q18_2 <- select(data_q18_2, Resp_Group, Categories)
+data_q18_2summary_agro <- filter (data_q18_2, Resp_Group == "Agronomist" & Categories !=  "NA")%>%
+  group_by(Resp_Group) %>%
+  count(Categories) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+data_q18_2summary_agro
+
+
+
+data_q18_2summary_grower <- filter (data_q18_2, Resp_Group == "Grower" & Categories !=  "NA")%>%
+  group_by(Resp_Group) %>%
+  count(Categories) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+data_q18_2summary_grower
+
+
+
+data_q18_2summary_agro_grower <- rbind(data_q18_2summary_grower, data_q18_2summary_agro)
+
+```
+
+
+```{r Q18 table reason 2, echo=FALSE, warning=FALSE}
+
+datatable(data_q18_2summary_agro_grower,
+          options = list(pageLength = 35, dom = 't'),
+           caption = "Second reason for soil testing",
+          colnames = c( "Respondent" = "Resp_Group",
+                        "Reason" = "Categories",
+                        "count" = "n",
+                        "percent" = "percent")) %>%
+  formatPercentage(c("percent"), 0)
+
+
+```
+
+```{r Q18 reason 3 working, warning=FALSE, include=FALSE}
+headers18_3 <- read_excel("Q18_Top_3_Categories _ 12.12.19.xlsx", 
+                          sheet = "Q18_categories", col_names=FALSE, range = "B4:I4")
+
+
+
+data_q18_3 <- read_excel("Q18_Top_3_Categories _ 12.12.19.xlsx", 
+                         sheet = "Q18_categories", col_names=FALSE, range = "B5:I174")
+names(data_q18_3) <- headers18_3
+
+names(data_q18_3)
+data_q18_3 <- select(data_q18_3, "Resp_Group", 'Q_18.3_ Categories')
+data_q18_3
+
+colnames(data_q18_3)[2] <- "Categories"
+data_q18_3 <- select(data_q18_3, Resp_Group, Categories)
+data_q18_3summary_agro <- filter (data_q18_3, Resp_Group == "Agronomist" & Categories !=  "NA")%>%
+  group_by(Resp_Group) %>%
+  count(Categories) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+data_q18_3summary_agro
+
+
+
+data_q18_3summary_grower <- filter (data_q18_3, Resp_Group == "Grower" & Categories !=  "NA")%>%
+  group_by(Resp_Group) %>%
+  count(Categories) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+data_q18_3summary_grower
+
+
+
+data_q18_3summary_agro_grower <- rbind(data_q18_3summary_grower, data_q18_3summary_agro)
+
+```
+
+
+```{r Q18 table reason 3, echo=FALSE, warning=FALSE}
+datatable(data_q18_3summary_agro_grower,
+          options = list(pageLength = 35, dom = 't'),
+           caption = "Third reason for soil testing",
+          colnames = c( "Respondent" = "Resp_Group",
+                        "Reason" = "Categories",
+                        "count" = "n",
+                        "percent" = "percent")) %>%
+  formatPercentage(c("percent"), 0)
+
+```
+
 #### **Question 19**
 Please indicate why you don't do more SOIL Nitrogen testing:
 
