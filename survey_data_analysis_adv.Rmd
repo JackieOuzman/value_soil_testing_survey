@@ -6542,6 +6542,29 @@ ggplot(soilP_testing, aes (x =  reorder(names_display, -percent), y = percent, f
 ```
 
 
+
+```{r Q36 text comments, echo=FALSE}
+
+
+
+#table
+  Q36_comments1 <- filter(data, Q_36 !=  "NA") %>% select(Resp_Group, Q_36 )
+  
+  datatable(Q36_comments1, options = list(pageLength = 35, dom = 't'),
+            caption = "Comments asked twice for the is question",
+            
+            colnames = c( "Comments" = "Q_36", 
+                          "Respondent" = "Resp_Group")) 
+
+Q36_comments2 <- filter(data, Q_36.8 !=  "NA") %>% select(Resp_Group, Q_36.8 )
+  
+  datatable(Q36_comments2, options = list(pageLength = 35, dom = 't'),
+            caption = "Comments asked twice for the is question",
+            colnames = c( "Comments" = "Q_36.8", 
+                          "Respondent" = "Resp_Group")) 
+```
+
+
 #### **Question 37**
 Agronomist
 Please indicate if you agree/disagree with the following statements in relation to PLANT testing
@@ -6555,7 +6578,181 @@ Please indicate if you agree/disagree with the following statements in relation 
 * My farm business would be more profitable if I did more plant testing than I do now
 * Uncertainty about how the season will turn out makes it hard to get value from plant testing results
 
+```{r Q37 working, warning=FALSE, include=FALSE}
+data$Q_37.1
+data$Q_37.2
 
+
+#group the Q37 data together
+subsetQ37 <- select(data, Q_37.1, Q_37.2,  Resp_Group) 
+#how many people ans the questions
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_Q_Q_37.1 = sum(!is.na(Q_37.1)))  #Agro = 3, Grower = 42
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_Q_Q_37.2 = sum(!is.na(Q_37.2)))  #Agro = 3, Grower = 38
+
+
+#* My farm business would be more profitable if I did more soil testing than I do now
+#* Uncertainty about how the season will turn out makes it hard to get value from soil testing results
+
+subsetQ37.1_summary <- 
+  filter(subsetQ37, Q_37.1 != "NA") %>% 
+  group_by( Resp_Group) %>%
+  count(Q_37.1) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)),
+         question = "more profitable")
+
+
+subsetQ37.2_summary <- 
+  filter(subsetQ37, Q_37.2 != "NA") %>% 
+  group_by( Resp_Group) %>%
+  count(Q_37.2) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)),
+         question = "Uncertainty")
+
+
+
+
+
+
+
+subsetQ37.1_summary <- ungroup(subsetQ37.1_summary)
+subsetQ37.1_summary <- rename(subsetQ37.1_summary , "scale" = "Q_37.1")
+
+subsetQ37.2_summary <- ungroup(subsetQ37.2_summary)
+subsetQ37.2_summary <- rename(subsetQ37.2_summary , "scale" = "Q_37.2")
+
+
+
+subsetQ37_summary <- rbind(subsetQ37.1_summary,
+                           subsetQ37.2_summary)
+subsetQ37_summary
+
+
+
+# df needs ording for display
+subsetQ37_summary$scale <-
+  factor(
+    subsetQ37_summary$scale ,
+    levels = c(
+      "Strongly agree",
+      "Agree",
+      "Neutral",
+      "Disagree",
+      "Strongly disagree"
+    )
+  )
+
+
+```
+
+```{r Q37 table and graph profit, echo=FALSE, warning=FALSE}
+filter(subsetQ37_summary,
+       Resp_Group == "Agronomist" &
+         question == "more profitable") %>%
+  select(Resp_Group, scale, n, percent, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "more profitable - Agronomist")%>%
+  formatPercentage(c("percent"))
+
+#  more profitable table 2
+filter(subsetQ37_summary,
+       Resp_Group == "Grower" &
+         question == "more profitable") %>%
+  select(Resp_Group, scale, n, percent, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "more profitable - Grower")%>%
+  formatPercentage(c("percent"))
+
+#  more profitable graph
+
+filter(subsetQ37_summary, question == "more profitable" ) %>% 
+  ggplot( aes (x =  reorder(scale, -percent), y = percent, 
+               fill = Resp_Group))+
+  geom_col() +
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "Percentage of respondents to question",
+       title = "More profitable with more plant testing",
+       subtitle = "",
+       caption = "Q) My farm business would be more profitable if I did more plant testing than I do now")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+```
+
+
+
+```{r Q37 table and graph Uncertainty, echo=FALSE, warning=FALSE}
+filter(subsetQ37_summary,
+       Resp_Group == "Agronomist" &
+         question == "Uncertainty") %>%
+  select(Resp_Group, scale, n, percent, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Uncertainty - Agronomist")%>%
+  formatPercentage(c("percent"))
+
+#  more profitable table 2
+filter(subsetQ37_summary,
+       Resp_Group == "Grower" &
+         question == "Uncertainty") %>%
+  select(Resp_Group, scale, n, percent, question) %>%
+  datatable(
+    colnames = c(
+      "Respondent" = "Resp_Group",
+      "scale" = "scale",
+      "count" = "n" ,
+      "percent" = "percent",
+      "question" = "question"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Uncertainty - Grower")%>%
+  formatPercentage(c("percent"))
+
+#  more Uncertainty graph
+
+filter(subsetQ37_summary, question == "Uncertainty" ) %>% 
+  ggplot( aes (x =  reorder(scale, -percent), y = percent, 
+               fill = Resp_Group))+
+  geom_col() +
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(.~ Resp_Group )+
+  theme_classic()+
+  labs(x= "",
+       y = "Percentage of respondents to question",
+       title = "Uncertainty about how the season devalues plant testing",
+       subtitle = "",
+       caption = "Q) Uncertainty about how the season will turn out makes it hard to get value from plant testing results")+
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(size = 8), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) 
+```
 
 
 #### **Question 38** 
