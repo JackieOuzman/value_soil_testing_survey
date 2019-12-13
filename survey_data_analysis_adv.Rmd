@@ -5757,17 +5757,151 @@ filter(subsetQ28_summary, question == "my_profitability" ) %>%
 ```
 
 
+```{r Q28.0 graph comments, echo=FALSE}
+
+
+
+#table
+  Q28 <- filter(data, Q_28.5 !=  "NA") %>% select(Resp_Group, Q_28.5 )
+  
+  datatable(Q28, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_28.5", 
+                          "Respondent" = "Resp_Group")) 
+
+
+```
+
+
 #### **Question 29**
 Agronomist
 On average, how much would your clients spend per year on plant testing (including sampling)?
 Grower
 On average, how much would you spend per year on  plant testing (including sampling)?
 
+```{r Q29 working, include=FALSE}
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_Q_29.1 = sum(!is.na(Q_29.1))) #agro =54 and grower = 30
+
+Q29 <- select(data, Resp_Group, Q_29.1 , Q_29.2)
+Q29
+Q29 <-  filter (Q29,   Q_29.1 !=  "NA") %>%
+  mutate(
+    Q_29.1_recode = case_when(
+      Q_29.1 ==   "0" ~  "< $2500",
+      Q_29.1 == 	"$1 - $2,500"  ~  "< $2500",
+      Q_29.1 == 	"$2,500 - $5,000"  ~  "> $2500",
+      Q_29.1 == 	"$15,000 - $17,500"  ~  "> $2500",
+      Q_29.1 == 	"$5,000 - $7,500"  ~  "> $2500",
+      Q_29.1 == 	"$10,000 - $12,500"  ~  "> $2500",
+      Q_29.1 == 	"$17,500 - $20,000"  ~  "> $2500",
+      Q_29.1 == 	"$7,500 - $10,000"  ~  "> $2500",
+      TRUE ~ "****"
+    )
+  )
+
+Q29
+
+
+Q29_summary <- 
+  group_by(Q29, Resp_Group) %>%
+  count(Q_29.1_recode) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+Q29_summary
+
+```
+
+
+```{r Q29 table and graph, echo=FALSE, warning=FALSE}
+datatable(Q29_summary, options = list(pageLength = 35, dom = 't'),
+          colnames = c( "spend" = "Q_29.1_recode", "Respondent" = "Resp_Group", "count" = "n")) %>% 
+  formatPercentage('percent', 0)  
+
+
+
+ggplot(Q29_summary, aes(Q_29.1_recode , percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(. ~ Resp_Group)+
+  theme_classic()+
+  labs(x= "Average spend each year",
+       y = "Percentage of respondents to question",
+       fill = "",
+       title = "Spend per year",
+       subtitle = "",
+       caption = "Q) On average, how much would your clients / you spend per year on plant testing (including sampling)?")+
+  
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(hjust = 0), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+#scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+```
+
+
+```{r Q29.0 graph comments, echo=FALSE}
+
+
+
+#table
+  Q29_comments <- filter(data, Q_29.2 !=  "NA") %>% select(Resp_Group, Q_29.2 )
+  
+  datatable(Q29_comments, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_29.2", 
+                          "Respondent" = "Resp_Group")) 
+
+
+```
+
 #### **Question 30** 
 Agronomist
 Compared to five years' ago, has the amount of plant testing you do / recommend changed?
 Grower
 Compared to five years' ago, has the amount of plant testing you do on your farm changed?
+
+```{r Q30 working, warning=FALSE, include=FALSE}
+data$Q_30
+unique(data$Q_30)
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_Q_30 = sum(!is.na(Q_30))) #ago #53 grower #28
+
+Q30 <- select(data, Resp_Group, Q_30)
+Q30
+Q30_summary <- 
+  filter(Q30, Q_30 != "NA") %>% 
+  group_by( Resp_Group) %>%
+  count(Q_30) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+Q30_summary
+
+```
+
+
+
+```{r Q30 table and graph, echo=FALSE, warning=FALSE}
+datatable(Q30_summary, options = list(pageLength = 35, dom = 't'),
+          colnames = c( "compared to 5 years ago" = "Q_30", "Respondent" = "Resp_Group", "count" = "n")) %>% 
+  formatPercentage('percent', 0)  
+
+
+
+ggplot(Q30_summary, aes(Q_30 , percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(. ~ Resp_Group)+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent responded to question",
+       fill = "",
+       title = "Change in plant testing",
+       subtitle = "",
+       caption = "Q) Compared to five years' ago, has the amount of plant testing you do / recommend changed?")+
+  
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(hjust = 0), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+```
 
 
 #### **Question 31**
@@ -5776,11 +5910,75 @@ In five years' time,how much plant sampling do you expect to be doing / recommen
 Grower
 In five years' time, how much plant sampling do you expect to be doing?
 
+```{r Q31 working, warning=FALSE, include=FALSE}
+data$Q_31
+unique(data$Q_31)
+data %>% group_by(Resp_Group) %>% summarise(non_na_count_Q_31 = sum(!is.na(Q_31))) #ago #53 grower #28
+
+Q31 <- select(data, Resp_Group, Q_31)
+Q31
+Q31_summary <- 
+  filter(Q31, Q_31 != "NA") %>% 
+  group_by( Resp_Group) %>%
+  count(Q_31) %>% 
+  mutate(percent = 
+           (freq = n / sum(n)))
+
+Q31_summary
+
+
+```
+
+```{r Q31 table and graph, echo=FALSE, warning=FALSE}
+datatable(Q31_summary, options = list(pageLength = 35, dom = 't'),
+          colnames = c( "In 5 years" = "Q_31", "Respondent" = "Resp_Group", "count" = "n")) %>% 
+  formatPercentage('percent', 0)  
+
+
+
+ggplot(Q31_summary, aes(Q_31 , percent, fill = Resp_Group))+
+  geom_col()+
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  facet_wrap(. ~ Resp_Group)+
+  theme_classic()+
+  labs(x= "",
+       y = "Percent responded to question",
+       fill = "",
+       title = "Future plant testing",
+       subtitle = "",
+       caption = "Q) In five years' time,how much plant sampling do you expect to be doing / recommending?")+
+  
+  theme(axis.text.x=element_text(angle=90,hjust=1),
+        plot.caption = element_text(hjust = 0), legend.position = "none") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
+#scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.5))
+
+```
+
+
+
 
 #### **Question 32**
-Agronomist
-Grower
+
+Agronomist)
+Not asked
+
+Grower)
 Is the use of soil testing on your farm increasing your profitability?
+
+```{r Q32 text comments, echo=FALSE}
+
+
+
+#table
+  Q32_comments <- filter(data, Q_32 !=  "NA") %>% select(Resp_Group, Q_32 )
+  
+  datatable(Q32_comments, options = list(pageLength = 35, dom = 't'),
+            colnames = c( "Comments" = "Q_32", 
+                          "Respondent" = "Resp_Group")) 
+
+
+```
 
 
 #### **Question 33**
