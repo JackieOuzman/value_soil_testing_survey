@@ -1,5 +1,5 @@
 ---
-title: "Survey data analysis"
+title: "Survey data analysis for: “Using soil and plant testing data to better inform nutrient management and optimise fertiliser investments for grain growers in the southern region"
 author: "Jackie Ouzman and Belinda Stummer"
 date: "22/08/2019"
 output:
@@ -25,10 +25,7 @@ library(data.table)
 #library(formattable)
 ```
 
-#### General notes 
 
-* Note I have made some adjustment to the heading names in the excel sheet - many questions don't have numbers.
-* I have used survey script to get the order correct.
 
 ```{r import dataset advisor, include=FALSE}
 
@@ -175,7 +172,7 @@ ggplot(Q1_resp_percent, aes(Resp_Group, percent, fill = Resp_Group))+
   theme_classic()+
   theme(legend.position = "none")+
   labs(x= "",
-       y = "percentage of all respondents",
+       y = "percentage of participants in survey",
        fill = "",
        title = "",
        subtitle = "Survey respondents")+
@@ -614,7 +611,13 @@ head(Q3_regions_grower_narrow, 40)
 
 ```
 
-```{r Q3 graph regions agro only, include=FALSE,  echo=FALSE}
+```{r Q3 graph regions agro only, echo=FALSE}
+#Q3_regions_grower_narrow
+datatable(Q3_regions_grower_narrow, 
+          options = list(pageLength = 35, dom = 't'),
+          colnames = c( "Respondents", "Crop", "Average cropped area"))
+
+
 ggplot(Q3_regions_grower_narrow, aes(x = crop, y = ave_area, fill = Resp_Group ))+
   geom_col()+
   scale_fill_manual(values=c( "grey40"))+
@@ -750,7 +753,7 @@ ggplot(Q4_resp_percent, aes(Q_4, percent, fill =Resp_Group ))+
        caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
-        scale_y_continuous("All respondent", breaks=seq(0, 1.0, 0.1)
+        scale_y_continuous("Percentage of participants in survey", breaks=seq(0, 1.0, 0.1)
                            , labels=c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"), limits = c(0,0.5))
   
 
@@ -790,19 +793,33 @@ Q4group_resp_percent$Q_4_group <- factor(Q4group_resp_percent$Q_4_group,
 ```
 
 ```{r Q4 working more grouping2, echo=FALSE}
+
+  datatable(Q4group_resp_percent,
+    options = list(pageLength = 35, dom = 't'),
+    colnames = c(
+      'Respondent' = 'Resp_Group',
+      'Total annual variable costs' = 'Q_4_group',
+      'Number of respondents' = 'n',
+      'percent' = 'percent'
+    )
+  ) %>%
+  formatPercentage('percent', 0) 
+
+
+
 ggplot(Q4group_resp_percent, aes(Q_4_group, percent, fill = Resp_Group ))+
   geom_col()+
   scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(~Resp_Group)+
   theme_classic()+
-  labs(x= "percentage of total variable cost - more grouping",
+  labs(x= "",
        y = "percent response",
-       title = "Percent of annual variable costs attributed to fertilisers",
+       title = "Percent of annual variable costs attributed to fertilisers - additional grouping",
        #subtitle = "Agronomist and grower",
        caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
-  scale_y_continuous("All respondent", breaks=seq(0, 1.0, 0.1)
+  scale_y_continuous("Percentage of participants in survey", breaks=seq(0, 1.0, 0.1)
                      , labels=c("0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"), limits = c(0,0.5))
 
 ```
@@ -843,13 +860,28 @@ Q4group_resp__regions_merged_percent$Q_4_group <- factor(Q4group_resp__regions_m
 
 
 ```{r Q4 regions graph, echo=FALSE, warning=FALSE}
+
+ 
+datatable(Q4group_resp__regions_merged_percent,
+    options = list(pageLength = 60, dom = 't'),
+    colnames = c(
+      'Respondent' = 'Resp_Group',
+      'Region' = 'region_merge', 
+      'Total annual variable costs' = 'Q_4_group',
+      'Number of respondents' = 'n',
+      'percent' = 'percent'
+    )
+  ) %>%
+  formatPercentage('percent', 0) 
+
+
 filter(Q4group_resp__regions_merged_percent, Resp_Group == "Agronomist") %>% 
 ggplot( aes(Q_4_group, percent))+
   geom_col(fill = "grey70", color = "black")+
   facet_wrap(. ~ region_merge)+
   theme_classic()+
-  labs(x= "percentage of total variable cost",
-       y = "percent response",
+  labs(x= "",
+       y = "Percentage of participants in survey",
        title = "Percent of annual variable costs attributed to fertilisers - more grouping",
        subtitle = "Agronomist",
        caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
@@ -863,8 +895,8 @@ ggplot( aes(Q_4_group, percent))+
   geom_col(fill = "grey40", color = "black")+
   facet_wrap(. ~ region_merge)+
   theme_classic()+
-  labs(x= "percentage of total variable cost",
-       y = "percent response",
+  labs(x= "",
+       y = "Percentage of participants in survey",
        title = "Percent of annual variable costs attributed to fertilisers - more grouping",
        subtitle = "Grower",
        caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
@@ -882,7 +914,7 @@ Note that percentages is calculated for each regional grouping (by agronomist or
 
 
 
-**Question 4 with bins grouped and by rainfall**
+**Question 4 grouped and by rainfall**
 
 ```{r Q4 regions working, echo=FALSE}
 
@@ -899,10 +931,7 @@ Q4group_resp__rainfall_percent$Q_4_group <- factor(Q4group_resp__rainfall_percen
                               levels = c("<20%","20-35%", ">35%", "Unsure" ))
 
 
-# filter(Q4group_resp__rainfall_percent, Resp_Group == "Agronomist") %>%
-# datatable(Q4group_resp__rainfall_percent)
-# filter(Q4group_resp__rainfall_percent, Resp_Group == "Grower") %>%
-# datatable(Q4group_resp__rainfall_percent)
+
 
 ```
 
@@ -924,8 +953,8 @@ ggplot( aes(Q_4_group, percent))+
   geom_col(fill = "grey70", color = "black")+
   facet_wrap(. ~ rainfall)+
   theme_classic()+
-  labs(x= "percentage of total variable cost",
-       y = "percent response for rainfall grouping",
+  labs(x= "",
+       y = "Percentage of participants in survey",
        title = "Percent of annual variable costs attributed to fertilisers - more grouping",
        subtitle = "Agronomist",
        caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
@@ -947,8 +976,8 @@ ggplot( aes(Q_4_group, percent))+
   geom_col(fill = "grey40", color = "black")+
   facet_wrap(. ~ rainfall)+
   theme_classic()+
-  labs(x= "percentage of total variable cost",
-       y = "percent response for rainfall grouping",
+  labs(x= "Percentage of participants in survey",
+       y = "",
        title = "Percent of annual variable costs attributed to fertilisers - more grouping",
        subtitle = "Grower",
        caption = "Q)  Of your total annual variable costs, what percentage would fertilisers account for?")+
@@ -1009,16 +1038,16 @@ Q_5.2_N <- data %>%
   mutate(percent = 
            (freq = n / sum(n))) %>% 
   filter(Q_5.2_N != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "N")
-
+Q_5.2_N
 Q_5.2_P <- data %>% 
   group_by(Resp_Group) %>% 
   count(Q_5.2_P) %>% 
   mutate(percent = round(
     (freq = n / sum(n)),2)) %>% 
   filter(Q_5.2_P != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "P")
 
 Q_5.2_S <- data %>% 
@@ -1027,7 +1056,7 @@ Q_5.2_S <- data %>%
   mutate(percent = round(
     (freq = n / sum(n)),2)) %>% 
   filter(Q_5.2_S != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "S")
 
 Q_5.2_Zn <- data %>% 
@@ -1036,7 +1065,7 @@ Q_5.2_Zn <- data %>%
   mutate(percent = round(
     (freq = n / sum(n)),2)) %>% 
   filter(Q_5.2_Zn != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "Zn")
 
 Q_5.2_Cu <- data %>% 
@@ -1045,7 +1074,7 @@ Q_5.2_Cu <- data %>%
   mutate(percent = round(
     (freq = n / sum(n)),2)) %>% 
   filter(Q_5.2_Cu != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "Cu")
 
 Q_5.2_Mn <- data %>% 
@@ -1054,7 +1083,7 @@ Q_5.2_Mn <- data %>%
   mutate(percent = round(
     (freq = n / sum(n)),2)) %>% 
   filter(Q_5.2_Mn != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "Mn")
 
 Q_5.2_pH <- data %>% 
@@ -1063,7 +1092,7 @@ Q_5.2_pH <- data %>%
   mutate(percent = round(
     (freq = n / sum(n)),2)) %>% 
   filter(Q_5.2_pH != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "pH")
 
 Q_5.2_Fe <- data %>% 
@@ -1072,7 +1101,7 @@ Q_5.2_Fe <- data %>%
   mutate(percent = round(
     (freq = n / sum(n)),2)) %>% 
   filter(Q_5.2_Fe != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "Fe")
 
 Q_5.2_Mg <- data %>% 
@@ -1081,7 +1110,7 @@ Q_5.2_Mg <- data %>%
   mutate(percent = round(
     (freq = n / sum(n)),2)) %>% 
   filter(Q_5.2_Mg != "NA") %>% 
-  select(Resp_Group, percent) %>% 
+  select(Resp_Group, n, percent) %>% 
   mutate( nutrient = "Mg")
 
 ### These are the same size and can be mereged as is...
@@ -1090,7 +1119,8 @@ nutr_def <- rbind(Q_5.2_N, Q_5.2_P, Q_5.2_S,  Q_5.2_Zn,
 
 add_lines <- tibble (Resp_Group = c("Grower", "Grower"),
                          percent = c(0, 0),
-                         nutrient = c("Fe", "Mg"))
+                         nutrient = c("Fe", "Mg"),
+                         n = c(0,0))
 
 nutr_def_all <- full_join(nutr_def, add_lines)
 
@@ -1104,25 +1134,35 @@ nutr_def_all <- mutate(nutr_def_all, nutrient = fct_relevel(nutrient, c("N", "P"
                                                                 "Fe",
                                                                 "Mg")))
 
-
+#nutr_def_all
 ```
 
 
 ```{r Q5 new nutrient def clms graph, echo=FALSE}
 ## tables
-select(nutr_def_all, Resp_Group, nutrient, percent) %>% 
-filter(Resp_Group == "Agronomist" ) %>% 
-  datatable(options = list(pageLength = 35, dom = 't'),
-    colnames = c('Respondent' = 'Resp_Group', 
-                         'Nutrient Deficiency' = 'nutrient' )) %>% 
+select(nutr_def_all, Resp_Group, nutrient, n, percent) %>%
+  filter(Resp_Group == "Agronomist") %>%
+  datatable(
+    options = list(pageLength = 35, dom = 't'),
+    colnames = c(
+      'Respondent' = 'Resp_Group',
+      'Nutrient Deficiency' = 'nutrient' ,
+      'count' = 'n'
+    )
+  ) %>%
   formatPercentage('percent', 0)
 
 
-select(nutr_def_all, Resp_Group, nutrient, percent) %>% 
-filter(Resp_Group == "Grower" ) %>% 
-  datatable(options = list(pageLength = 35, dom = 't'),
-    colnames = c('Respondent' = 'Resp_Group', 
-                         'Nutrient Deficiency' = 'nutrient' )) %>% 
+select(nutr_def_all, Resp_Group, nutrient, n, percent) %>%
+  filter(Resp_Group == "Grower") %>%
+  datatable(
+    options = list(pageLength = 35, dom = 't'),
+    colnames = c(
+      'Respondent' = 'Resp_Group',
+      'Nutrient Deficiency' = 'nutrient' ,
+      'count' = 'n'
+    )
+  ) %>%
   formatPercentage('percent', 0)
 
 
@@ -1135,7 +1175,7 @@ ggplot( nutr_def_all, aes(nutrient, percent, fill = Resp_Group ))+
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
   labs(x= "",
-       y = "Percent of all agronomist / grower",
+       y = "Percentage of participants in survey",
        title = "Percent of clients / growers with type of nutrient deficiencies",
        subtitle = "",
        caption = "Q)  What are the main nutrient deficiencies")+
@@ -1191,14 +1231,28 @@ Q6_all_agro <- group_by(data, Resp_Group) %>%
 
 ```{r Q6 agro summary agro and grower graph, echo=FALSE}
 
+
+select(Q6_all_agro, Resp_Group, Q_6, n, percent) %>%
+  datatable(
+    options = list(pageLength = 35, dom = 't'),
+    colnames = c(
+      'Respondent' = 'Resp_Group',
+      'soil and or plant testing' = 'Q_6' ,
+      'count' = 'n',
+      "percent" = "percent"
+    )
+  ) %>%
+  formatPercentage('percent', 0)
+
+
 ggplot(Q6_all_agro, aes(Q_6, percent, fill = Resp_Group))+
   geom_col()+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   scale_fill_manual(values=c("grey70", "grey40"))+
   theme_classic()+
   facet_wrap(~ Resp_Group)+
-  labs(x= "All regions",
-       y = "percentage of respondents",
+  labs(x= "",
+       y = "Percentage of participants in survey",
        title = "Recommend soil and or plant testing",
        subtitle = "",
        caption = "Q) Do you recommend soil and or plant testing?")+
@@ -1225,13 +1279,29 @@ Q6_by_Region_merge <-
 ```
 
 ```{r Q6 regions merged summary graph , echo=FALSE}
+
+
+
+select(Q6_by_Region_merge, Resp_Group, region_merge, Q_6, n, percent) %>%
+  datatable(
+    options = list(pageLength = 35, dom = 't'),
+    colnames = c(
+      'Respondent' = 'Resp_Group',
+      "Region" = "region_merge",
+      'soil and or plant testing' = 'Q_6' ,
+      'count' = 'n',
+      "percent" = "percent"
+    )
+  ) %>%
+  formatPercentage('percent', 0)
+
 ggplot(Q6_by_Region_merge, aes(region_merge, percent, fill=Q_6 ))+
   geom_col()+
   facet_wrap(. ~ Resp_Group)+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
-  labs(x= "Regions",
-       y = "percentage of respondents",
+  labs(x= "",
+       y = "Percentage of participants in survey",
        fill = "",
        title = "Recommend soil and or plant testing",
        subtitle = "",
@@ -1255,7 +1325,7 @@ ggplot(aes(region_merge, percent, fill = Resp_Group))+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "percentage of respondents not testing",
+       y = "Percentage of participants in survey",
        title = "Not recommending soil and or plant testing",
        subtitle = "",
        caption = "Q) Do you recommend soil and or plant testing?")+
