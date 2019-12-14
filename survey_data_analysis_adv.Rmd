@@ -1399,7 +1399,7 @@ ggplot(Q7, aes(Q_7 , percent ))+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "percentage of growers who responded",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Decisions on your farm?",
        subtitle = "",
@@ -1425,7 +1425,7 @@ ggplot(Q7, aes(Q_7 , percent ))+
 #### **Question 8**
 
 Agronomist)
-
+only asked to agronomist.
 
 * Q8.1 Of your clients, how many of them rely **entirely** on you to make the nutrient decisions?
 
@@ -1525,11 +1525,13 @@ ggplot(Q8_1_3, aes(bin , percent))+
   #geom_text(aes(label = n, vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "percentage",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Rely on agronomist to make nutrient decisions?",
        subtitle = "Agronomist only",
-       caption = "Q) Of your clients, how many of them rely somewhat on you to make the nutrient decisions?")+
+       caption = "Q) Of your clients, how many of them rely entirely on you to make the nutrient decisions?
+       Q) Of your clients, how many of them rely somewhat on you to make the nutrient decisions?
+       Q) of your clients, how many of them make their own nutrient decisions?")+
   theme(axis.text.x=element_text(angle=45,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
@@ -1591,14 +1593,27 @@ Q9_1 <- mutate(Q9_1, Q_9.1 = fct_relevel(Q_9.1, c("less than 10%", "10-30%", "30
 ```
 
 ```{r Q9.1 graph how much testing, echo=FALSE, message=FALSE, warning=TRUE}
+
+### table
+
+select(Q9_1, Resp_Group, Q_9.1,  n, percent  ) %>% 
+  datatable(options = list(pageLength = 35, dom = 't'),
+            colnames = c('Respondent' = 'Resp_Group', 
+                         'Extent of testing' = 'Q_9.1',
+                         "count" = "n",
+                         "Percent" = "percent")) %>% 
+  formatPercentage('Percent', 0)
+
+
+
 ggplot(Q9_1, aes(Q_9.1 , percent, fill =  Resp_Group))+
   geom_col()+
   facet_wrap(. ~ Resp_Group)+
   scale_fill_manual(values=c("grey70", "grey40"))+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
-  labs(x= "",
-       y = "",
+  labs(x= "Percentage of respondents to question",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "To what extent determined testing?",
        subtitle = "",
@@ -1617,7 +1632,7 @@ ggplot(Q9_1, aes(Q_9.1 , percent, fill =  Resp_Group))+
 filter(data, Q_9.2 !=  "NA") %>% 
   select( Resp_Group, Q_9.2) %>% 
 datatable(options = list(pageLength = 35, dom = 't'),
-   colnames = c( "Other reasons" = "Q_9.2", 'Respondent' = 'Resp_Group'))   
+   colnames = c( "Other reasons / comments" = "Q_9.2", 'Respondent' = 'Resp_Group'))   
         
       
 
@@ -1695,7 +1710,7 @@ Q10_1 <- mutate(Q10_1, Q_10.1 = fct_relevel(Q_10.1, c("10-30%", "30-50%", "50-70
 
 
 datatable(Q10_1, options = list(pageLength = 35, dom = 't'),
-            colnames = c( "bins" = "Q_10.1", "Respondent" = "Resp_Group")) %>% 
+            colnames = c( "Extent of influence" = "Q_10.1", "Respondent" = "Resp_Group", "count" = "n")) %>% 
     formatPercentage('percent', 0)  
 
 
@@ -1705,8 +1720,8 @@ ggplot(Q10_1, aes(Q_10.1 , percent, fill = Resp_Group))+
   scale_fill_manual(values=c("grey70", "grey40"))+
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
-  labs(x= "extent of influence",
-       y = "Percent of respondents",
+  labs(x= "",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "To what extent do test results have a influence on recommendations?",
        subtitle = "",
@@ -1753,8 +1768,8 @@ data <- mutate(data,
 #table
   
   datatable(Q10_1_group_df, options = list(pageLength = 35, dom = 't'),
-            colnames = c( "grouping of bins" = "Q_10_1group", 
-                          "Respondent" = "Resp_Group")) %>% 
+            colnames = c( "Extent of influence - additional grouping" = "Q_10_1group", 
+                          "Respondent" = "Resp_Group", "count" = "n")) %>% 
     formatPercentage('percent', 0)  
   
 
@@ -1766,12 +1781,12 @@ ggplot(Q10_1_group_df, aes(Q_10_1group , percent, fill = Resp_Group ))+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "Percent of respondents",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "To what extent do test results have a influence on recommendations?",
        subtitle = "",
        caption = "Q) To what extent do the test results influence your recommendations?
-                     To what extent does your agronomist make recommendations based on the test results from your farm? ")+
+                   Q)  To what extent does your agronomist make recommendations based on the test results from your farm? ")+
   
   theme(axis.text.x=element_text(angle=45,hjust=1),
         plot.caption = element_text(hjust = 1), legend.position = "none") +
@@ -1930,7 +1945,7 @@ ggplot(subsetQ_11_coded_agro, aes( source , percent_source1 ))+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Main sources of information or advice for what nutrients (source one only)",
        subtitle = "Agronomist only",
@@ -2055,7 +2070,7 @@ ggplot(subsetQ_11_coded_grower, aes( source , percent_source1 ))+
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Main sources of information or advice for what nutrients (source one only)",
        subtitle = "Growers only",
@@ -2113,6 +2128,7 @@ ggplot(subsetQ_11_coded_grower, aes( source , percent_all_sources ))+
 # **Soil testing** 
 * This section explores how you use soil testing. If you have NOT done soil testing, please go to page  8.
 * The above comment is from the survey script but some of the answers to the below question don't indicate this split.
+* page 8 is question 33.
 
 
 
@@ -2214,7 +2230,7 @@ datatable(data_q12_1summary_agro_grower,
             options = list(pageLength = 35, dom = 't'),
             # caption = "Grower",
              colnames = c( "Respondent" = "Resp_Group",
-                           "Approach" = "names_display",
+                           "Approach to P soil testing" = "names_display",
                            "count" = "n",
                            "percent" = "percent")) %>%
   formatPercentage(c("percent"), 0)
@@ -2226,7 +2242,7 @@ ggplot(data_q12_1summary_agro_grower, aes(names_display , percent, fill = Resp_G
   #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Explain your approach to soil testing P?",
        subtitle = "",
@@ -2311,7 +2327,7 @@ datatable(data_q12_2summary_agro_grower,
           options = list(pageLength = 35, dom = 't'),
           # caption = "Grower",
           colnames = c( "Respondent" = "Resp_Group",
-                        "Approach" = "names_display",
+                        "Approach to N soil testing" = "names_display",
                         "count" = "n",
                         "percent" = "percent")) %>%
   formatPercentage(c("percent"), 0)
@@ -2328,7 +2344,7 @@ ggplot(data_q12_2summary_agro_grower, aes(names_display , percent, fill = Resp_G
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Explain your approach to soil testing N?",
        subtitle = "",
@@ -2433,7 +2449,14 @@ data_q12_3summary_agro_grower<- mutate(data_q12_3summary_agro_grower, names_disp
 
 ```{r graph and table - Q12.3 source of advice both, echo=FALSE, message=FALSE, warning=TRUE}
 
-
+datatable(data_q12_3summary_agro_grower,
+          options = list(pageLength = 35, dom = 't'),
+          # caption = "Grower",
+          colnames = c( "Respondent" = "Resp_Group",
+                        "Approach to Mirconutrients soil testing" = "names_display",
+                        "count" = "n",
+                        "percent" = "percent")) %>%
+  formatPercentage(c("percent"), 0)
 
 
 
@@ -2445,7 +2468,7 @@ ggplot(data_q12_3summary_agro_grower, aes(names_display , percent, fill= Resp_Gr
   facet_wrap(.~ Resp_Group)+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Explain your approach to soil testing micronutrients?",
        subtitle = "",
