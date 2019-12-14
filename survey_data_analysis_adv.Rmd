@@ -2671,7 +2671,7 @@ Q13_percent_testing <- select(Q13_percent_testing,
 
 labels <- c(percent_N_testing_2018 = "N", 
             percent_P_testing_2018 = "P",
-            percent_testing_2018 = "testing")
+            percent_testing_2018 = "soil tested")
 
 
 #head(Q12_percent_testing)
@@ -2680,42 +2680,9 @@ Q13_percent_testing_for_table <- mutate(Q13_percent_testing,
                                         label_name = case_when(
                                           type == "percent_N_testing_2018" ~ "N",
                                           type == "percent_P_testing_2018" ~ "P",
-                                          type == "percent_testing_2018" ~ "any testing")) %>% 
+                                          type == "percent_testing_2018" ~ "soil tested")) %>% 
                                 select(label_name, bins, percent1, Resp_Group, n )
 
-
-
-
-
-```
-
-```{r Q13 graphs and table, echo=FALSE, warning=FALSE}
-##Table
-#Q13_percent_testing_for_table
-
-
-select(Q13_percent_testing_for_table,Resp_Group, label_name, bins,  n, percent1 ) %>% 
-  filter(Resp_Group == "Agronomist" ) %>% 
-datatable( 
-          colnames = c("Type of test" =  "label_name", 
-                       "Respondent" = "Resp_Group", 
-                       "percent" = "percent1", 
-                       "count" = "n"), 
-          options = list(pageLength = 35,  dom = 't'),
-          caption = "Agronomist") %>% 
-  formatPercentage('percent', 0)
-
-
-select(Q13_percent_testing_for_table,Resp_Group, label_name, bins,  n, percent1 ) %>% 
-  filter(Resp_Group == "Grower" ) %>% 
-datatable( 
-          colnames = c("Type of test" =  "label_name", 
-                       "Respondent" = "Resp_Group", 
-                       "percent" = "percent1", 
-                       "count" = "n"), 
-          options = list(pageLength = 35,  dom = 't'),
-          caption = "Grower") %>% 
-  formatPercentage('percent', 0)
 
 #Captions and labels
 caption_agro <- c(
@@ -2743,7 +2710,25 @@ Q) What % of your cropped land was tested for P in 2018?")
                                         levels=c(0,5,10,15,20,50),
                                         labels=c("0","5-10%","10-15%","15-20%", "20-50%", "50-100%")) 
   
-  
+
+
+```
+
+```{r Q13 graphs and table ago, echo=FALSE, warning=FALSE}
+##Table
+#Q13_percent_testing_for_table
+
+
+select(Q13_percent_testing_for_table,Resp_Group, label_name, bins,  n, percent1 ) %>% 
+  filter(Resp_Group == "Agronomist" ) %>% 
+datatable( 
+          colnames = c("Type of test" =  "label_name", 
+                       "Respondent" = "Resp_Group", 
+                       "percent" = "percent1", 
+                       "count" = "n"), 
+          options = list(pageLength = 35,  dom = 't'),
+          caption = "Agronomist") %>% 
+  formatPercentage('percent', 0)
 
  ### plots 
   
@@ -2753,14 +2738,35 @@ Q) What % of your cropped land was tested for P in 2018?")
     geom_col(fill = "grey70", color = "black")+
     theme_classic()+
     facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
-    labs(x= "bins",
-         y = "",
-         title = "In 2018 what % of your clients tested...",
+    labs(x= "",
+         y = "Percentage of respondents to question",
+         title = "In 2018 what % of your clients soil tested for...",
          subtitle = "Agronomist",
          caption = caption_agro)+
     theme(axis.text.x=element_text(angle=90,hjust=1),
           plot.caption = element_text(size = 8, hjust = 0))+
     scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.4))
+
+
+```
+
+
+```{r Q13 graphs and table grower, echo=FALSE, warning=FALSE}
+select(Q13_percent_testing_for_table,Resp_Group, label_name, bins,  n, percent1 ) %>% 
+  filter(Resp_Group == "Grower" ) %>% 
+datatable( 
+          colnames = c("Type of test" =  "label_name", 
+                       "Respondent" = "Resp_Group", 
+                       "percent" = "percent1", 
+                       "count" = "n"), 
+          options = list(pageLength = 35,  dom = 't'),
+          caption = "Grower") %>% 
+  formatPercentage('percent', 0)
+
+
+  
+
+
 
   
   
@@ -2771,8 +2777,8 @@ Q) What % of your cropped land was tested for P in 2018?")
     theme_classic()+
     facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
     labs(x= "bins",
-         y = "",
-         title = "In 2018 what % of your cropped land was tested...",
+         y = "Percentage of respondents to question",
+         title = "In 2018 what % of your cropped land was soil tested for...",
          subtitle = "Grower",
          caption = caption_grower)+
     theme(axis.text.x=element_text(angle=90,hjust=1),
@@ -2782,6 +2788,8 @@ Q) What % of your cropped land was tested for P in 2018?")
 
 
 Additional grouping to make the answer easier to interpenetrate.
+
+
 
 ```{r Q13 grouping other options, include=FALSE}
 
@@ -2956,7 +2964,7 @@ subset_soil_N_P_Any_Q_13_wide <- mutate_if(subset_soil_N_P_Any_Q_13_wide,
 
 
 
-```{r graph - Q13 grouping other options, echo=FALSE}
+```{r graph - Q13 grouping other agro options, echo=FALSE}
 
 #subset_soil_N_P_Any_Q_13_wide
 
@@ -2965,10 +2973,10 @@ filter(subset_soil_N_P_Any_Q_13_wide, Resp_Group == "Agronomist") %>%
     colnames = c(
       "bins" =  "bins",
       "respondent" = "Resp_Group",
-      "testing" = "percent_testing_2018",
+      "soil testing" = "percent_testing_2018",
       "N" = "percent_N_testing_2018",
       "P" = "percent_P_testing_2018",
-      "count test" = "test",
+      "count soil test" = "test",
       "count N test" = "n_test",
       "count P test" = "p_test"
     ),
@@ -2976,30 +2984,10 @@ filter(subset_soil_N_P_Any_Q_13_wide, Resp_Group == "Agronomist") %>%
     caption = "Agronomist"
   ) %>%
   
-  formatPercentage(c("testing",
+  formatPercentage(c("soil testing",
                      "N",
                      "P"))
 
-
-filter(subset_soil_N_P_Any_Q_13_wide, Resp_Group == "Grower") %>%
-  datatable(
-    colnames = c(
-      "bins" =  "bins",
-      "respondent" = "Resp_Group",
-      "testing" = "percent_testing_2018",
-      "N" = "percent_N_testing_2018",
-      "P" = "percent_P_testing_2018",
-      "count test" = "test",
-      "count N test" = "n_test",
-      "count P test" = "p_test"
-    ),
-    options = list(pageLength = 35,  dom = 't'),
-    caption = "Grower"
-  ) %>%
-  
-  formatPercentage(c("testing",
-                     "N",
-                     "P"))
 
 ######
 filter(subset_soil_testQ_13_narrow, bins != "other" &
@@ -3010,13 +2998,41 @@ filter(subset_soil_testQ_13_narrow, bins != "other" &
     theme_classic()+
     facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
     labs(x= "bins",
-         y = "",
-         title = "In 2018 what % of your cropped land was tested...",
+         y = "Percentage of respondents to question",
+         title = "In 2018 what % of your cropped land was soil tested for...",
          subtitle = "Grower",
          caption = caption_grower)+
     theme(axis.text.x=element_text(angle=90,hjust=1),
           plot.caption = element_text(size = 8, hjust = 0))+
     scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.4))
+
+
+```
+
+```{r graph - Q13 grouping other grower options, echo=FALSE}
+############ Grower
+
+filter(subset_soil_N_P_Any_Q_13_wide, Resp_Group == "Grower") %>%
+  datatable(
+    colnames = c(
+      "bins" =  "bins",
+      "respondent" = "Resp_Group",
+      "soil testing" = "percent_testing_2018",
+      "N" = "percent_N_testing_2018",
+      "P" = "percent_P_testing_2018",
+      "count soil test" = "test",
+      "count N test" = "n_test",
+      "count P test" = "p_test"
+    ),
+    options = list(pageLength = 35,  dom = 't'),
+    caption = "Grower"
+  ) %>%
+  
+  formatPercentage(c("soil testing",
+                     "N",
+                     "P"))
+
+
 
 filter(subset_soil_testQ_13_narrow, bins != "other" &
            Resp_Group == "Agronomist") %>% 
@@ -3026,8 +3042,8 @@ filter(subset_soil_testQ_13_narrow, bins != "other" &
     theme_classic()+
     facet_wrap(. ~ type, labeller=labeller(type = labels)) +  
     labs(x= "bins",
-         y = "",
-         title = "In 2018 what % of your cropped land was tested...",
+         y = "Percentage of respondents to question",
+         title = "In 2018 what % of your cropped land was soil tested for...",
          subtitle = "Agronomist",
          caption = caption_grower)+
     theme(axis.text.x=element_text(angle=90,hjust=1),
@@ -3275,7 +3291,7 @@ ggplot(N_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of tests nominated ",
        title = "N test used",
        subtitle = "",
        caption = "Q)  Which tests do you currently use for your soil N testing?")+
@@ -3328,9 +3344,9 @@ ggplot(N_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
   theme_classic()+
   labs(x= "Number of samples per paddock",
        y = "",
-       title = "",
+       title = "Representative samples per paddock – N tests",
        subtitle = "",
-       caption = "Q)  Which tests do you currently use for your soil N testing?")+
+       caption = "Q)  How many representative samples per paddock for soil N testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
@@ -3338,6 +3354,17 @@ ggplot(N_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
 
 
 ```
+
+NB the perecenatge are expressed as:
+
+* N test - all the nomintaed n tests used (some people use more than 1) total is 116
+If you want as a percenatge of participants in survey, this inormation is in the table.
+* The number of representative samples per paddock for N test
+ - all the answeres to this question are used accross all the types of n tests (some people use more than 1) total number of answeres to this question is 95. This is confusing, and example might help: for all the 3 types of N tests 20 agronomist said they take between 0-5 tests per paddock, so this is 20/95 =21%
+ 
+If you want as a percenatge of participants in survey, this inormation is in the table.
+
+The same appoach is taken for P soil testing, K soil testing and micro nutrients.
 
 #### **Question 15 P**
 grower
@@ -3619,7 +3646,7 @@ ggplot(P_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of tests nominated",
        title = "P test used",
        subtitle = "",
        caption = "Q)  Which tests do you currently use for your soil P testing?")+
@@ -3673,9 +3700,9 @@ ggplot(P_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
   theme_classic()+
   labs(x= "Number of samples per paddock",
        y = "",
-       title = "",
+       title = "Representative samples per paddock – P tests",
        subtitle = "",
-       caption = "Q)  Which tests do you currently use for your soil P testing?")+
+       caption = "Q) How many representative samples per paddock for soil N testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
@@ -3867,7 +3894,7 @@ filter(K_test_counts, Resp_Group == "Grower") %>%
 # K_test_numb_counts$numb_of_test <- factor(K_test_numb_counts$numb_of_test,levels = c("0-5",  "5-10", "10-15", 
 #                                                                                              "15-20", "20-25",  "25-30", 
 #                                                                                              "greater than 30"))
-K_test_counts
+
 
 #percent of people in survey using certain test
 ggplot(K_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
@@ -3876,7 +3903,7 @@ ggplot(K_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of tests nominated ",
        title = "K test used",
        subtitle = "",
        caption = "Q)  Which tests do you currently use for your soil K testing?")+
@@ -3934,9 +3961,9 @@ ggplot(K_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
   theme_classic()+
   labs(x= "Number of samples per paddock",
        y = "",
-       title = "",
+       title = "Representative samples per paddock – K tests",
        subtitle = "",
-       caption = "Q)  Which tests do you currently use for your soil K testing?")+
+       caption = "Q) How many representative samples per paddock for soil K testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
@@ -4426,7 +4453,7 @@ ggplot(mirco_test_counts, aes (x = test, y = percent, fill = Resp_Group))+
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of tests nominated ",
        title = "mirco nutrients test used",
        subtitle = "",
        caption = "Q)  Which tests do you currently use for your soil micro nutrient testing?")+
@@ -4484,9 +4511,9 @@ ggplot(mirco_test_numb_counts, aes(numb_of_test, perecnt, fill = Resp_Group))+
   theme_classic()+
   labs(x= "Number of samples per paddock",
        y = "",
-       title = "",
+       title = "Representative samples per paddock – Mirco nutrients tests",
        subtitle = "",
-       caption = "Q)  Which tests do you currently use for your soil micro nutrient testing?")+
+       caption = "Q) How many representative samples per paddock for soil micro nutrient testing?")+
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(size = 8), legend.position = "none") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 5L))
@@ -4500,6 +4527,7 @@ What are the top 3 reasons for soil testing on your clients farms ...
 * 1
 * 2
 * 3
+
 
 ```{r Q18 working, warning=FALSE, include=FALSE}
 headers18_1 <- read_excel("Q18_Top_3_Categories _ 12.12.19.xlsx", 
@@ -4665,6 +4693,11 @@ datatable(data_q18_3summary_agro_grower,
 
 ```
 
+
+#### **Comments notes on Question 18** 
+
+* The responses are varied, therefore only tables were made.
+
 #### **Question 19**
 Please indicate why you don't do more SOIL Nitrogen testing:
 
@@ -4750,7 +4783,7 @@ filter(reason_soil_N, Resp_Group == "Agronomist") %>%
                  "percent" = "percent"
     ),
     options = list(pageLength = 35,  dom = 't'),
-    caption = "Agronomist")%>%
+    caption = "Reason for not doing more Soil N testing -Agronomist")%>%
   formatPercentage(c("percent"))
 
 filter(reason_soil_N, Resp_Group == "Grower") %>% 
@@ -4762,7 +4795,7 @@ filter(reason_soil_N, Resp_Group == "Grower") %>%
                  "percent" = "percent"
     ),
     options = list(pageLength = 35,  dom = 't'),
-    caption = "Grower")%>%
+    caption = "Reason for not doing more Soil N testing - Grower")%>%
   formatPercentage(c("percent"))
 
 
@@ -4777,7 +4810,7 @@ ggplot(reason_soil_N, aes (x =  reorder(names_display, -percent), y = percent, f
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        title = "",
        subtitle = "",
        caption = "Q)  Please indicate why you don't do more soil nitrogen testing?")+
@@ -4872,7 +4905,7 @@ filter(reason_soil_P, Resp_Group == "Agronomist") %>%
                  "percent" = "percent"
     ),
     options = list(pageLength = 35,  dom = 't'),
-    caption = "Agronomist")%>%
+    caption = "Reason for not doing more Soil P testing - Agronomist")%>%
   formatPercentage(c("percent"))
 
 filter(reason_soil_P, Resp_Group == "Grower") %>% 
@@ -4884,7 +4917,7 @@ filter(reason_soil_P, Resp_Group == "Grower") %>%
                  "percent" = "percent"
     ),
     options = list(pageLength = 35,  dom = 't'),
-    caption = "Grower")%>%
+    caption = "Reason for not doing more Soil P testing - Grower")%>%
   formatPercentage(c("percent"))
 
 ### graph
@@ -4894,7 +4927,7 @@ ggplot(reason_soil_N, aes (x =  reorder(names_display, -percent), y = percent, f
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        title = "",
        subtitle = "",
        caption = "Q)  Please indicate why you don't do more soil P testing?")+
@@ -4910,8 +4943,6 @@ ggplot(reason_soil_N, aes (x =  reorder(names_display, -percent), y = percent, f
 Please indicate if you agree/disagree with the following statements in relation to SOIL testing.
 
 
-	The use of soil testing on my farm increases my profitability (Grower only Q)	Feel free to comment on this response
-
 * 21.1 My clients businesses would be more profitable if they did more soil testing than they do now 
 * 21.2 Uncertainty about how the season will turn out makes it hard to get value from soil testing results 
 * 21.3 My clients recommend the use of regular soil testing to other local farmers
@@ -4920,7 +4951,7 @@ Please indicate if you agree/disagree with the following statements in relation 
 
 
 ```{r q21 data prep, include=FALSE}
-data$Q_21.1
+
 #group the Q21 data together
 subsetQ21 <- select(data, Q_21.1, Q_21.2, Q_21.3, Q_21.4, Q_21.5, Resp_Group) 
 #how many people ans the questions
@@ -5100,7 +5131,7 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        title = "More profitable with more soil testing",
        subtitle = "",
        caption = "Q)My clients businesses would be more profitable if they did more soil testing than they do now")+
@@ -5159,7 +5190,7 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        title = "Uncertainty about the season will reduces value of soil testing ",
        subtitle = "",
        caption = "Q)Uncertainty about how the season will turn out makes it hard to get value from soil testing results")+
@@ -5214,7 +5245,7 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        title = "Recommend regular soil testing to others",
        subtitle = "",
        caption = "Q)My clients recommend the use of regular soil testing to other local farmers")+
@@ -5274,7 +5305,7 @@ ggplot( aes (x =  reorder(scale, -percent_of_numb_resp), y = percent_of_numb_res
   facet_wrap(.~ Resp_Group )+
   theme_classic()+
   labs(x= "",
-       y = "",
+       y = "Percentage of respondents to question",
        title = "Soil testing increases my profitability",
        subtitle = "",
        caption = "Q)The use of soil testing on my farm increases my profitability (Grower only Q)")+
@@ -5358,7 +5389,7 @@ ggplot(test_Q22_summary, aes(Q_22.1_recode , percent, fill = Resp_Group))+
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
   labs(x= "Average spend each year",
-       y = "Percent responded to question",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Spend per year",
        subtitle = "",
@@ -5426,11 +5457,11 @@ ggplot(test_Q23_summary, aes(Q_23.1 , percent, fill = Resp_Group))+
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
   labs(x= "",
-       y = "Percent responded to question",
+       y = "Percentage of respondents to question",
        fill = "",
-       title = "Change in soil testing",
+       title = "Change in the amount of soil testing",
        subtitle = "",
-       caption = "Q)Compared to five years' ago, has the amount of soil testing you do / recommend changed?")+
+       caption = "Q) Compared to five years' ago, has the amount of soil testing you do / recommend changed?")+
   
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(hjust = 0), legend.position = "none") +
@@ -5486,11 +5517,11 @@ ggplot(test_Q24_summary, aes(Q_24.1 , percent, fill = Resp_Group))+
   facet_wrap(. ~ Resp_Group)+
   theme_classic()+
   labs(x= "",
-       y = "Percent responded to question",
+       y = "Percentage of respondents to question",
        fill = "",
        title = "Future soil testing",
        subtitle = "",
-       caption = "Q)In five years' time, how much soil sampling do you expect to be doing / recommending?")+
+       caption = "Q) In five years' time, how much soil sampling do you expect to be doing / recommending?")+
   
   theme(axis.text.x=element_text(angle=90,hjust=1),
         plot.caption = element_text(hjust = 0), legend.position = "none") +
@@ -5501,6 +5532,7 @@ ggplot(test_Q24_summary, aes(Q_24.1 , percent, fill = Resp_Group))+
 
 
 # PLANT TESTING 
+We will now ask a few questions about how you use plant testing ... If you have not done any plant testing, please go to page 8.
 
 #### **Question 25**
 How do you currently use plant testing?
@@ -5518,6 +5550,8 @@ How do you currently use plant testing?
 
 
 ```
+
+Only 14 text responses here.
 
 
 #### **Question 26**
@@ -6111,9 +6145,13 @@ ggplot(Q29_summary, aes(Q_29.1_recode , percent, fill = Resp_Group))+
 ```
 
 #### **Question 30** 
-Agronomist
+
+Agronomist)
+
 Compared to five years' ago, has the amount of plant testing you do / recommend changed?
-Grower
+
+Grower)
+
 Compared to five years' ago, has the amount of plant testing you do on your farm changed?
 
 ```{r Q30 working, warning=FALSE, include=FALSE}
@@ -6162,9 +6200,13 @@ ggplot(Q30_summary, aes(Q_30 , percent, fill = Resp_Group))+
 
 
 #### **Question 31**
-Agronomist
+
+Agronomist)
+
 In five years' time,how much plant sampling do you expect to be doing / recommending?
-Grower
+
+Grower)
+
 In five years' time, how much plant sampling do you expect to be doing?
 
 ```{r Q31 working, warning=FALSE, include=FALSE}
@@ -6390,6 +6432,8 @@ ggplot(soilN_testing, aes (x =  reorder(names_display, -percent), y = percent, f
 #### **Question 34**
 Agronomist)
 
+Please indicate why you don't do SOIL Phosphorous  testing
+
 Grower) 
 
 Please indicate why you don't do SOIL Phosphorous  testing
@@ -6507,7 +6551,11 @@ ggplot(soilP_testing, aes (x =  reorder(names_display, -percent), y = percent, f
 ```
 
 #### **Question 35** 
+
 Agronomist)
+
+* My clients businesses would be more profitable if they did more soil testing than they do 
+* Uncertainty about how the season will turn out makes it hard to get value from soil testing results
 
 Grower) 
 
@@ -6696,8 +6744,20 @@ filter(subsetQ35_summary, question == "Uncertainty" ) %>%
 
 
 #### **Question 36** 
-Agronomist
-Grower
+
+Agronomist)
+
+* The cost of plant sampling
+* The time required for plant sampling
+* The cost of plant analysis
+* The difficulty in being able to represent the variability in a paddock55
+* The level of accuracy of plant analysis
+* The ability to translate plant test results into a profitable fertiliser decision for my paddock
+* Not being able to get plant test results at the right time for decision making
+* Comment
+
+Grower)
+
 Please indicate why you don't do any PLANT testing
 
 * The cost of plant sampling
