@@ -5557,8 +5557,98 @@ Only 14 text responses here.
 #### **Question 26**
 Please list the main 3 reasons you use plant testing data?
 
-TEXT QUESTION
+```{r Q26 working, warning=FALSE, include=FALSE}
+headers25_1 <- read_excel("Q26_text_question.xlsx", 
+                          sheet = "Data", col_names=FALSE, range = "A4:E4")
 
+
+
+data_q25_1 <- read_excel("Q26_text_question.xlsx", 
+                         sheet = "Data", col_names=FALSE, range = "A5:E174")
+names(data_q25_1) <- headers25_1
+
+
+data_q25_1 <- select(data_q25_1, - "Q_25_reason1")
+
+
+data_q25_1summary_agro <- filter (data_q25_1, Resp_Group == "Agronomist" & Q_25_reason12_coded  !=  "NA")%>%
+  group_by(Resp_Group) %>%
+  count(Q_25_reason12_coded) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+data_q25_1summary_agro
+
+
+```
+
+```{r Q26 graph and tables, echo=FALSE, warning=FALSE}
+data_q25_1summary_grower <- filter (data_q25_1, Resp_Group == "Grower" & Q_25_reason12_coded !=  "NA")%>%
+  group_by(Resp_Group) %>% 
+  count(Q_25_reason12_coded) %>% 
+  mutate(percent = 
+           (freq = n / sum(n))) %>% 
+  arrange(desc(percent))
+
+
+
+
+
+
+
+datatable(data_q25_1summary_agro,
+          options = list(pageLength = 35, dom = 't'),
+          caption = "Agronomist",
+          colnames = c( "Respondent" = "Resp_Group",
+                        "Reason for plant testing" = "Q_25_reason12_coded",
+                        "count" = "n",
+                        "percent" = "percent")) %>%
+  formatPercentage(c("percent"), 0)
+
+ggplot(data_q25_1summary_agro, aes(Q_25_reason12_coded , percent, fill = Resp_Group  )) +
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  geom_col()+
+  facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percentage of respondents to question",
+       fill = "",
+       title = "Top reason for plant testing",
+       subtitle = "",
+       caption = "Q) .Please list the main 3 reasons you use plant testing data?")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8),
+        legend.position =  "") + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
+
+datatable(data_q25_1summary_grower,
+          options = list(pageLength = 35, dom = 't'),
+          caption = "Grower",
+          colnames = c( "Respondent" = "Resp_Group",
+                        "Reason for plant testing" = "Q_25_reason12_coded",
+                        "count" = "n",
+                        "percent" = "percent")) %>%
+  formatPercentage(c("percent"), 0)
+
+ggplot(data_q25_1summary_grower, aes(Q_25_reason12_coded , percent, fill = Resp_Group  )) +
+  scale_fill_manual(values=c("grey70", "grey40"))+
+  geom_col()+
+  facet_wrap(. ~ Resp_Group)+
+  #geom_text(aes(label = percent(signif(percent),1), vjust = -1.0, hjust = 0.5))+
+  theme_classic()+
+  labs(x= "",
+       y = "Percentage of respondents to question",
+       fill = "",
+       title = "Top reason for plant testing",
+       subtitle = "",
+       caption = "Q) .Please list the main 3 reasons you use plant testing data?")+
+  theme(axis.text.x=element_text(angle=45,hjust=1),
+        plot.caption = element_text(size = 8),
+        legend.position =  "") + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 5L), limits=c(0, 0.8))
+
+```
 
 #### **Question 27**
 Please indicate why you don't do more PLANT testing
