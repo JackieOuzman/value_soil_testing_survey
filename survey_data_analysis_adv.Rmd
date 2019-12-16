@@ -6886,7 +6886,7 @@ Q36_comments2 <- filter(data, Q_36.8 !=  "NA") %>% select(Resp_Group, Q_36.8 )
 Agronomist
 Please indicate if you agree/disagree with the following statements in relation to PLANT testing
 
-* My clients businesses would be more profitable if they did more plant testing than they do now
+* My clients businesses would be more profitable if they did more plant testing than they do now
 * Uncertainty about how the season will turn out makes it hard to get value from plant testing results
 * Feel free to comment on this response
 
